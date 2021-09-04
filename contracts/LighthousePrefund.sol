@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./LighthouseTier.sol";
 import "./LighthouseRegistration.sol";
+import "./LighthouseProject.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
@@ -10,21 +11,9 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  * @notice The second phase of the Project Fund raising is to prefund. 
  */
 contract LighthousePrefund is Ownable {
-
-    struct Project {
-        uint256 startTime;
-        uint256 endTime;
-        uint256[3] fixedPrices;         // Amount of tokens that user can invest, depending on his tier
-        uint256[3] collectedAmounts;    // Amount of tokens that users invested so far.
-        uint256[3] pools;               // Amount of tokens that could be invested in the pool.
-        address token;                  // Token to accept
-    }
-
     LighthouseTier private lighthouseTier;
     LighthouseRegistration private lighthouseRegistration;
-
-    /// @notice The second phase information of the project
-    mapping(uint256 => Project) public projects;
+    LighthouseProject private lighthouseProject;
 
     /// @notice The investor prefunds in the project
     /// @dev Project -> Investor -> funded
@@ -35,15 +24,16 @@ contract LighthousePrefund is Ownable {
     /// @dev Used with v, r, s
     address public prefundVerifier;
 
-    event AddProject(uint256 indexed projectId, address indexed token, uint256 startTime, uint256 endTime, uint256[3] pools, uint256[3] fixedPrices);
-    event Prefund(uint256 indexed projectId, address indexed investor, uint8 tier, uint256 time);
+    event Prefund(uint256 indexed projectId, address indexed investor, int8 tier, uint256 time);
 
-    constructor(address _tier, address _submission, address _verifier) {
-        require(_tier != address(0) && _submission != address(0) && _verifier != address(0), "Lighthouse: ZERO_ADDRESS");
+    constructor(address _tier, address _submission, address _project, address _verifier) {
+        require(_tier != address(0) && _submission != address(0) && _project != address(0) && _verifier != address(0), "Lighthouse: ZERO_ADDRESS");
         require(_tier != _submission, "Lighthouse: SAME_ADDRESS");
+        require(_tier != _project, "Lighthouse: SAME_ADDRESS");
 
         lighthouseTier = LighthouseTier(_tier);
         lighthouseRegistration = LighthouseRegistration(_submission);
+        lighthouseProject = LighthouseProject(_project);
         prefundVerifier = _verifier;
     }
 
@@ -54,100 +44,63 @@ contract LighthousePrefund is Ownable {
         prefundVerifier = _verifier;
     }
 
-    /// @notice Add the second phase of the project
-    /// @dev The start time is end time of first phase
-    /// uint16 investorAmount 0 - total amount to spend for tier 1
-    /// uint16 investorAmount 1 - total amount to spend for tier 2
-    /// uint16 investorAmount 2 - total amount to spend for tier 3
-    /// uint256 param 2 - tier 1 spend limit
-    /// uint256 param 3 - tier 2 spend limit
-    /// uint256 param 3 - tier 3 spend limit 
-    function addProject(uint256 projectId, uint256 endTime, uint256[3] calldata fixedPrices, uint256[3] calldata pools, address _token) external onlyOwner {
-        require(projectId > 0, "Lighthouse: INVALID_PARAMETER");
-        require(endTime > 0 && block.timestamp < endTime, "Lighthouse: INVALID_TIME");
-        require(pools[0] > 0 && pools[1] > 0 && pools[2] > 0, "Lighthouse: ZERO_POOL_CAP");
-        require(fixedPrices[0] > 0 && fixedPrices[1] > 0 && fixedPrices[2] > 0, "Lighthouse: ZERO_FIXED_PRICE");
-        Project storage project = projects[projectId];
-        require(project.startTime == 0, "Lighthouse: ALREADY_ADDED");
-
-        uint256 submissionEndTime = lighthouseRegistration.getEndTime(projectId);
-        require(submissionEndTime > 0 && submissionEndTime < endTime, "Lighthouse: INVALID_SUBMISSION_TIME");
-    
-        project.startTime = submissionEndTime;
-        project.endTime = endTime;
-        project.fixedPrices = fixedPrices;
-        project.pools = pools;
-        project.token = _token;
-
-        emit AddProject(projectId, _token, submissionEndTime, endTime, pools, fixedPrices);
-    }
-
     /// @dev v, r, s are used to ensure on server side that user passed KYC
     //todo pass Tier eligable for prefunding.
+    //todo can use least tier
     //todo use the tier
     function prefund(uint256 projectId, uint8 v, bytes32 r, bytes32 s) external payable {
-        require(projectId > 0, "Lighthouse: ZERO_ADDRESS");
-        Project storage project = projects[projectId];
-        require(project.startTime > 0, "Lighthouse: NO_PROJECT");
-        require(investments[projectId][msg.sender] == false, "Lighthouse: ALREADY_PREFUNDED");
+        require(lighthouseProject.prefundInitialized(projectId), "Lighthouse: REGISTRATION_NOT_INITIALIZED");
+        require(!prefunded(projectId, msg.sender), "Lighthouse: ALREADY_PREFUNDED");
 
-        require(project.startTime >= block.timestamp, "Lighthouse: TOO_EARLY");
-        require(project.endTime <= block.timestamp, "Lighthouse: TOO_LATE");
-        require(lighthouseRegistration.submissions(projectId, msg.sender), "Lighthouse: NOT_SUBMITTED");
+        {   // Avoid stack too deep.
+        uint256 startTime;
+        uint256 endTime;
+        
+        (startTime, endTime) = lighthouseProject.prefundTimeInfo(projectId);
 
-        uint8 level = lighthouseTier.getTierLevel(msg.sender);
-        require(level > 0 && level < 4, "Lighthouse: NO_TIER");
+        require(block.timestamp >= startTime,   "Lighthouse: NOT_STARTED_YET");
+        require(block.timestamp <= endTime,     "Lighthouse: FINISHED");
+        }
+        require(lighthouseRegistration.registered(projectId, msg.sender), "Lighthouse: NOT_REGISTERED");
 
-        require(project.collectedAmounts[level - 1] < project.pools[level - 1], "Lighthouse: TIER_CAP");
+        int8 tier = lighthouseTier.getTierLevel(msg.sender);
+        require(tier > 0 && tier < 4, "Lighthouse: NO_TIER");
 
+        uint256 collectedAmount;        // Tier investment amount
+        uint256 pool;                   // Tier investment cap
+        (collectedAmount, pool) = lighthouseProject.prefundPoolInfo(projectId, tier);
+
+        require(collectedAmount < pool, "Lighthouse: TIER_CAP");
+ 
         // investor, project verification
 	    bytes memory prefix     = "\x19Ethereum Signed Message:\n32";
-	    bytes32 message         = keccak256(abi.encodePacked(msg.sender, projectId, level));
+	    bytes32 message         = keccak256(abi.encodePacked(msg.sender, projectId, tier));
 	    bytes32 hash            = keccak256(abi.encodePacked(prefix, message));
 	    address recover         = ecrecover(hash, v, r, s);
 
 	    require(recover == prefundVerifier, "Lighthouse: SIG");
 
-        if (project.token == address(0)) {
-            require(msg.value == project.fixedPrices[level - 1], "Lighthouse: NOT_ENOUGH_NATIVE");
+        uint256 investAmount;
+        address investToken;
+        (investAmount, investToken) = lighthouseProject.prefundInvestAmount(projectId, tier);
+
+        if (investToken == address(0)) {
+            require(msg.value == investAmount, "Lighthouse: NOT_ENOUGH_NATIVE");
         } else {
-            IERC20 token = IERC20(project.token);
-            require(token.transferFrom(msg.sender, address(this), project.fixedPrices[level - 1]), "Lighthouse: FAILED_TO_TRANSER");
+            IERC20 token = IERC20(investToken);
+            require(token.transferFrom(msg.sender, address(this), investAmount), "Lighthouse: FAILED_TO_TRANSER");
         }
 
-        project.collectedAmounts[level - 1] = project.collectedAmounts[level - 1] + project.fixedPrices[level - 1];
+        lighthouseProject.collectPrefundInvestment(projectId, tier);
         investments[projectId][msg.sender] = true;
 
-        emit Prefund(projectId, msg.sender, level, block.timestamp);
-    }
-
-    function getEndTime(uint256 id) external view returns(uint256) {
-        if (id == 0 || id <= lighthouseRegistration.totalProjects()) {
-            return 0;
-        }
-
-        return projects[id].endTime;
-    }
-
-    /// @notice returns total pool, and invested pool
-    /// @dev the first returning parameter is total pool. The second returning parameter is invested amount so far.
-    function getTotalPool(uint256 id) external view returns(uint256, uint256) {
-        Project storage project = projects[id];
-
-        uint256 totalPool = project.pools[0] + project.pools[1] + project.pools[2];
-        uint256 totalInvested = project.collectedAmounts[0] + project.collectedAmounts[1] + project.collectedAmounts[2];
-
-        return (totalPool, totalInvested);
+        emit Prefund(projectId, msg.sender, tier, block.timestamp);
     }
 
     /// @notice checks whether the user had prefunded or not.
     /// @param id of the project
     /// @param investor who prefuned
-    function isPrefunded(uint256 id, address investor) external view returns(bool) {
+    function prefunded(uint256 id, address investor) public view returns(bool) {
         return investments[id][investor];
-    }
-
-    function getFixedPrice(uint256 id, int8 tierLevel) external view returns(uint256) {
-        return projects[id][tierLevel - 1];
     }
 }

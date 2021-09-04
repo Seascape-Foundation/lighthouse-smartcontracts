@@ -39,7 +39,7 @@ contract LighthouseRegistration is Ownable {
     /// @notice User registers to join the fund.
     /// @param id is the project id to join
     function register(uint256 id) external {
-        require(lighthouseProject.validProjectId(id), "Lighthouse: INVALID_PROJECT_ID");
+        require(lighthouseProject.registrationInitialized(id), "Lighthouse: REGISTRATION_NOT_INITIALIZED");
 
         uint256 startTime;
         uint256 endTime;
@@ -48,7 +48,7 @@ contract LighthouseRegistration is Ownable {
 
         require(block.timestamp >= startTime, "Lighthouse: NOT_STARTED_YET");
         require(block.timestamp <= endTime, "Lighthouse: FINISHED");
-        require(registrations[id][msg.sender] == false, "Lighthouse: SUBMITTED_ALREADY");
+        require(!registered(id, msg.sender), "Lighthouse: ALREADY_REGISTERED");
 
         int8 tierLevel = lighthouseTier.getTierLevel(msg.sender);
         require(tierLevel > 0, "Lighthouse: NOT_QUALIFIED");
@@ -65,4 +65,8 @@ contract LighthouseRegistration is Ownable {
     // Public functions
     //
     ////////////////////////////////////////////////////////////////////////////
+
+    function registered(uint256 id, address investor) public view returns(bool) {
+        registrations[id][msg.sender];
+    }
 }
