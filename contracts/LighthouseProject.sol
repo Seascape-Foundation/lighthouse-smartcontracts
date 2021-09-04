@@ -27,13 +27,20 @@ contract LighthouseProject is Ownable {
         uint256[3] pools;               // Amount of tokens that could be invested in the pool.
         address token;                  // Token to accept
     }
+    struct Auction {
+        uint256 startTime;
+        uint256 endTime;
+        uint256 spent;          // Total Spent Crowns for this project
+    }
 
     mapping(uint256 => Registration) public registrations;
     mapping(uint256 => Prefund) public prefunds;
+    mapping(uint256 => Auction) public auctions;
 
     event ProjectEditor(address indexed user, bool allowed);
     event InitRegistration(uint256 indexed id, uint256 startTime, uint256 endTime);
-    event InitPrefund(uint256 indexed projectId, address indexed token, uint256 startTime, uint256 endTime, uint256[3] pools, uint256[3] fixedPrices);
+    event InitPrefund(uint256 indexed id, address indexed token, uint256 startTime, uint256 endTime, uint256[3] pools, uint256[3] fixedPrices);
+    event InitAuction(uint256 indexed id, uint256 startTime, uint256 endTime);
 
     constructor() {
         projectId.increment(); 	// starts at value 1
@@ -92,7 +99,7 @@ contract LighthouseProject is Ownable {
     /// uint256 param 2 - tier 1 spend limit
     /// uint256 param 3 - tier 2 spend limit
     /// uint256 param 3 - tier 3 spend limit
-    function addPrefund(uint256 id, uint256 startTime, uint256 endTime, uint256[3] calldata fixedPrices, uint256[3] calldata pools, address _token) external onlyOwner {
+    function initPrefund(uint256 id, uint256 startTime, uint256 endTime, uint256[3] calldata fixedPrices, uint256[3] calldata pools, address _token) external onlyOwner {
         require(validProjectId(id), "Lighthouse: INVALID_PROJECT_ID");
         require(startTime > 0 && block.timestamp < startTime, "Lighthouse: INVALID_START_TIME");
         require(endTime > 0 && startTime != endTime && startTime < endTime, "Lighthouse: INVALID_END_TIME");
@@ -114,8 +121,26 @@ contract LighthouseProject is Ownable {
         emit InitPrefund(id, _token, startTime, endTime, pools, fixedPrices);
     }
 
+    /// @notice Add the last stage period for the project
+    function initAuction(uint256 id, uint256 startTime, uint256 endTime) external onlyOwner {
+        require(validProjectId(id), "Lighthouse: INVALID_PROJECT_ID");
+        require(startTime > 0 && block.timestamp < startTime, "Lighthouse: INVALID_START_TIME");
+        require(endTime > 0 && startTime != endTime && startTime < endTime, "Lighthouse: INVALID_END_TIME");
+        Auction storage auction = auctions[id];
+        require(auction.startTime == 0, "Lighthouse: ALREADY_ADDED");
 
-    /// @dev Should be called from other smartcontracts that are doing security check ins.
+        // prefundEndTime is already used as the name of function 
+        uint256 prevEndTime = prefunds[id].endTime;
+        require(prevEndTime > 0, "Lighthouse: NO_PREFUND_YET");
+        require(startTime > prevEndTime, "Lighthouse: NO_REGISTRATION_END_YET");
+    
+        auction.startTime = startTime;
+        auction.endTime = endTime;
+
+        emit InitAuction(id, startTime, endTime);
+    }
+
+    /// @dev Should be called from other smartcontracts that are doing security check-ins.
     function collectPrefundInvestment(uint256 id, int8 tier) external {
         require(editors[msg.sender], "Lighthouse: FORBIDDEN");
         Prefund storage x = prefunds[id];
@@ -124,6 +149,14 @@ contract LighthouseProject is Ownable {
         uint8 i = uint8(tier) - 1;
 
         x.collectedAmounts[i] = x.collectedAmounts[i] + x.fixedPrices[i];
+    }
+
+    /// @dev Should be called from other smartcontracts that are doing security check-ins.
+    function collectAuctionAmount(uint256 id, uint256 amount) external {
+        require(editors[msg.sender], "Lighthouse: FORBIDDEN");
+        Auction storage x = auctions[id];
+
+        x.spent = x.spent + amount;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -158,6 +191,15 @@ contract LighthouseProject is Ownable {
         return (x.startTime > 0);
     }
 
+    function auctionInitialized(uint256 id) public view returns(bool) {
+        if (!validProjectId(id)) {
+            return false;
+        }
+
+        Auction storage x = auctions[id];
+        return (x.startTime > 0);
+    }
+
     /// @notice Returns Information about Registration: start time, end time
     function registrationInfo(uint256 id) external view returns(uint256, uint256) {
         Registration storage x = registrations[id];
@@ -171,6 +213,12 @@ contract LighthouseProject is Ownable {
     /// @notice Returns Information about Prefund Time: start time, end time
     function prefundTimeInfo(uint256 id) external view returns(uint256, uint256) {
         Prefund storage x = prefunds[id];
+        return (x.startTime, x.endTime);
+    }
+
+    /// @notice Returns Information about Auction Time: start time, end time
+    function auctionTimeInfo(uint256 id) external view returns(uint256, uint256) {
+        Auction storage x = auctions[id];
         return (x.startTime, x.endTime);
     }
 
@@ -207,5 +255,14 @@ contract LighthouseProject is Ownable {
         uint256 totalInvested = x.collectedAmounts[0] + x.collectedAmounts[1] + x.collectedAmounts[2];
 
         return (totalPool, totalInvested);
+    }
+
+    function auctionEndTime(uint256 id) external view returns(uint256) {
+        return auctions[id].endTime;
+    }
+
+    /// @notice returns total auction
+    function auctionTotalPool(uint256 id) external view returns(uint256) {
+        return auctions[id].spent;
     }
 }

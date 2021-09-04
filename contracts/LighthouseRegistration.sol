@@ -67,6 +67,7 @@ contract LighthouseRegistration is Ownable {
     ////////////////////////////////////////////////////////////////////////////
 
     function registered(uint256 id, address investor) public view returns(bool) {
-        registrations[id][msg.sender];
+        bool r = registrations[id][investor];
+        return r;
     }
 }

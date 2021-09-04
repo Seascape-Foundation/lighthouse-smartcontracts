@@ -5,6 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./LighthouseAuction.sol";
 import "./LighthousePrefund.sol";
 import "./LighthouseNft.sol";
+import "./LighthouseProject.sol";
 import "./crowns/CrownsInterface.sol";
 
 /**
@@ -22,6 +23,7 @@ contract LighthouseBurn is Ownable {
     LighthouseAuction   private lighthouseAuction;
     LighthousePrefund   private lighthousePrefund;
     LighthouseTier      private lighthouseTier;
+    LighthouseProject   private lighthouseProject;
     CrownsInterface     private crowns;
 
     uint256 private constant SCALER = 10 ** 18;
@@ -37,6 +39,8 @@ contract LighthouseBurn is Ownable {
         uint256 compensation;           // The total compensation of tokens that users could get
         address pcc;                    // The Game token that users are invested for
         address lighthouse;             // The nft dedicated for the project.
+
+        uint256 startTime;
     }
 
     mapping(uint256 => Project) public projects;
@@ -49,12 +53,13 @@ contract LighthouseBurn is Ownable {
     event BurnForPCC(uint256 indexed projectId, address indexed lighthouse, uint256 indexed nftId, address owner, address pcc, uint256 allocation);
     event BurnForCWS(uint256 indexed projectId, address indexed lighthouse, uint256 indexed nftId, address owner, uint256 compensation);
 
-    constructor(address _lighthouseAuction, address _lighthousePrefund, address _lighthouseTier, address _crowns) {
-        require(_lighthouseAuction != address(0) && _crowns != address(0) && _lighthousePrefund != address(0) && _lighthouseTier != address(0), "Lighthouse: ZERO_ADDRESS");
+    constructor(address _lighthouseAuction, address _lighthousePrefund, address _lighthouseTier, address _crowns, address _project) {
+        require(_lighthouseAuction != address(0) && _crowns != address(0) && _lighthousePrefund != address(0) && _lighthouseTier != address(0) && _project != address(0), "Lighthouse: ZERO_ADDRESS");
 
         lighthouseAuction   = LighthouseAuction(_lighthouseAuction);
         lighthousePrefund   = LighthousePrefund(_lighthousePrefund);
-        LighthouseTier      = LighthouseTier(_lighthouseTier);
+        lighthouseTier      = LighthouseTier(_lighthouseTier);
+        lighthouseProject   = LighthouseProject(_project);
         crowns          = CrownsInterface(_crowns);
     }
 
@@ -65,7 +70,7 @@ contract LighthouseBurn is Ownable {
         require(projects[projectId].startTime == 0, "Lighthouse: ALREADY_STARTED");
         require(startTime > 0, "Lighthouse: ZERO_PARAMETER");
 
-        uint256 auctionEndTime = lighthouseAuction.getEndTime(projectId);
+        uint256 auctionEndTime = lighthouseProject.auctionEndTime(projectId);
         require(auctionEndTime > 0, "Lighthouse: NO_AUCTION_END_TIME");
         require(startTime >= auctionEndTime, "Lighthouse: START_TIME_BEFORE_AUCTION_END");
 
@@ -74,7 +79,7 @@ contract LighthouseBurn is Ownable {
         uint256 totalPool;
         uint256 totalInvested;
         
-        (totalPool, totalInvested) = lighthousePrefund.getTotalPool(projectId);
+        (totalPool, totalInvested) = lighthouseProject.prefundTotalPool(projectId);
         
         // Remained part of tokens that are not staked are going to auction pool
         if (totalInvested < totalPool) {
@@ -95,7 +100,7 @@ contract LighthouseBurn is Ownable {
         project.compensation            = prefundCompensation + auctionCompensation;
         project.lighthouse              = lighthouse;                    
         project.startTime               = startTime;
-        project.ratio                   = project.pool.mul(SCALER).div(project.compensation);
+        project.ratio                   = project.pool * SCALER / project.compensation;
 
         emit AddProject(projectId, prefundPool, auctionPool, prefundCompensation, auctionCompensation, lighthouse, startTime);
     }
@@ -127,7 +132,7 @@ contract LighthouseBurn is Ownable {
         LighthouseNft nft = LighthouseNft(project.lighthouse);
         require(nft.ownerOf(nftId) == msg.sender, "Lighthouse: NOT_NFT_OWNER");
 
-        uint256 allocation = nft.getAllocation(nftId).div(SCALER);
+        uint256 allocation = nft.getAllocation(nftId) / SCALER;
         require(allocation > 0, "Lighthouse: NFT_ZERO_ALLOCATION");
 
         nft.burn(nftId);
