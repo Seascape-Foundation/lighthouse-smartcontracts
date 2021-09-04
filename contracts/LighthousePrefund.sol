@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
  * @notice The second phase of the Project Fund raising is to prefund. 
+ * todo accept native token, function should be payable
  */
 contract LighthousePrefund is Ownable {
     LighthouseTier private lighthouseTier;
@@ -19,29 +20,16 @@ contract LighthousePrefund is Ownable {
     /// @dev Project -> Investor -> funded
     mapping(uint256 => mapping(address => bool)) public investments;
 
-    /// @notice An account that tracks and prooves the Tier level to claim
-    /// It tracks the requirements on the server side.
-    /// @dev Used with v, r, s
-    address public prefundVerifier;
-
     event Prefund(uint256 indexed projectId, address indexed investor, int8 tier, uint256 time);
 
-    constructor(address _tier, address _submission, address _project, address _verifier) {
-        require(_tier != address(0) && _submission != address(0) && _project != address(0) && _verifier != address(0), "Lighthouse: ZERO_ADDRESS");
+    constructor(address _tier, address _submission, address _project) {
+        require(_tier != address(0) && _submission != address(0) && _project != address(0), "Lighthouse: ZERO_ADDRESS");
         require(_tier != _submission, "Lighthouse: SAME_ADDRESS");
         require(_tier != _project, "Lighthouse: SAME_ADDRESS");
 
         lighthouseTier = LighthouseTier(_tier);
         lighthouseRegistration = LighthouseRegistration(_submission);
         lighthouseProject = LighthouseProject(_project);
-        prefundVerifier = _verifier;
-    }
-
-    function setPrefundVerifier(address _verifier) external onlyOwner {
-        require(_verifier != address(0), "Lighthouse: ZERO_ADDRESS");
-        require(prefundVerifier != _verifier, "Lighthouse: SAME_ADDRESS");
-
-        prefundVerifier = _verifier;
     }
 
     /// @dev v, r, s are used to ensure on server side that user passed KYC
@@ -78,7 +66,7 @@ contract LighthousePrefund is Ownable {
 	    bytes32 hash            = keccak256(abi.encodePacked(prefix, message));
 	    address recover         = ecrecover(hash, v, r, s);
 
-	    require(recover == prefundVerifier, "Lighthouse: SIG");
+	    require(recover == lighthouseProject.getKYCVerifier(), "Lighthouse: SIG");
 
         uint256 investAmount;
         address investToken;

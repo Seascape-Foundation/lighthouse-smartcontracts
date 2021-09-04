@@ -41,8 +41,7 @@ contract LighthouseAuction is Ownable {
     /// @notice User participates in the Public Auction
     /// @param amount of Crowns that user wants to spend
     /// @dev We are not checkig Tier level of the user, as it was checked in the LighthouseRegistration.
-    // todo add v,r,s for KYC or for checking lottery win
-    function participate(uint256 projectId, uint256 amount) external {
+    function participate(uint256 projectId, uint256 amount, uint8 v, bytes32 r, bytes32 s) external {
         require(lighthouseProject.auctionInitialized(projectId), "Lighthouse: AUCTION_NOT_INITIALIZED");
         require(!participated(projectId, msg.sender), "Lighthouse: ALREADY_PARTICIPATED");
 
@@ -55,11 +54,20 @@ contract LighthouseAuction is Ownable {
         require(block.timestamp >= startTime,   "Lighthouse: NOT_STARTED_YET");
         require(block.timestamp <= endTime,     "Lighthouse: FINISHED");
         }
+
         require(lighthouseRegistration.registered(projectId, msg.sender), "Lighthouse: NOT_REGISTERED");
         // Lottery winners are not joining to public auction
         require(!lighthousePrefund.prefunded(projectId, msg.sender), "Lighthouse: PREFUNDED");
 
         require(amount > 0, "Lighthouse: ZERO_VALUE");
+
+        // investor, project verification
+	    bytes memory prefix     = "\x19Ethereum Signed Message:\n32";
+	    bytes32 message         = keccak256(abi.encodePacked(msg.sender, projectId, amount));
+	    bytes32 hash            = keccak256(abi.encodePacked(prefix, message));
+	    address recover         = ecrecover(hash, v, r, s);
+
+	    require(recover == lighthouseProject.getKYCVerifier(), "Lighthouse: SIG");
 
         require(crowns.spendFrom(msg.sender, amount), "Lighthouse: CWS_UNSPEND");
 

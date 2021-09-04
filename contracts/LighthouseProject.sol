@@ -14,6 +14,10 @@ contract LighthouseProject is Ownable {
 
     Counters.Counter private projectId;
 
+    /// @notice An account that tracks user's KYC pass
+    /// @dev Used with v, r, s
+    address public kycVerifier;
+
     /// @dev Smartcontract address => can use or not
     mapping(address => bool) public editors;
 
@@ -57,6 +61,7 @@ contract LighthouseProject is Ownable {
     mapping(uint256 => Auction) public auctions;
     mapping(uint256 => Minting) public mintings;
 
+    event SetKYCVerifier(address indexed verifier);
     event ProjectEditor(address indexed user, bool allowed);
     event InitRegistration(uint256 indexed id, uint256 startTime, uint256 endTime);
     event InitPrefund(uint256 indexed id, address indexed token, uint256 startTime, uint256 endTime, uint256[3] pools, uint256[3] investAmounts);
@@ -65,7 +70,8 @@ contract LighthouseProject is Ownable {
     event InitMinting(uint256 indexed id, uint256 scaledAllocation, uint256 scaledCompensation, address nft);
     event TransferUnfunded(uint256 indexed id, uint256 scaledPrefundAmount, uint256 scaledCompensationAmount);
 
-    constructor() {
+    constructor(address verifier) {
+        setKYCVerifier(verifier);
         projectId.increment(); 	// starts at value 1
     }
 
@@ -74,6 +80,15 @@ contract LighthouseProject is Ownable {
     // Manager: adds project parameters, changes the permission for other smartcontracts
     //
     ////////////////////////////////////////////////////////////////////////////
+
+    function setKYCVerifier(address verifier) public onlyOwner {
+        require(verifier != address(0), "Lighthouse: ZERO_ADDRESS");
+        require(kycVerifier != verifier, "Lighthouse: SAME_ADDRESS");
+
+        kycVerifier = verifier;
+
+        emit SetKYCVerifier(verifier);
+    }
 
     /// @notice Who can update tier of user? It's another smartcontract from Seapad.
     function addEditor(address _user) external onlyOwner {
@@ -369,6 +384,10 @@ contract LighthouseProject is Ownable {
         return mintings[id].nft;
     }
 
+    function getKYCVerifier() external view returns(address) {
+        return kycVerifier;
+    }
+
     //////////////////////////////////////////////////////////
     //
     // Internal functions
@@ -399,4 +418,5 @@ contract LighthouseProject is Ownable {
             TransferUnfunded(id, scaledTransferAmount, scaledCompensationAmount);
         }
     }
+    
 }
