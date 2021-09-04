@@ -43,6 +43,7 @@ contract LighthouseAuction is Ownable {
     /// @dev We are not checkig Tier level of the user, as it was checked in the LighthouseRegistration.
     function participate(uint256 projectId, uint256 amount, uint8 v, bytes32 r, bytes32 s) external {
         require(lighthouseProject.auctionInitialized(projectId), "Lighthouse: AUCTION_NOT_INITIALIZED");
+        require(lighthouseProject.transferredPrefund(), "Lighthouse: NOT_TRANSFERRED_PREFUND_YET");
         require(!participated(projectId, msg.sender), "Lighthouse: ALREADY_PARTICIPATED");
 
         {   // Avoid stack too deep.

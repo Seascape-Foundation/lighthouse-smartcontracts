@@ -29,14 +29,14 @@ contract LighthouseProject is Ownable {
     struct Prefund {
         uint256 startTime;
         uint256 endTime;
-        uint256[3] investAmounts;         // Amount of tokens that user can invest, depending on his tier
+        uint256[3] investAmounts;       // Amount of tokens that user can invest, depending on his tier
         uint256[3] collectedAmounts;    // Amount of tokens that users invested so far.
         uint256[3] pools;               // Amount of tokens that could be invested in the pool.
-        address token;                  // Token to accept
+        address token;                  // Token to accept from investor
 
         uint256 scaledAllocation;       // prefund PCC allocation
         uint256 scaledCompensation;     // prefund Crowns compensation
-        uint256 scaledRatio;            // Pool to compensation ratio.
+        uint256 scaledRatio;            // Pool to compensation ratio
     }
 
     struct Auction {
@@ -44,8 +44,10 @@ contract LighthouseProject is Ownable {
         uint256 endTime;
         uint256 spent;                  // Total Spent Crowns for this project
 
-        uint256 scaledAllocation;             // auction PCC allocation
-        uint256 scaledCompensation;           // auction Crowns compensation
+        uint256 scaledAllocation;       // auction PCC allocation
+        uint256 scaledCompensation;     // auction Crowns compensation
+
+        bool transferredPrefund;       // Prefund allocatio transferred to aution pool
     }
 
     struct Minting {
@@ -68,7 +70,7 @@ contract LighthouseProject is Ownable {
     event InitAuction(uint256 indexed id, uint256 startTime, uint256 endTime);
     event InitAllocationCompensation(uint256 indexed id, uint256 prefundAllocation, uint256 prefundCompensation, uint256 auctionAllocation, uint256 auctionCompensation);
     event InitMinting(uint256 indexed id, uint256 scaledAllocation, uint256 scaledCompensation, address nft);
-    event TransferUnfunded(uint256 indexed id, uint256 scaledPrefundAmount, uint256 scaledCompensationAmount);
+    event TransferPrefund(uint256 indexed id, uint256 scaledPrefundAmount, uint256 scaledCompensationAmount);
 
     constructor(address verifier) {
         setKYCVerifier(verifier);
@@ -194,9 +196,6 @@ contract LighthouseProject is Ownable {
 
         auction.scaledAllocation    = auctionAllocation * SCALER;
         auction.scaledCompensation  = auctionCompensation * SCALER;
-
-        transferUnfunded(id);
-
         prefund.scaledRatio         = prefund.scaledAllocation / prefund.scaledCompensation;
 
         emit InitAllocationCompensation(id, prefundAllocation, prefundCompensation, auctionAllocation, auctionCompensation);
@@ -374,6 +373,10 @@ contract LighthouseProject is Ownable {
         return auctions[id].spent;
     }
 
+    function transferredPrefund(uint256 id) external view returns(bool) {
+        return auctions[id].transferredPrefund;
+    }
+
     /// @dev Prefund PCC distributed per Invested token.
     function auctionScaledUnit(uint256 id) external view returns(uint256, uint256) {
         Auction storage x = auctions[id];
@@ -390,11 +393,16 @@ contract LighthouseProject is Ownable {
 
     //////////////////////////////////////////////////////////
     //
-    // Internal functions
+    // Public functions
     //
     //////////////////////////////////////////////////////////
 
-    function transferUnfunded(uint256 id) internal {
+    // auto transfer prefunded and track it in the Prefund
+    function transferPrefund(uint256 id) external {
+        if (auctions[id].transferredPrefund) {
+            return;
+        }
+
         uint256 cap;
         uint256 amount;
         (cap, amount) = prefundTotalPool(id);
@@ -415,8 +423,9 @@ contract LighthouseProject is Ownable {
             auctions[id].scaledCompensation = auctions[id].scaledCompensation + scaledCompensationAmount;
             prefunds[id].scaledCompensation = prefunds[id].scaledCompensation - scaledCompensationAmount;
 
-            TransferUnfunded(id, scaledTransferAmount, scaledCompensationAmount);
+            TransferPrefund(id, scaledTransferAmount, scaledCompensationAmount);
         }
     }
     
+    auctions[id].transferPrefund = true;
 }

@@ -81,17 +81,6 @@ contract LighthouseBurn is Ownable {
         
         (totalPool, totalInvested) = lighthouseProject.prefundTotalPool(projectId);
         
-        // Remained part of tokens that are not staked are going to auction pool
-        if (totalInvested < totalPool) {
-            uint256 percent = (totalPool - totalInvested) / (totalPool / 100);
-
-            auctionPool = auctionPool + (prefundPool / 100 * percent);
-            prefundPool = prefundPool - (prefundPool / 100 * percent);
-
-            auctionCompensation = auctionCompensation + (prefundCompensation / 100 * percent);
-            prefundCompensation = prefundCompensation - (prefundCompensation / 100 * percent);
-        }
-
         project.prefundPool             = prefundPool;
         project.auctionPool             = auctionPool;
         project.prefundCompensation     = prefundCompensation;   
