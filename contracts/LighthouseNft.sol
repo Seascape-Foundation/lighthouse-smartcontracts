@@ -48,7 +48,7 @@ contract LighthouseNft is ERC721, ERC721Burnable, Ownable {
     }
 
     /// @dev ensure that all parameters are checked on factory smartcontract
-    function mint(address _to, uint256 _allocation, uint256 _compensation, int8 _tier, uint8 _type, uint256 _projectId) public onlyMinter returns(uint256) {
+    function mint(uint256 _projectId, address _to, uint256 _allocation, uint256 _compensation, int8 _tier, uint8 _type) public onlyMinter returns(uint256) {
 	    require(_projectId == projectId, "Lighthouse: PROJECT_ID_MISMATCH");
         uint256 _tokenId = tokenId.current();
 

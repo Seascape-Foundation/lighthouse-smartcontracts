@@ -10,6 +10,8 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 contract LighthouseProject is Ownable {
     using Counters for Counters.Counter;
 
+    uint256 private constant SCALER = 10 ** 18;
+
     Counters.Counter private projectId;
 
     /// @dev Smartcontract address => can use or not
@@ -19,28 +21,49 @@ contract LighthouseProject is Ownable {
         uint256 startTime;
         uint256 endTime;
     }
+
     struct Prefund {
         uint256 startTime;
         uint256 endTime;
-        uint256[3] fixedPrices;         // Amount of tokens that user can invest, depending on his tier
+        uint256[3] investAmounts;         // Amount of tokens that user can invest, depending on his tier
         uint256[3] collectedAmounts;    // Amount of tokens that users invested so far.
         uint256[3] pools;               // Amount of tokens that could be invested in the pool.
         address token;                  // Token to accept
+
+        uint256 scaledAllocation;       // prefund PCC allocation
+        uint256 scaledCompensation;     // prefund Crowns compensation
+        uint256 scaledRatio;            // Pool to compensation ratio.
     }
+
     struct Auction {
         uint256 startTime;
         uint256 endTime;
-        uint256 spent;          // Total Spent Crowns for this project
+        uint256 spent;                  // Total Spent Crowns for this project
+
+        uint256 scaledAllocation;             // auction PCC allocation
+        uint256 scaledCompensation;           // auction Crowns compensation
+    }
+
+    struct Minting {
+        uint256 scaledAllocation;             // The total pool of tokens that users could get
+        uint256 scaledCompensation;     // The total compensation of tokens that users could get
+
+        address nft;                    // The nft dedicated for the project.
+        address pcc;                    // The nft dedicated for the project.
     }
 
     mapping(uint256 => Registration) public registrations;
     mapping(uint256 => Prefund) public prefunds;
     mapping(uint256 => Auction) public auctions;
+    mapping(uint256 => Minting) public mintings;
 
     event ProjectEditor(address indexed user, bool allowed);
     event InitRegistration(uint256 indexed id, uint256 startTime, uint256 endTime);
-    event InitPrefund(uint256 indexed id, address indexed token, uint256 startTime, uint256 endTime, uint256[3] pools, uint256[3] fixedPrices);
+    event InitPrefund(uint256 indexed id, address indexed token, uint256 startTime, uint256 endTime, uint256[3] pools, uint256[3] investAmounts);
     event InitAuction(uint256 indexed id, uint256 startTime, uint256 endTime);
+    event InitAllocationCompensation(uint256 indexed id, uint256 prefundAllocation, uint256 prefundCompensation, uint256 auctionAllocation, uint256 auctionCompensation);
+    event InitMinting(uint256 indexed id, uint256 scaledAllocation, uint256 scaledCompensation, address nft);
+    event TransferUnfunded(uint256 indexed id, uint256 scaledPrefundAmount, uint256 scaledCompensationAmount);
 
     constructor() {
         projectId.increment(); 	// starts at value 1
@@ -99,12 +122,12 @@ contract LighthouseProject is Ownable {
     /// uint256 param 2 - tier 1 spend limit
     /// uint256 param 3 - tier 2 spend limit
     /// uint256 param 3 - tier 3 spend limit
-    function initPrefund(uint256 id, uint256 startTime, uint256 endTime, uint256[3] calldata fixedPrices, uint256[3] calldata pools, address _token) external onlyOwner {
+    function initPrefund(uint256 id, uint256 startTime, uint256 endTime, uint256[3] calldata investAmounts, uint256[3] calldata pools, address _token) external onlyOwner {
         require(validProjectId(id), "Lighthouse: INVALID_PROJECT_ID");
         require(startTime > 0 && block.timestamp < startTime, "Lighthouse: INVALID_START_TIME");
         require(endTime > 0 && startTime != endTime && startTime < endTime, "Lighthouse: INVALID_END_TIME");
         require(pools[0] > 0 && pools[1] > 0 && pools[2] > 0, "Lighthouse: ZERO_POOL_CAP");
-        require(fixedPrices[0] > 0 && fixedPrices[1] > 0 && fixedPrices[2] > 0, "Lighthouse: ZERO_FIXED_PRICE");
+        require(investAmounts[0] > 0 && investAmounts[1] > 0 && investAmounts[2] > 0, "Lighthouse: ZERO_FIXED_PRICE");
         Prefund storage prefund = prefunds[id];
         require(prefund.startTime == 0, "Lighthouse: ALREADY_ADDED");
 
@@ -114,11 +137,11 @@ contract LighthouseProject is Ownable {
 
         prefund.startTime   = startTime;
         prefund.endTime     = endTime;
-        prefund.fixedPrices = fixedPrices;
+        prefund.investAmounts = investAmounts;
         prefund.pools       = pools;
         prefund.token       = _token;
 
-        emit InitPrefund(id, _token, startTime, endTime, pools, fixedPrices);
+        emit InitPrefund(id, _token, startTime, endTime, pools, investAmounts);
     }
 
     /// @notice Add the last stage period for the project
@@ -140,6 +163,49 @@ contract LighthouseProject is Ownable {
         emit InitAuction(id, startTime, endTime);
     }
 
+    /// @notice add allocation for prefund, auction.
+    /// @dev Called after initAuction.
+    /// Separated function for allocation to avoid stack too deep in other functions.
+    function initAllocationCompensation(uint256 id, uint256 prefundAllocation, uint256 prefundCompensation, uint256 auctionAllocation, uint256 auctionCompensation) external onlyOwner {
+        require(auctionInitialized(id), "Lighthouse: NO_AUCTION");
+        require(!allocationCompensationInitialized(id), "Lighthouse: ALREADY_INITIATED");
+        require(prefundAllocation > 0 && prefundCompensation > 0 && auctionAllocation > 0 && auctionCompensation > 0, "Lighthouse: ZERO_PARAMETER");
+
+        Prefund storage prefund     = prefunds[id];
+        Auction storage auction     = auctions[id];
+
+        prefund.scaledAllocation    = prefundAllocation * SCALER;
+        prefund.scaledCompensation  = prefundCompensation * SCALER;
+
+        auction.scaledAllocation    = auctionAllocation * SCALER;
+        auction.scaledCompensation  = auctionCompensation * SCALER;
+
+        transferUnfunded(id);
+
+        prefund.scaledRatio         = prefund.scaledAllocation / prefund.scaledCompensation;
+
+        emit InitAllocationCompensation(id, prefundAllocation, prefundCompensation, auctionAllocation, auctionCompensation);
+    }
+
+    /// @notice add a the NFT minting which means NFT.
+    /// @dev Called after initAllocationCompensation
+    /// and after Lighthouse NFT deployment
+    function initMinting(uint256 id, address nft) external onlyOwner {
+        require(allocationCompensationInitialized(id), "Lighthouse: NO_ALLOCATION_COMPENSATION");
+        require(!mintingInitialized(id), "Lighthouse: ALREADY_STARTED");
+        require(nft != address(0), "Lighthouse: ZERO_ADDRESS");
+
+        Minting storage minting         = mintings[id];
+        Prefund storage prefund         = prefunds[id];
+        Auction storage auction         = auctions[id];
+
+        minting.scaledAllocation        = prefund.scaledAllocation + auction.scaledAllocation;
+        minting.scaledCompensation      = prefund.scaledCompensation + auction.scaledCompensation;
+        minting.nft                     = nft;                    
+
+        emit InitMinting(id, minting.scaledAllocation, minting.scaledCompensation, nft);
+    }
+
     /// @dev Should be called from other smartcontracts that are doing security check-ins.
     function collectPrefundInvestment(uint256 id, int8 tier) external {
         require(editors[msg.sender], "Lighthouse: FORBIDDEN");
@@ -148,7 +214,7 @@ contract LighthouseProject is Ownable {
         // index
         uint8 i = uint8(tier) - 1;
 
-        x.collectedAmounts[i] = x.collectedAmounts[i] + x.fixedPrices[i];
+        x.collectedAmounts[i] = x.collectedAmounts[i] + x.investAmounts[i];
     }
 
     /// @dev Should be called from other smartcontracts that are doing security check-ins.
@@ -200,6 +266,25 @@ contract LighthouseProject is Ownable {
         return (x.startTime > 0);
     }
 
+    function mintingInitialized(uint256 id) public view returns(bool) {
+        if (!validProjectId(id)) {
+            return false;
+        }
+
+        Minting storage x = mintings[id];
+        return (x.scaledAllocation > 0);
+    }
+
+    function allocationCompensationInitialized(uint256 id) public view returns(bool) {
+        if (!validProjectId(id)) {
+            return false;
+        }
+
+        Prefund storage x = prefunds[id];
+        Auction storage y = auctions[id];
+        return (x.scaledAllocation > 0 && y.scaledAllocation > 0);
+    }
+
     /// @notice Returns Information about Registration: start time, end time
     function registrationInfo(uint256 id) external view returns(uint256, uint256) {
         Registration storage x = registrations[id];
@@ -239,7 +324,7 @@ contract LighthouseProject is Ownable {
         // index
         uint8 i = uint8(tier) - 1;
 
-        return (x.fixedPrices[i], x.token);
+        return (x.investAmounts[i], x.token);
     }
 
     function prefundEndTime(uint256 id) external view returns(uint256) {
@@ -248,13 +333,21 @@ contract LighthouseProject is Ownable {
 
     /// @notice returns total pool, and invested pool
     /// @dev the first returning parameter is total pool. The second returning parameter is invested amount so far.
-    function prefundTotalPool(uint256 id) external view returns(uint256, uint256) {
+    function prefundTotalPool(uint256 id) public view returns(uint256, uint256) {
         Prefund storage x = prefunds[id];
 
         uint256 totalPool = x.pools[0] + x.pools[1] + x.pools[2];
         uint256 totalInvested = x.collectedAmounts[0] + x.collectedAmounts[1] + x.collectedAmounts[2];
 
         return (totalPool, totalInvested);
+    }
+
+    /// @dev Prefund PCC distributed per Invested token.
+    function prefundScaledUnit(uint256 id) external view returns(uint256, uint256) {
+        Prefund storage x = prefunds[id];
+        uint256 totalInvested = x.collectedAmounts[0] + x.collectedAmounts[1] + x.collectedAmounts[2];
+    
+        return (x.scaledAllocation / totalInvested, x.scaledCompensation / totalInvested);
     }
 
     function auctionEndTime(uint256 id) external view returns(uint256) {
@@ -264,5 +357,46 @@ contract LighthouseProject is Ownable {
     /// @notice returns total auction
     function auctionTotalPool(uint256 id) external view returns(uint256) {
         return auctions[id].spent;
+    }
+
+    /// @dev Prefund PCC distributed per Invested token.
+    function auctionScaledUnit(uint256 id) external view returns(uint256, uint256) {
+        Auction storage x = auctions[id];
+        return (x.scaledAllocation / x.spent, x.scaledCompensation / x.spent);
+    }
+
+    function nftAddress(uint256 id) external view returns(address) {
+        return mintings[id].nft;
+    }
+
+    //////////////////////////////////////////////////////////
+    //
+    // Internal functions
+    //
+    //////////////////////////////////////////////////////////
+
+    function transferUnfunded(uint256 id) internal {
+        uint256 cap;
+        uint256 amount;
+        (cap, amount) = prefundTotalPool(id);
+        
+        if (amount < cap) {
+            // We apply SCALER multiplayer, if the cap is less than 100
+            // It could happen if investing goes in NATIVE token.
+            uint256 scaledPercent = (cap - amount) * SCALER / (cap * SCALER / 100);
+
+            // allocation = 10 * SCALER / 100 * SCALED percent;
+            uint256 scaledTransferAmount = (prefunds[id].scaledAllocation / 100 * scaledPercent) / SCALER;
+
+            auctions[id].scaledAllocation = auctions[id].scaledAllocation + scaledTransferAmount;
+            prefunds[id].scaledAllocation = prefunds[id].scaledAllocation - scaledTransferAmount;
+
+            uint256 scaledCompensationAmount = (prefunds[id].scaledCompensation / 100 * scaledPercent) / SCALER;
+
+            auctions[id].scaledCompensation = auctions[id].scaledCompensation + scaledCompensationAmount;
+            prefunds[id].scaledCompensation = prefunds[id].scaledCompensation - scaledCompensationAmount;
+
+            TransferUnfunded(id, scaledTransferAmount, scaledCompensationAmount);
+        }
     }
 }

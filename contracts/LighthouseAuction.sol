@@ -21,7 +21,6 @@ contract LighthouseAuction is Ownable {
     CrownsInterface private crowns;
 
     mapping(uint256 => mapping(address => uint256)) public spents;
-    // todo track how much CWS each participant spent.
 
     event Participate(uint256 indexed projectId, address indexed participant, uint256 amount, uint256 time);
 
@@ -38,8 +37,6 @@ contract LighthouseAuction is Ownable {
         lighthouseProject = LighthouseProject(project);
         crowns = CrownsInterface(_crowns);
     }
-
-    // todo cancel aution
 
     /// @notice User participates in the Public Auction
     /// @param amount of Crowns that user wants to spend

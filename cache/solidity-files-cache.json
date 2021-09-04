@@ -36,8 +36,8 @@
       ]
     },
     "/home/node/app/contracts/LighthouseMint.sol": {
-      "lastModificationDate": 1630777248855,
-      "contentHash": "d0663ba1a1d6d32f6bcb1238eeeb7464",
+      "lastModificationDate": 1630793173938,
+      "contentHash": "c049acb9a89c92ac32219523425d7daa",
       "sourceName": "contracts/LighthouseMint.sol",
       "solcConfig": {
         "version": "0.8.0",
@@ -148,8 +148,8 @@
       ]
     },
     "/home/node/app/contracts/LighthouseAuction.sol": {
-      "lastModificationDate": 1630773741278,
-      "contentHash": "53e92c8736da5475402c7920afef65dd",
+      "lastModificationDate": 1630780753139,
+      "contentHash": "d040d6655cb00a4451bd5936f9253c24",
       "sourceName": "contracts/LighthouseAuction.sol",
       "solcConfig": {
         "version": "0.8.0",
@@ -190,8 +190,8 @@
       ]
     },
     "/home/node/app/contracts/LighthousePrefund.sol": {
-      "lastModificationDate": 1630772326694,
-      "contentHash": "9b5d03190d093bfe08e6f70df109e720",
+      "lastModificationDate": 1630780711593,
+      "contentHash": "f556d3cd1af50468504bfc1fd1071902",
       "sourceName": "contracts/LighthousePrefund.sol",
       "solcConfig": {
         "version": "0.8.0",
@@ -230,8 +230,8 @@
       ]
     },
     "/home/node/app/contracts/LighthouseNft.sol": {
-      "lastModificationDate": 1630777158394,
-      "contentHash": "2ac511b9b81d833a48dd0cbcbf3d9077",
+      "lastModificationDate": 1630791816047,
+      "contentHash": "7ce4e3d931f8be0f897349ea0d82e271",
       "sourceName": "contracts/LighthouseNft.sol",
       "solcConfig": {
         "version": "0.8.0",
@@ -269,8 +269,8 @@
       ]
     },
     "/home/node/app/contracts/LighthouseProject.sol": {
-      "lastModificationDate": 1630773706530,
-      "contentHash": "5a6d7d71c37191fbec8aea51e3f8cb07",
+      "lastModificationDate": 1630793213186,
+      "contentHash": "e355ba7069bc39c986f895fd2787c14c",
       "sourceName": "contracts/LighthouseProject.sol",
       "solcConfig": {
         "version": "0.8.0",

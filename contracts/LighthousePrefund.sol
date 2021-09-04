@@ -47,7 +47,7 @@ contract LighthousePrefund is Ownable {
     /// @dev v, r, s are used to ensure on server side that user passed KYC
     //todo pass Tier eligable for prefunding.
     //todo can use least tier
-    //todo use the tier
+    //todo use the tier parameter
     function prefund(uint256 projectId, uint8 v, bytes32 r, bytes32 s) external payable {
         require(lighthouseProject.prefundInitialized(projectId), "Lighthouse: REGISTRATION_NOT_INITIALIZED");
         require(!prefunded(projectId, msg.sender), "Lighthouse: ALREADY_PREFUNDED");
