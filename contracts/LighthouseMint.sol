@@ -51,7 +51,6 @@ contract LighthouseMint is Ownable {
 
     /// @notice After the prefund phase, investors can get a NFT with the weight proportion to their investment.
     /// @dev Lighthouse should be added into LighthouseTier.badgeUser();
-    /// todo make it to be minted for any player, besides prefund, auction
     function mint(uint256 projectId) external {
         uint256 endTime = lighthouseProject.auctionEndTime(projectId);
         require(block.timestamp > endTime,     "Lighthouse: AUCTION_FINISHED_YET");
@@ -91,7 +90,7 @@ contract LighthouseMint is Ownable {
         }
 
         // stack too deep
-        address nftAddress = lighthouseProject.nftAddress(projectId);
+        address nftAddress = lighthouseProject.nft(projectId);
         LighthouseNft lighthouseNft = LighthouseNft(nftAddress);
         uint256 nftId = lighthouseNft.mint(projectId, msg.sender, allocation, compensation, tierLevel, mintType);
         require(nftId > 0, "Lighthouse: NO_NFT_MINTED");

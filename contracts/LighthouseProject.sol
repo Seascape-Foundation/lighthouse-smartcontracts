@@ -182,12 +182,12 @@ contract LighthouseProject is Ownable {
     /// @notice add allocation for prefund, auction.
     /// @dev Called after initAuction.
     /// Separated function for allocation to avoid stack too deep in other functions.
-    function initAllocationCompensation(uint256 id, uint256 prefundAllocation, uint256 prefundCompensation, uint256 auctionAllocation, uint256 auctionCompensation, address nft) external onlyOwner {
+    function initAllocationCompensation(uint256 id, uint256 prefundAllocation, uint256 prefundCompensation, uint256 auctionAllocation, uint256 auctionCompensation, address nftAddress) external onlyOwner {
         require(auctionInitialized(id), "Lighthouse: NO_AUCTION");
         require(!allocationCompensationInitialized(id), "Lighthouse: ALREADY_INITIATED");
         require(prefundAllocation > 0 && prefundCompensation > 0 && auctionAllocation > 0 && auctionCompensation > 0, "Lighthouse: ZERO_PARAMETER");
-        require(nft != address(0), "Lighthouse: ZERO_ADDRESS");
-        require(usedNfts[nft] == 0, "Lighthouse: NFT_USED");
+        require(nftAddress != address(0), "Lighthouse: ZERO_ADDRESS");
+        require(usedNfts[nftAddress] == 0, "Lighthouse: NFT_USED");
 
         Prefund storage prefund     = prefunds[id];
         Auction storage auction     = auctions[id];
@@ -199,10 +199,11 @@ contract LighthouseProject is Ownable {
         auction.scaledCompensation  = auctionCompensation * SCALER;
         prefund.scaledRatio         = prefund.scaledAllocation / prefund.scaledCompensation;
 
-        nfts[id]                    = nft; 
-        usedNfts[nft]               = id;                   
+        nfts[id]                    = nftAddress; 
+        usedNfts[nftAddress]        = id;                   
 
-        emit InitAllocationCompensation(id, nft, prefundAllocation, prefundCompensation, auctionAllocation, auctionCompensation);
+        emit InitAllocationCompensation(id, nftAddress, prefundAllocation, prefundCompensation, auctionAllocation, auctionCompensation);
+    }
 
     function setPcc(uint256 id, address pccAddress) external onlyOwner {
         require(validProjectId(id), "Lighthouse: INVALID_PROJECT_ID");
@@ -369,7 +370,7 @@ contract LighthouseProject is Ownable {
         return (x.scaledAllocation / x.spent, x.scaledCompensation / x.spent);
     }
 
-    function nftAddress(uint256 id) external view returns(address) {
+    function nft(uint256 id) external view returns(address) {
         return nfts[id];
     }
 

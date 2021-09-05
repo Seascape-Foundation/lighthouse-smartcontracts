@@ -21,10 +21,10 @@ contract LighthouseNft is ERC721, ERC721Burnable, Ownable {
     uint256 public projectId;  // project to which it's used	
 
     struct Params {
-	    uint256 allocation;     // allocation among total pool of investors.
-        uint256 compensation;   // compensation
-	    int8 tier;              // tier level
-        uint8 mintType;         // mint type: 1 = prefund pool, 2 = auction pool, 3 = private investor
+	    uint256 scaledAllocation;       // allocation among total pool of investors.
+        uint256 scaledCompensation;     // compensation
+	    int8 tier;                      // tier level
+        uint8 mintType;                 // mint type: 1 = prefund pool, 2 = auction pool, 3 = private investor
     }
 
     mapping(address => bool) public minters;
@@ -83,12 +83,12 @@ contract LighthouseNft is ERC721, ERC721Burnable, Ownable {
         _baseURIextended = baseURI_;
     }
 
-    function getAllocation(uint256 nftId) external view returns(uint256) {
-        return paramsOf[nftId].allocation;
+    function scaledAllocation(uint256 nftId) external view returns(uint256) {
+        return paramsOf[nftId].scaledAllocation;
     }
 
-    function getCompensation(uint256 nftId) external view returns(uint256) {
-        return paramsOf[nftId].compensation;
+    function scaledCompensation(uint256 nftId) external view returns(uint256) {
+        return paramsOf[nftId].scaledCompensation;
     }
 
     function mintType(uint256 nftId) external view returns(uint8) {
