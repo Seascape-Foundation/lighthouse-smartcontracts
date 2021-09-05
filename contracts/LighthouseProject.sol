@@ -53,16 +53,23 @@ contract LighthouseProject is Ownable {
     mapping(uint256 => Registration) public registrations;
     mapping(uint256 => Prefund) public prefunds;
     mapping(uint256 => Auction) public auctions;
+
+    // Lighthouse Investment NFT for each project.
     mapping(uint256 => address) public nfts;
     mapping(address => uint256) public usedNfts;
+
+    /// PCC of each project.
+    mapping(uint256 => address) public pccs;
+    mapping(address => uint256) public usedPccs;
 
     event SetKYCVerifier(address indexed verifier);
     event ProjectEditor(address indexed user, bool allowed);
     event InitRegistration(uint256 indexed id, uint256 startTime, uint256 endTime);
     event InitPrefund(uint256 indexed id, address indexed token, uint256 startTime, uint256 endTime, uint256[3] pools, uint256[3] investAmounts);
     event InitAuction(uint256 indexed id, uint256 startTime, uint256 endTime);
-    event InitAllocationCompensation(uint256 indexed id, address indexed nft, uint256 prefundAllocation, uint256 prefundCompensation, uint256 auctionAllocation, uint256 auctionCompensation);
+    event InitAllocationCompensation(uint256 indexed id, address indexed nftAddress, uint256 prefundAllocation, uint256 prefundCompensation, uint256 auctionAllocation, uint256 auctionCompensation);
     event TransferPrefund(uint256 indexed id, uint256 scaledPrefundAmount, uint256 scaledCompensationAmount);
+    event SetPCC(uint256 indexed id, address indexed pccAddress);
 
     constructor(address verifier) {
         setKYCVerifier(verifier);
@@ -196,6 +203,16 @@ contract LighthouseProject is Ownable {
         usedNfts[nft]               = id;                   
 
         emit InitAllocationCompensation(id, nft, prefundAllocation, prefundCompensation, auctionAllocation, auctionCompensation);
+
+    function setPcc(uint256 id, address pccAddress) external onlyOwner {
+        require(validProjectId(id), "Lighthouse: INVALID_PROJECT_ID");
+        require(pccAddress != address(0), "Lighthouse: ZERO_ADDRESS");
+        require(usedPccs[pccAddress] == 0, "Lighthouse: PCC_USED");
+
+        pccs[id]                    = pccAddress;
+        usedNfts[pccAddress]        = id;
+
+        emit SetPCC(id, pccAddress);
     }
 
     /// @dev Should be called from other smartcontracts that are doing security check-ins.
@@ -354,6 +371,10 @@ contract LighthouseProject is Ownable {
 
     function nftAddress(uint256 id) external view returns(address) {
         return nfts[id];
+    }
+
+    function pcc(uint256 id) external view returns(address) {
+        return pccs[id];
     }
 
     function getKYCVerifier() external view returns(address) {

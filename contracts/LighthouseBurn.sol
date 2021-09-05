@@ -134,18 +134,6 @@ contract LighthouseBurn is Ownable {
         emit AddProject(projectId, prefundPool, auctionPool, prefundCompensation, auctionCompensation, lighthouse, startTime);
     }
 
-    function addProjectPcc(uint256 projectId, address pcc) external onlyOwner {
-        require(projectId > 0, "Lighthouse: PROJECT_NOT_EXIST");
-        require(pcc != address(0), "Lighthouse: ZERO_ADDRESS");
-        
-        Project storage project = projects[projectId];
-        require(project.pcc == address(0), "Lighthouse: ALREADY_ADDED");
-
-        project.pcc = pcc;
-
-        emit AddPCC(projectId, pcc);
-    }
-
     //////////////////////////////////////////////////////////////////////
     //
     // The investor functions
