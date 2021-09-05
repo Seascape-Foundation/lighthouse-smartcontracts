@@ -50,26 +50,18 @@ contract LighthouseProject is Ownable {
         bool transferredPrefund;       // Prefund allocatio transferred to aution pool
     }
 
-    struct Minting {
-        uint256 scaledAllocation;             // The total pool of tokens that users could get
-        uint256 scaledCompensation;     // The total compensation of tokens that users could get
-
-        address nft;                    // The nft dedicated for the project.
-        address pcc;                    // The nft dedicated for the project.
-    }
-
     mapping(uint256 => Registration) public registrations;
     mapping(uint256 => Prefund) public prefunds;
     mapping(uint256 => Auction) public auctions;
-    mapping(uint256 => Minting) public mintings;
+    mapping(uint256 => address) public nfts;
+    mapping(address => uint256) public usedNfts;
 
     event SetKYCVerifier(address indexed verifier);
     event ProjectEditor(address indexed user, bool allowed);
     event InitRegistration(uint256 indexed id, uint256 startTime, uint256 endTime);
     event InitPrefund(uint256 indexed id, address indexed token, uint256 startTime, uint256 endTime, uint256[3] pools, uint256[3] investAmounts);
     event InitAuction(uint256 indexed id, uint256 startTime, uint256 endTime);
-    event InitAllocationCompensation(uint256 indexed id, uint256 prefundAllocation, uint256 prefundCompensation, uint256 auctionAllocation, uint256 auctionCompensation);
-    event InitMinting(uint256 indexed id, uint256 scaledAllocation, uint256 scaledCompensation, address nft);
+    event InitAllocationCompensation(uint256 indexed id, address indexed nft, uint256 prefundAllocation, uint256 prefundCompensation, uint256 auctionAllocation, uint256 auctionCompensation);
     event TransferPrefund(uint256 indexed id, uint256 scaledPrefundAmount, uint256 scaledCompensationAmount);
 
     constructor(address verifier) {
@@ -183,10 +175,12 @@ contract LighthouseProject is Ownable {
     /// @notice add allocation for prefund, auction.
     /// @dev Called after initAuction.
     /// Separated function for allocation to avoid stack too deep in other functions.
-    function initAllocationCompensation(uint256 id, uint256 prefundAllocation, uint256 prefundCompensation, uint256 auctionAllocation, uint256 auctionCompensation) external onlyOwner {
+    function initAllocationCompensation(uint256 id, uint256 prefundAllocation, uint256 prefundCompensation, uint256 auctionAllocation, uint256 auctionCompensation, address nft) external onlyOwner {
         require(auctionInitialized(id), "Lighthouse: NO_AUCTION");
         require(!allocationCompensationInitialized(id), "Lighthouse: ALREADY_INITIATED");
         require(prefundAllocation > 0 && prefundCompensation > 0 && auctionAllocation > 0 && auctionCompensation > 0, "Lighthouse: ZERO_PARAMETER");
+        require(nft != address(0), "Lighthouse: ZERO_ADDRESS");
+        require(usedNfts[nft] == 0, "Lighthouse: NFT_USED");
 
         Prefund storage prefund     = prefunds[id];
         Auction storage auction     = auctions[id];
@@ -198,26 +192,10 @@ contract LighthouseProject is Ownable {
         auction.scaledCompensation  = auctionCompensation * SCALER;
         prefund.scaledRatio         = prefund.scaledAllocation / prefund.scaledCompensation;
 
-        emit InitAllocationCompensation(id, prefundAllocation, prefundCompensation, auctionAllocation, auctionCompensation);
-    }
+        nfts[id]                    = nft; 
+        usedNfts[nft]               = id;                   
 
-    /// @notice add a the NFT minting which means NFT.
-    /// @dev Called after initAllocationCompensation
-    /// and after Lighthouse NFT deployment
-    function initMinting(uint256 id, address nft) external onlyOwner {
-        require(allocationCompensationInitialized(id), "Lighthouse: NO_ALLOCATION_COMPENSATION");
-        require(!mintingInitialized(id), "Lighthouse: ALREADY_STARTED");
-        require(nft != address(0), "Lighthouse: ZERO_ADDRESS");
-
-        Minting storage minting         = mintings[id];
-        Prefund storage prefund         = prefunds[id];
-        Auction storage auction         = auctions[id];
-
-        minting.scaledAllocation        = prefund.scaledAllocation + auction.scaledAllocation;
-        minting.scaledCompensation      = prefund.scaledCompensation + auction.scaledCompensation;
-        minting.nft                     = nft;                    
-
-        emit InitMinting(id, minting.scaledAllocation, minting.scaledCompensation, nft);
+        emit InitAllocationCompensation(id, nft, prefundAllocation, prefundCompensation, auctionAllocation, auctionCompensation);
     }
 
     /// @dev Should be called from other smartcontracts that are doing security check-ins.
@@ -278,15 +256,6 @@ contract LighthouseProject is Ownable {
 
         Auction storage x = auctions[id];
         return (x.startTime > 0);
-    }
-
-    function mintingInitialized(uint256 id) public view returns(bool) {
-        if (!validProjectId(id)) {
-            return false;
-        }
-
-        Minting storage x = mintings[id];
-        return (x.scaledAllocation > 0);
     }
 
     function allocationCompensationInitialized(uint256 id) public view returns(bool) {
@@ -384,7 +353,7 @@ contract LighthouseProject is Ownable {
     }
 
     function nftAddress(uint256 id) external view returns(address) {
-        return mintings[id].nft;
+        return nfts[id];
     }
 
     function getKYCVerifier() external view returns(address) {
