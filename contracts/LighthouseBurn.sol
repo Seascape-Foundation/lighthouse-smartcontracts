@@ -60,10 +60,11 @@ contract LighthouseBurn is Ownable {
         lighthousePrefund   = LighthousePrefund(_lighthousePrefund);
         lighthouseTier      = LighthouseTier(_lighthouseTier);
         lighthouseProject   = LighthouseProject(_project);
-        crowns          = CrownsInterface(_crowns);
+        crowns              = CrownsInterface(_crowns);
     }
 
     /// @notice add a new project to the IDO project.
+    // todo receive PCC and CWS for Nfts.
     function addProject(uint256 projectId, uint256 prefundPool, uint256 auctionPool, uint256 prefundCompensation, uint256 auctionCompensation, uint256 startTime, address lighthouse) external onlyOwner {
         require(projectId > 0 && prefundPool > 0 && auctionPool > 0 && prefundCompensation > 0 && auctionCompensation > 0, "Lighthouse: ZERO_PARAMETER");
         require(lighthouse != address(0), "Lighthouse: ZERO_ADDRESS");
@@ -113,13 +114,14 @@ contract LighthouseBurn is Ownable {
     //////////////////////////////////////////////////////////////////////
 
     /// 100k, 10k cws, 10:1
-    // @todo match to cws, to spend it.
+    // @todo compensation cws is burnt to spend it.
     function burnForPcc(uint256 projectId, uint256 nftId) external {
         Project storage project = projects[projectId];
         require(project.pcc != address(0), "Lighthouse: NO_PCC");
 
         LighthouseNft nft = LighthouseNft(project.lighthouse);
         require(nft.ownerOf(nftId) == msg.sender, "Lighthouse: NOT_NFT_OWNER");
+        require(nft.mintType(nftId) <= 2, "Lighthouse: FORBIDDEN_MINT_TYPE");
 
         uint256 allocation = nft.getAllocation(nftId) / SCALER;
         require(allocation > 0, "Lighthouse: NFT_ZERO_ALLOCATION");
@@ -132,13 +134,14 @@ contract LighthouseBurn is Ownable {
         emit BurnForPCC(projectId, project.lighthouse, nftId, msg.sender, project.pcc, allocation);
     }
 
-    // @todo transfer to staking pool PCC in ratio to CWS.                                                                             
+    // @todo transfer allocation PCC in ration to CWS to the staking pool PCC.
     function burnForCws(uint256 projectId, uint256 nftId) external {
         Project storage project = projects[projectId];
         require(project.pcc != address(0), "Lighthouse: NO_PCC");
 
         LighthouseNft nft = LighthouseNft(project.lighthouse);
         require(nft.ownerOf(nftId) == msg.sender, "Lighthouse: NOT_NFT_OWNER");
+        require(nft.mintType(nftId) <= 2, "Lighthouse: FORBIDDEN_MINT_TYPE");
 
         uint256 compensation = nft.getCompensation(nftId);
         require(compensation > 0, "Lighthouse: NFT_ZERO_COMPENSATION");

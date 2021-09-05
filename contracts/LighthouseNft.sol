@@ -90,4 +90,8 @@ contract LighthouseNft is ERC721, ERC721Burnable, Ownable {
     function getCompensation(uint256 nftId) external view returns(uint256) {
         return paramsOf[nftId].compensation;
     }
+
+    function mintType(uint256 nftId) external viw returns(uint8) {
+        return paramsOf[nftId].mintType;
+    }
 }

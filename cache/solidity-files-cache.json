@@ -148,8 +148,8 @@
       ]
     },
     "/home/node/app/contracts/LighthouseAuction.sol": {
-      "lastModificationDate": 1630780753139,
-      "contentHash": "d040d6655cb00a4451bd5936f9253c24",
+      "lastModificationDate": 1630794432825,
+      "contentHash": "927ca776fcd488699225f660cef203c3",
       "sourceName": "contracts/LighthouseAuction.sol",
       "solcConfig": {
         "version": "0.8.0",
@@ -190,8 +190,8 @@
       ]
     },
     "/home/node/app/contracts/LighthousePrefund.sol": {
-      "lastModificationDate": 1630780711593,
-      "contentHash": "f556d3cd1af50468504bfc1fd1071902",
+      "lastModificationDate": 1630794439100,
+      "contentHash": "3c59d10502ffab6126b5c253a4edf636",
       "sourceName": "contracts/LighthousePrefund.sol",
       "solcConfig": {
         "version": "0.8.0",
@@ -269,8 +269,8 @@
       ]
     },
     "/home/node/app/contracts/LighthouseProject.sol": {
-      "lastModificationDate": 1630793213186,
-      "contentHash": "e355ba7069bc39c986f895fd2787c14c",
+      "lastModificationDate": 1630794415879,
+      "contentHash": "60967b9d471e6f31c5b37ff3d76da5a5",
       "sourceName": "contracts/LighthouseProject.sol",
       "solcConfig": {
         "version": "0.8.0",
