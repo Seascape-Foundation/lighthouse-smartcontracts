@@ -28,35 +28,16 @@ contract LighthouseBurn is Ownable {
 
     uint256 private constant SCALER = 10 ** 18;
 
-    struct Project {
-        uint256 prefundPool;            // The PCC pool for prefund investors
-        uint256 auctionPool;            // The PCC pool for auction participants
-        uint256 prefundCompensation;    // The Crowns that prefunders could get
-        uint256 auctionCompensation;    // The Crowns that auction participants could get
-        uint256 ratio;                  // The prefund * scaler / ratio
-
-        uint256 pool;                   // The total pool of tokens that users could get
-        uint256 compensation;           // The total compensation of tokens that users could get
-        address pcc;                    // The Game token that users are invested for
-        address lighthouse;             // The nft dedicated for the project.
-
-        uint256 startTime;
-    }
-
     /// @notice Some PCC goes to staking contract
     /// @dev PCC address => reserve amount
     mapping(address => uint256) public stakeReserves;
     /// @notice The contract to where the staked tokens will go
     address public staker;
 
-    mapping(uint256 => Project) public projects;
-
     /// @notice Check whether the user minted nft for the project or not
     mapping(uint256 => mapping(address => uint256)) public mintedNfts;
 
     event SetStaker(address indexed staker);
-    event AddProject(uint256 indexed projectId, uint256 prefundPool, uint256 auctionPool, uint256 prefundCompensation, uint256 auctionCompensation, address indexed lighthouse, uint256 startTime);
-    event AddPCC(uint256 indexed projectId, address indexed pcc);
     event BurnForPCC(uint256 indexed projectId, address indexed lighthouse, uint256 indexed nftId, address owner, address pcc, uint256 allocation);
     event BurnForCWS(uint256 indexed projectId, address indexed lighthouse, uint256 indexed nftId, address owner, uint256 compensation);
 
@@ -100,38 +81,6 @@ contract LighthouseBurn is Ownable {
         pcc.transferFrom(address(this), staker, stakeReserves[pccAddress]);
 
         stakeReserves[pccAddress] = 0;
-    }
-
-    /// @notice add a new project to the IDO project.
-    // todo receive PCC and CWS for Nfts.
-    function addProject(uint256 projectId, uint256 prefundPool, uint256 auctionPool, uint256 prefundCompensation, uint256 auctionCompensation, uint256 startTime, address lighthouse) external onlyOwner {
-        require(projectId > 0 && prefundPool > 0 && auctionPool > 0 && prefundCompensation > 0 && auctionCompensation > 0, "Lighthouse: ZERO_PARAMETER");
-        require(lighthouse != address(0), "Lighthouse: ZERO_ADDRESS");
-        require(projects[projectId].startTime == 0, "Lighthouse: ALREADY_STARTED");
-        require(startTime > 0, "Lighthouse: ZERO_PARAMETER");
-
-        uint256 auctionEndTime = lighthouseProject.auctionEndTime(projectId);
-        require(auctionEndTime > 0, "Lighthouse: NO_AUCTION_END_TIME");
-        require(startTime >= auctionEndTime, "Lighthouse: START_TIME_BEFORE_AUCTION_END");
-
-        Project storage project = projects[projectId];
-        
-        uint256 totalPool;
-        uint256 totalInvested;
-        
-        (totalPool, totalInvested) = lighthouseProject.prefundTotalPool(projectId);
-        
-        project.prefundPool             = prefundPool;
-        project.auctionPool             = auctionPool;
-        project.prefundCompensation     = prefundCompensation;   
-        project.auctionCompensation     = auctionCompensation;
-        project.pool                    = prefundPool + auctionPool;
-        project.compensation            = prefundCompensation + auctionCompensation;
-        project.lighthouse              = lighthouse;                    
-        project.startTime               = startTime;
-        project.ratio                   = project.pool * SCALER / project.compensation;
-
-        emit AddProject(projectId, prefundPool, auctionPool, prefundCompensation, auctionCompensation, lighthouse, startTime);
     }
 
     //////////////////////////////////////////////////////////////////////

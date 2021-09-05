@@ -36,8 +36,8 @@
       ]
     },
     "/home/node/app/contracts/LighthouseMint.sol": {
-      "lastModificationDate": 1630846669971,
-      "contentHash": "e808586356b418bfe8905fe74edf26df",
+      "lastModificationDate": 1630847008041,
+      "contentHash": "9f17b9628371a29ef18b4d0cc79a9b34",
       "sourceName": "contracts/LighthouseMint.sol",
       "solcConfig": {
         "version": "0.8.0",
@@ -774,8 +774,8 @@
       ]
     },
     "/home/node/app/contracts/LighthouseBurn.sol": {
-      "lastModificationDate": 1630846639415,
-      "contentHash": "1696fbf5a739525ce5b43587697a9781",
+      "lastModificationDate": 1630846931219,
+      "contentHash": "c9266d5290d09772d7948a1edacc0b29",
       "sourceName": "contracts/LighthouseBurn.sol",
       "solcConfig": {
         "version": "0.8.0",
