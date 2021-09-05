@@ -426,6 +426,6 @@ contract LighthouseProject is Ownable {
             TransferPrefund(id, scaledTransferAmount, scaledCompensationAmount);
         }
 
-        auctions[id].transferPrefund = true;
+        auctions[id].transferredPrefund = true;
     }    
 }
