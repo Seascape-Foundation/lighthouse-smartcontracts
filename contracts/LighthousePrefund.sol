@@ -9,7 +9,6 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
  * @notice The second phase of the Project Fund raising is to prefund. 
- * todo transfer invested tokens to the Seascape Team address
  */
 contract LighthousePrefund is Ownable {
     LighthouseTier private lighthouseTier;
@@ -22,23 +21,31 @@ contract LighthousePrefund is Ownable {
 
     event Prefund(uint256 indexed projectId, address indexed investor, int8 tier, uint256 time);
 
-    constructor(address _tier, address _submission, address _project) {
-        require(_tier != address(0) && _submission != address(0) && _project != address(0), "Lighthouse: ZERO_ADDRESS");
+    address payable fundCollector;
+
+    constructor(address _tier, address _submission, address _project, _fundCollector) {
+        require(_tier != address(0) && _submission != address(0) && _project != address(0) && _fundCollector != address(0), "Lighthouse: ZERO_ADDRESS");
         require(_tier != _submission, "Lighthouse: SAME_ADDRESS");
         require(_tier != _project, "Lighthouse: SAME_ADDRESS");
 
         lighthouseTier = LighthouseTier(_tier);
         lighthouseRegistration = LighthouseRegistration(_submission);
         lighthouseProject = LighthouseProject(_project);
+        fundCollector = _fundCollector;
+    }
+
+    function setFundCollector(address _fundCollector) external onlyOwner {
+        require(_fundCollector != address(0), "Lighthouse: ZERO_ADDRESS");
+        require(_fundCollector != owner(), "Lighthouse: USED_OWNER");
+
+        fundCollector = _fundCollector;
     }
 
     /// @dev v, r, s are used to ensure on server side that user passed KYC
-    //todo pass Tier eligable for prefunding.
-    //todo can use least tier
-    //todo use the tier parameter in the prefund
-    function prefund(uint256 projectId, uint8 v, bytes32 r, bytes32 s) external payable {
+    function prefund(uint256 projectId, uint8 certainTier, uint8 v, bytes32 r, bytes32 s) external payable {
         require(lighthouseProject.prefundInitialized(projectId), "Lighthouse: REGISTRATION_NOT_INITIALIZED");
         require(!prefunded(projectId, msg.sender), "Lighthouse: ALREADY_PREFUNDED");
+        require(certainTier > 0 && certainTier < 4, "Lighthouse: INVALID_CERTAIN_TIER");
 
         {   // Avoid stack too deep.
         uint256 startTime;
@@ -53,6 +60,8 @@ contract LighthousePrefund is Ownable {
 
         int8 tier = lighthouseTier.getTierLevel(msg.sender);
         require(tier > 0 && tier < 4, "Lighthouse: NO_TIER");
+        require(certainTier <= tier, "Lighthouse: INVALID_CERTAIN_TIER");
+        tier = certainTier;
 
         uint256 collectedAmount;        // Tier investment amount
         uint256 pool;                   // Tier investment cap
@@ -74,9 +83,10 @@ contract LighthousePrefund is Ownable {
 
         if (investToken == address(0)) {
             require(msg.value == investAmount, "Lighthouse: NOT_ENOUGH_NATIVE");
+            fundCollector.transfer(msg.value);
         } else {
             IERC20 token = IERC20(investToken);
-            require(token.transferFrom(msg.sender, address(this), investAmount), "Lighthouse: FAILED_TO_TRANSER");
+            require(token.transferFrom(msg.sender, fundCollector, investAmount), "Lighthouse: FAILED_TO_TRANSER");
         }
 
         lighthouseProject.collectPrefundInvestment(projectId, tier);
