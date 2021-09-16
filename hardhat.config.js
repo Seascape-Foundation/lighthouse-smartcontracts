@@ -23,6 +23,10 @@ module.exports = {
         auto: false,
         interval: 1000
       }
+    },
+    moonbeam: {
+      url: process.env.MOONBEAM_REMOTE_HTTP,
+      accounts: [process.env.MOONBEAM_DEPLOYER_KEY]
     }
   },
   etherscan: {
