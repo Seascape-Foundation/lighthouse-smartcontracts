@@ -141,10 +141,4 @@ contract LighthouseBurn is Ownable {
 
         emit BurnForCWS(projectId, lighthouseProject.nft(projectId), nftId, msg.sender, compensation);
     }
-
-    // @todo separated contract
-    /// need to ask: could it be any project. or user has to choose a certain project for burning this nft.
-    function burnForProject(uint256 projectId, uint256 anotherProjectId, address nftAddress, uint256 nftId) external {
-
-    }
 }
