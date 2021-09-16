@@ -101,9 +101,4 @@ contract LighthouseMint is Ownable {
         emit Mint(projectId, nftAddress, nftId, msg.sender, allocation, compensation);
     }
 
-    // @todo stake
-    // @todo separated contract
-    function stake(uint256 projectId, uint256 nftId) external {
-
-    }
 }
