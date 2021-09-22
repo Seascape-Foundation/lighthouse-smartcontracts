@@ -36,8 +36,8 @@
       ]
     },
     "/home/node/app/contracts/LighthouseMint.sol": {
-      "lastModificationDate": 1630847008041,
-      "contentHash": "9f17b9628371a29ef18b4d0cc79a9b34",
+      "lastModificationDate": 1631814880911,
+      "contentHash": "c576aecd7702511615e91a6cc32b732a",
       "sourceName": "contracts/LighthouseMint.sol",
       "solcConfig": {
         "version": "0.8.0",
@@ -190,8 +190,8 @@
       ]
     },
     "/home/node/app/contracts/LighthousePrefund.sol": {
-      "lastModificationDate": 1630812182164,
-      "contentHash": "48d6bd3a28178969ab0e413922abe5ad",
+      "lastModificationDate": 1632331327123,
+      "contentHash": "65b71d6af9d4006f6483aa67ac8b7d6f",
       "sourceName": "contracts/LighthousePrefund.sol",
       "solcConfig": {
         "version": "0.8.0",
@@ -774,8 +774,8 @@
       ]
     },
     "/home/node/app/contracts/LighthouseBurn.sol": {
-      "lastModificationDate": 1630846931219,
-      "contentHash": "c9266d5290d09772d7948a1edacc0b29",
+      "lastModificationDate": 1631814791470,
+      "contentHash": "835e38aac4a050b9bf9a647be3a570d5",
       "sourceName": "contracts/LighthouseBurn.sol",
       "solcConfig": {
         "version": "0.8.0",
@@ -813,6 +813,78 @@
       ],
       "artifacts": [
         "LighthouseBurn"
+      ]
+    },
+    "/home/node/app/contracts/LighthouseStake.sol": {
+      "lastModificationDate": 1631814873754,
+      "contentHash": "eccc6b493c933374fdadb04a49bd15d1",
+      "sourceName": "contracts/LighthouseStake.sol",
+      "solcConfig": {
+        "version": "0.8.0",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/access/Ownable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "LighthouseMint"
+      ]
+    },
+    "/home/node/app/contracts/LighthouseAllocation.sol": {
+      "lastModificationDate": 1631814783386,
+      "contentHash": "a66c032ca914d7e17ccb08047b78ca7d",
+      "sourceName": "contracts/LighthouseAllocation.sol",
+      "solcConfig": {
+        "version": "0.8.0",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/access/Ownable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "LighthouseAllocation"
       ]
     }
   }

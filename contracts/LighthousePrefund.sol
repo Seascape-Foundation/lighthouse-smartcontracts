@@ -23,7 +23,7 @@ contract LighthousePrefund is Ownable {
 
     address payable fundCollector;
 
-    constructor(address _tier, address _submission, address _project, _fundCollector) {
+    constructor(address _tier, address _submission, address _project, address payable _fundCollector) {
         require(_tier != address(0) && _submission != address(0) && _project != address(0) && _fundCollector != address(0), "Lighthouse: ZERO_ADDRESS");
         require(_tier != _submission, "Lighthouse: SAME_ADDRESS");
         require(_tier != _project, "Lighthouse: SAME_ADDRESS");
@@ -34,7 +34,7 @@ contract LighthousePrefund is Ownable {
         fundCollector = _fundCollector;
     }
 
-    function setFundCollector(address _fundCollector) external onlyOwner {
+    function setFundCollector(address payable _fundCollector) external onlyOwner {
         require(_fundCollector != address(0), "Lighthouse: ZERO_ADDRESS");
         require(_fundCollector != owner(), "Lighthouse: USED_OWNER");
 
@@ -42,7 +42,7 @@ contract LighthousePrefund is Ownable {
     }
 
     /// @dev v, r, s are used to ensure on server side that user passed KYC
-    function prefund(uint256 projectId, uint8 certainTier, uint8 v, bytes32 r, bytes32 s) external payable {
+    function prefund(uint256 projectId, int8 certainTier, uint8 v, bytes32 r, bytes32 s) external payable {
         require(lighthouseProject.prefundInitialized(projectId), "Lighthouse: REGISTRATION_NOT_INITIALIZED");
         require(!prefunded(projectId, msg.sender), "Lighthouse: ALREADY_PREFUNDED");
         require(certainTier > 0 && certainTier < 4, "Lighthouse: INVALID_CERTAIN_TIER");
@@ -69,6 +69,7 @@ contract LighthousePrefund is Ownable {
 
         require(collectedAmount < pool, "Lighthouse: TIER_CAP");
  
+        {   // avoid stack too deep
         // investor, project verification
 	    bytes memory prefix     = "\x19Ethereum Signed Message:\n32";
 	    bytes32 message         = keccak256(abi.encodePacked(msg.sender, projectId, tier));
@@ -76,6 +77,7 @@ contract LighthousePrefund is Ownable {
 	    address recover         = ecrecover(hash, v, r, s);
 
 	    require(recover == lighthouseProject.getKYCVerifier(), "Lighthouse: SIG");
+        }
 
         uint256 investAmount;
         address investToken;
