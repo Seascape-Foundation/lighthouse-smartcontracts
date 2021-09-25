@@ -1,0 +1,3 @@
+[submodule "crowns-token"]
+	path = crowns-token
+	url = https://github.com/blocklords/crowns.git
