@@ -96,7 +96,7 @@ contract LighthouseTier is Ownable {
     }
 
     /// @notice Remove the tier user.
-    function deleteEditorEditor(address _user) external onlyOwner {
+    function deleteEditor(address _user) external onlyOwner {
         require(_user != address(0),                "LighthouseTier: ZERO_ADDRESS");
         require(editors[_user],                     "LighthouseTier: NO_USER");
 
@@ -115,7 +115,6 @@ contract LighthouseTier is Ownable {
     /// This function intended to be called from the website directly
     function claim(uint8 level, uint8 v, bytes32 r, bytes32 s) external {
         require(level >= 0 && level < 4,        "LighthouseTier: INVALID_PARAMETER");
-
         Tier storage tier = tiers[msg.sender];
         
         // if tier is used, then user can reclaim it.
