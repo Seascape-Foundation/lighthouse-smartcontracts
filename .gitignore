@@ -107,3 +107,4 @@ build/contracts
 data/postgres
 data/ipfs
 truffle-config.js
+artifacts/contracts/crowns-token
