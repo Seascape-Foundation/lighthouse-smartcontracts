@@ -14,6 +14,8 @@ contract LighthouseTier is Ownable {
 
     CrownsInterface private immutable crowns;
 
+    uint256 public chainID;
+
     struct Tier {
         uint8 level;
         bool usable;
@@ -23,10 +25,6 @@ contract LighthouseTier is Ownable {
     /// @notice Investor tier level
     /// @dev Investor address => TIER Level
     mapping(address => Tier) public tiers;
-
-    /// @notice Amount of Tokens that each tear could invest per project. In Stable USD coins
-    /// @dev Project ID => [Tier 1 amount, Tier 2, Tier 3]
-    mapping(uint256 => uint8[3]) public investAmount;
 
     /// @notice Amount of Crowns (CWS) that user would spend to claim the fee
     mapping(uint8 => uint256) public fees;
@@ -45,15 +43,17 @@ contract LighthouseTier is Ownable {
     event Claim(address indexed investor, uint8 indexed tier);
     event Use(address indexed investor, uint8 indexed tier);
 
-    constructor(address _crowns, address _claimVerifier, uint256[4] memory _fees) {
+    constructor(address _crowns, address _claimVerifier, uint256[4] memory _fees, uint256 _chainID) {
         require(_crowns != address(0),          "LighthouseTier: ZERO_ADDRESS");
         require(_claimVerifier != address(0),   "LighthouseTier: ZERO_ADDRESS");
+        require(_chainID > 0,                   "LighthouseTier: ZERO_VALUE");
 
         // Fee for claiming Tier
         setFees(_fees);
 
         crowns          = CrownsInterface(_crowns);
         claimVerifier   = _claimVerifier;
+        chainID         = _chainID;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -117,10 +117,7 @@ contract LighthouseTier is Ownable {
         require(level >= 0 && level < 4,        "LighthouseTier: INVALID_PARAMETER");
         Tier storage tier = tiers[msg.sender];
         
-        // if tier is used, then user can reclaim it.
-        if (!tier.usable) {
-            require(tier.level == level,                    "LighthouseTier: LEVEL_MISMATCH");
-        } else if (level != 0) {
+        if (level != 0) {
             require(tier.level + 1 == level,                "LighthouseTier: INVALID_LEVEL");
         } else {
             require(false,                                  "LighthouseTier: CLAIM_0");
@@ -133,12 +130,12 @@ contract LighthouseTier is Ownable {
 	    address recover         = ecrecover(hash, v, r, s);
 	    require(recover == claimVerifier,                   "LighthouseTier: SIG");
 
-        // Charging fee
-        require(crowns.spendFrom(msg.sender, fees[level]),  "LighthouseTier: CWS_UNSPEND");
-
         tier.level = level;
         tier.usable = true;
         tier.nonce = tier.nonce + 1;      // Prevent "double-spend".
+
+        // Charging fee
+        require(crowns.spendFrom(msg.sender, fees[level]),  "LighthouseTier: CWS_UNSPEND");
 
         emit Claim(msg.sender, level);
     }
@@ -176,7 +173,7 @@ contract LighthouseTier is Ownable {
 
     /// @notice Return Tier Level of the investor.
     function getTierLevel(address investor) external view returns(int8) {
-        if (!tiers[investor].usable) {
+        if (tiers[investor].usable) {
             return int8(tiers[investor].level);
         }
         return -1;
