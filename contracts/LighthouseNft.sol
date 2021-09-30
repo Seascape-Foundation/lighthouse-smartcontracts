@@ -38,8 +38,9 @@ contract LighthouseNft is ERC721, ERC721Burnable, Ownable {
      * @dev Sets the {name} and {symbol} of token.
      * Mints all tokens.
      */
-    constructor() ERC721("Lighthouse", "LIGHTHOUSE") {
-	    tokenId.increment(); // set to 1 the incrementor, so first token will be with id 1.
+    constructor(_projectId) ERC721("Lighthouse", "LIGHTHOUSE") {
+	    require(_projectId > 0, "Lighthouse: ZERO_VALUE");
+        tokenId.increment(); // set to 1 the incrementor, so first token will be with id 1.
     }
 
     modifier onlyMinter() {
