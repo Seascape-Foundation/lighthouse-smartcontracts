@@ -116,7 +116,8 @@ contract LighthouseTier is Ownable {
     function claim(uint8 level, uint8 v, bytes32 r, bytes32 s) external {
         require(level >= 0 && level < 4,        "LighthouseTier: INVALID_PARAMETER");
         Tier storage tier = tiers[msg.sender];
-        
+
+        // You can't Skip tiers.        
         if (level != 0) {
             require(tier.level + 1 == level,                "LighthouseTier: INVALID_LEVEL");
         } else {
@@ -125,7 +126,7 @@ contract LighthouseTier is Ownable {
 
         // investor, level verification with claim verifier
 	    bytes memory prefix     = "\x19Ethereum Signed Message:\n32";
-	    bytes32 message         = keccak256(abi.encodePacked(msg.sender, tier.nonce, level));
+	    bytes32 message         = keccak256(abi.encodePacked(msg.sender, tier.nonce, level, chainID, address(this)));
 	    bytes32 hash            = keccak256(abi.encodePacked(prefix, message));
 	    address recover         = ecrecover(hash, v, r, s);
 	    require(recover == claimVerifier,                   "LighthouseTier: SIG");

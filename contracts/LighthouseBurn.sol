@@ -67,7 +67,7 @@ contract LighthouseBurn is Ownable {
         require(stakeReserves[pccAddress] >= amount, "Lighthouse: NOT_ENOUGH_BALANCE");
 
         CrownsInterface pcc = CrownsInterface(pccAddress);
-        pcc.transferFrom(address(this), staker, amount);
+        require(pcc.transferFrom(address(this), staker, amount), "Lighthouse: FAILED_TO_TRANSFER");
 
         stakeReserves[pccAddress] = stakeReserves[pccAddress] - amount;
     }
@@ -78,7 +78,7 @@ contract LighthouseBurn is Ownable {
         require(stakeReserves[pccAddress] > 0, "Lighthouse: INVALID_PCC");
 
         CrownsInterface pcc = CrownsInterface(pccAddress);
-        pcc.transferFrom(address(this), staker, stakeReserves[pccAddress]);
+        require(pcc.transferFrom(address(this), staker, stakeReserves[pccAddress]), "LighthouseBurn: FAILED_TO_TRANSFER");
 
         stakeReserves[pccAddress] = 0;
     }
@@ -110,7 +110,7 @@ contract LighthouseBurn is Ownable {
 
         nft.burn(nftId);
 
-        pcc.transferFrom(address(this), msg.sender, allocation);
+        require(pcc.transferFrom(address(this), msg.sender, allocation), "Lighthouse: FAILED_TO_TRANSFER");
         crowns.spendFrom(address(this), compensation);
 
         emit BurnForPCC(projectId, lighthouseProject.nft(projectId), nftId, msg.sender, pccAddress, allocation);
@@ -136,7 +136,7 @@ contract LighthouseBurn is Ownable {
 
         nft.burn(nftId);
 
-        crowns.transferFrom(address(this), msg.sender, compensation);
+        require(crowns.transferFrom(address(this), msg.sender, compensation), "Lighthouse: FAILED_TO_TRANSFER");
         stakeReserves[pccAddress] = stakeReserves[pccAddress] + allocation;
 
         emit BurnForCWS(projectId, lighthouseProject.nft(projectId), nftId, msg.sender, compensation);

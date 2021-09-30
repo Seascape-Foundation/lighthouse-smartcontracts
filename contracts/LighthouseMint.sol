@@ -93,10 +93,11 @@ contract LighthouseMint is Ownable {
         // stack too deep
         address nftAddress = lighthouseProject.nft(projectId);
         LighthouseNft lighthouseNft = LighthouseNft(nftAddress);
-        uint256 nftId = lighthouseNft.mint(projectId, msg.sender, allocation, compensation, tierLevel, mintType);
+        uint256 nftId = lighthouseNft.getNextTokenId();
         require(nftId > 0, "Lighthouse: NO_NFT_MINTED");
-
         mintedNfts[projectId][msg.sender] = nftId;
+
+        require(lighthouseNft.mint(projectId, nftId, msg.sender, allocation, compensation, tierLevel, mintType), "LighthouseMint: FAILED");
 
         emit Mint(projectId, nftAddress, nftId, msg.sender, allocation, compensation);
     }

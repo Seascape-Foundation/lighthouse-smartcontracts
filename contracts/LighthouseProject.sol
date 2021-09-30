@@ -98,7 +98,7 @@ contract LighthouseProject is Ownable {
 
         editors[_user] = true;
 
-        ProjectEditor(_user, true);
+        emit ProjectEditor(_user, true);
     }
 
     /// @notice Remove the tier user.
@@ -108,14 +108,13 @@ contract LighthouseProject is Ownable {
 
         editors[_user] = false;
 
-        ProjectEditor(_user, false);
+        emit ProjectEditor(_user, false);
     }
 
     /// @notice Opens a registration entrance for a new project
     /// @param startTime of the registration entrance
     /// @param endTime of the registration. This is not th end of the project funding.
     function initRegistration(uint256 startTime, uint256 endTime) external onlyOwner {
-        require(startTime > 0,                  "Lighthouse: ZERO_ADDRESS");
         require(block.timestamp < startTime,    "Lighthouse: TIME_PASSED");
         require(endTime > startTime,            "Lighthouse: INCORRECT_END_TIME");
 
@@ -140,8 +139,8 @@ contract LighthouseProject is Ownable {
     /// uint256 param 3 - tier 3 spend limit
     function initPrefund(uint256 id, uint256 startTime, uint256 endTime, uint256[3] calldata investAmounts, uint256[3] calldata pools, address _token) external onlyOwner {
         require(validProjectId(id), "Lighthouse: INVALID_PROJECT_ID");
-        require(startTime > 0 && block.timestamp < startTime, "Lighthouse: INVALID_START_TIME");
-        require(endTime > 0 && startTime != endTime && startTime < endTime, "Lighthouse: INVALID_END_TIME");
+        require(block.timestamp < startTime, "Lighthouse: INVALID_START_TIME");
+        require(startTime != endTime && startTime < endTime, "Lighthouse: INVALID_END_TIME");
         require(pools[0] > 0 && pools[1] > 0 && pools[2] > 0, "Lighthouse: ZERO_POOL_CAP");
         require(investAmounts[0] > 0 && investAmounts[1] > 0 && investAmounts[2] > 0, "Lighthouse: ZERO_FIXED_PRICE");
         Prefund storage prefund = prefunds[id];
@@ -163,8 +162,8 @@ contract LighthouseProject is Ownable {
     /// @notice Add the last stage period for the project
     function initAuction(uint256 id, uint256 startTime, uint256 endTime) external onlyOwner {
         require(validProjectId(id), "Lighthouse: INVALID_PROJECT_ID");
-        require(startTime > 0 && block.timestamp < startTime, "Lighthouse: INVALID_START_TIME");
-        require(endTime > 0 && startTime != endTime && startTime < endTime, "Lighthouse: INVALID_END_TIME");
+        require(block.timestamp < startTime, "Lighthouse: INVALID_START_TIME");
+        require(startTime != endTime && startTime < endTime, "Lighthouse: INVALID_END_TIME");
         Auction storage auction = auctions[id];
         require(auction.startTime == 0, "Lighthouse: ALREADY_ADDED");
 
@@ -211,7 +210,7 @@ contract LighthouseProject is Ownable {
         require(usedPccs[pccAddress] == 0, "Lighthouse: PCC_USED");
 
         pccs[id]                    = pccAddress;
-        usedNfts[pccAddress]        = id;
+        usedPccs[pccAddress]        = id;
 
         emit SetPCC(id, pccAddress);
     }
@@ -389,7 +388,7 @@ contract LighthouseProject is Ownable {
     //////////////////////////////////////////////////////////
 
     // auto transfer prefunded and track it in the Prefund
-    function transferPrefund(uint256 id) external {
+    function transferPrefund(uint256 id) external onlyOwner {
         if (auctions[id].transferredPrefund) {
             return;
         }
@@ -404,17 +403,17 @@ contract LighthouseProject is Ownable {
             uint256 scaledPercent = (cap - amount) * SCALER / (cap * SCALER / 100);
 
             // allocation = 10 * SCALER / 100 * SCALED percent;
-            uint256 scaledTransferAmount = (prefunds[id].scaledAllocation / 100 * scaledPercent) / SCALER;
+            uint256 scaledTransferAmount = (prefunds[id].scaledAllocation * scaledPercent / 100) / SCALER;
 
             auctions[id].scaledAllocation = auctions[id].scaledAllocation + scaledTransferAmount;
             prefunds[id].scaledAllocation = prefunds[id].scaledAllocation - scaledTransferAmount;
 
-            uint256 scaledCompensationAmount = (prefunds[id].scaledCompensation / 100 * scaledPercent) / SCALER;
+            uint256 scaledCompensationAmount = (prefunds[id].scaledCompensation * scaledPercent / 100) / SCALER;
 
             auctions[id].scaledCompensation = auctions[id].scaledCompensation + scaledCompensationAmount;
             prefunds[id].scaledCompensation = prefunds[id].scaledCompensation - scaledCompensationAmount;
 
-            TransferPrefund(id, scaledTransferAmount, scaledCompensationAmount);
+            emit TransferPrefund(id, scaledTransferAmount, scaledCompensationAmount);
         }
 
         auctions[id].transferredPrefund = true;

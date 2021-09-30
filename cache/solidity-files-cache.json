@@ -36,8 +36,8 @@
       ]
     },
     "/home/node/app/contracts/LighthouseMint.sol": {
-      "lastModificationDate": 1631814880911,
-      "contentHash": "c576aecd7702511615e91a6cc32b732a",
+      "lastModificationDate": 1632998022103,
+      "contentHash": "4b6f819f6ce7d425bf29da3c79ffd38c",
       "sourceName": "contracts/LighthouseMint.sol",
       "solcConfig": {
         "version": "0.8.0",
@@ -148,8 +148,8 @@
       ]
     },
     "/home/node/app/contracts/LighthouseAuction.sol": {
-      "lastModificationDate": 1630811859297,
-      "contentHash": "4a3c4ad8a25bb619f0b2c6ab4b66d13b",
+      "lastModificationDate": 1632997092910,
+      "contentHash": "8f4bae1f0e5b7cc4c3874fd7a960a205",
       "sourceName": "contracts/LighthouseAuction.sol",
       "solcConfig": {
         "version": "0.8.0",
@@ -190,8 +190,8 @@
       ]
     },
     "/home/node/app/contracts/LighthousePrefund.sol": {
-      "lastModificationDate": 1632331327123,
-      "contentHash": "65b71d6af9d4006f6483aa67ac8b7d6f",
+      "lastModificationDate": 1632998812112,
+      "contentHash": "2516922b897782bfb64dbbf29b22410e",
       "sourceName": "contracts/LighthousePrefund.sol",
       "solcConfig": {
         "version": "0.8.0",
@@ -230,8 +230,8 @@
       ]
     },
     "/home/node/app/contracts/LighthouseNft.sol": {
-      "lastModificationDate": 1630813441871,
-      "contentHash": "ca76e889fae2e5580b5dd5f6b8daf86e",
+      "lastModificationDate": 1632998679639,
+      "contentHash": "a1ec672996d26189805ca3a784bd32ce",
       "sourceName": "contracts/LighthouseNft.sol",
       "solcConfig": {
         "version": "0.8.0",
@@ -269,8 +269,8 @@
       ]
     },
     "/home/node/app/contracts/LighthouseProject.sol": {
-      "lastModificationDate": 1630846592946,
-      "contentHash": "a809f5f03696aa02bf9c252bc6643bb2",
+      "lastModificationDate": 1632998510230,
+      "contentHash": "c088d34e8a5ba50ece2d8cc65878d254",
       "sourceName": "contracts/LighthouseProject.sol",
       "solcConfig": {
         "version": "0.8.0",
@@ -340,8 +340,8 @@
       ]
     },
     "/home/node/app/contracts/LighthouseTier.sol": {
-      "lastModificationDate": 1632655055574,
-      "contentHash": "b45c1e2549d21171adf86a6757a7d88c",
+      "lastModificationDate": 1632997296882,
+      "contentHash": "833111b6641d9b2c7688119bc9f3d240",
       "sourceName": "contracts/LighthouseTier.sol",
       "solcConfig": {
         "version": "0.8.0",
@@ -368,8 +368,7 @@
       "imports": [
         "@openzeppelin/contracts/access/Ownable.sol",
         "@openzeppelin/contracts/utils/Counters.sol",
-        "./crowns/CrownsInterface.sol",
-        "hardhat/console.sol"
+        "./crowns/CrownsInterface.sol"
       ],
       "versionPragmas": [
         "^0.8.0"
@@ -775,8 +774,8 @@
       ]
     },
     "/home/node/app/contracts/LighthouseBurn.sol": {
-      "lastModificationDate": 1631814791470,
-      "contentHash": "835e38aac4a050b9bf9a647be3a570d5",
+      "lastModificationDate": 1632998245240,
+      "contentHash": "6752579674f220bc4dc76b67ce27798c",
       "sourceName": "contracts/LighthouseBurn.sol",
       "solcConfig": {
         "version": "0.8.0",

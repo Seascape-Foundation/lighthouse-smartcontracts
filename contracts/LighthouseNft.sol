@@ -38,7 +38,7 @@ contract LighthouseNft is ERC721, ERC721Burnable, Ownable {
      * @dev Sets the {name} and {symbol} of token.
      * Mints all tokens.
      */
-    constructor(_projectId) ERC721("Lighthouse", "LIGHTHOUSE") {
+    constructor(uint256 _projectId) ERC721("Lighthouse", "LIGHTHOUSE") {
 	    require(_projectId > 0, "Lighthouse: ZERO_VALUE");
         tokenId.increment(); // set to 1 the incrementor, so first token will be with id 1.
     }
@@ -49,9 +49,10 @@ contract LighthouseNft is ERC721, ERC721Burnable, Ownable {
     }
 
     /// @dev ensure that all parameters are checked on factory smartcontract
-    function mint(uint256 _projectId, address _to, uint256 _allocation, uint256 _compensation, int8 _tier, uint8 _type) public onlyMinter returns(uint256) {
+    function mint(uint256 _projectId, uint256 _tokenId, address _to, uint256 _allocation, uint256 _compensation, int8 _tier, uint8 _type) public onlyMinter returns(bool) {
 	    require(_projectId == projectId, "Lighthouse: PROJECT_ID_MISMATCH");
-        uint256 _tokenId = tokenId.current();
+        uint256 _nextTokenId = tokenId.current();
+        require(_tokenId == _nextTokenId, "LighthouseNFT: INVALID_TOKEN");
 
         _safeMint(_to, _tokenId);
 
@@ -61,7 +62,11 @@ contract LighthouseNft is ERC721, ERC721Burnable, Ownable {
 
         emit Minted(_to, _tokenId, _allocation, _compensation, _tier, _type, projectId);
         
-        return _tokenId;
+        return true;
+    }
+
+    function getNextTokenId() external view returns(uint256) {
+        return tokenId.current();
     }
 
     function setOwner(address _owner) public onlyOwner {

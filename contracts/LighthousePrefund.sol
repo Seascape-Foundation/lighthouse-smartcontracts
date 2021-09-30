@@ -79,6 +79,8 @@ contract LighthousePrefund is Ownable {
 	    require(recover == lighthouseProject.getKYCVerifier(), "Lighthouse: SIG");
         }
 
+        lighthouseTier.use(msg.sender, uint8(lighthouseTier.getTierLevel(msg.sender)));
+
         uint256 investAmount;
         address investToken;
         (investAmount, investToken) = lighthouseProject.prefundInvestAmount(projectId, tier);

@@ -38,7 +38,7 @@ contract LighthouseAuction is Ownable {
         crowns = CrownsInterface(_crowns);
     }
 
-    /// @notice User participates in the Public Auction
+    /// @notice User participates in the Public Auction. Note that Public Auction interaction doesn't reset the Tier.
     /// @param amount of Crowns that user wants to spend
     /// @dev We are not checkig Tier level of the user, as it was checked in the LighthouseRegistration.
     function participate(uint256 projectId, uint256 amount, uint8 v, bytes32 r, bytes32 s) external {
