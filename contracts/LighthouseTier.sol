@@ -121,7 +121,7 @@ contract LighthouseTier is Ownable {
         if (level != 0) {
             require(tier.level + 1 == level,                "LighthouseTier: INVALID_LEVEL");
         } else {
-            require(false,                                  "LighthouseTier: CLAIM_0");
+            require(tier.usable == false,                   "LighhouseTier: 0_CLAIMED");
         }
 
         // investor, level verification with claim verifier
