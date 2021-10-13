@@ -14,11 +14,14 @@ describe("Lighthouse Tier", async () => {
   let player = null;
   let gameOwner = null;
 
-  async function signBadge(investor, nonce, level) {
+  let chainID = null;
+
+  async function signBadge(investor, nonce, level, chainID, tierAddress) {
     //v, r, s related stuff
     let bytes32 = utils.defaultAbiCoder.encode(["uint256"], [nonce]);
+    let chain32 = utils.defaultAbiCoder.encode(["uint256"], [chainID]);
     let bytes1 = utils.hexZeroPad([level], 1);
-    let str = investor.address + bytes32.substr(2) + bytes1.substr(2);
+    let str = investor.address + bytes32.substr(2) + bytes1.substr(2) + chain32.substr(2) + tierAddress.substr(2);
     let data = utils.keccak256(str);
     let flatSig = await gameOwner.signMessage(utils.arrayify(data));
 
@@ -37,6 +40,7 @@ describe("Lighthouse Tier", async () => {
     const [acc0, acc1] = await ethers.getSigners();
     gameOwner = acc0;
     player = acc1;
+    chainID             = await gameOwner.getChainId();
     
     const Crowns = await ethers.getContractFactory("CrownsToken");
     crowns = await Crowns.deploy(1);    /// Argument 1 means deploy in Test mode
@@ -70,7 +74,7 @@ describe("Lighthouse Tier", async () => {
     let badge = await tier.tiers(player.address);
     let nonce = parseInt(badge.nonce.toString());
 
-    let [v, r, s] = await signBadge(player, nonce, level);
+    let [v, r, s] = await signBadge(player, nonce, level, chainID, tier.address);
 
     try {
         let claimTx = await tier.connect(player).claim(level, v, r, s);
@@ -87,7 +91,7 @@ describe("Lighthouse Tier", async () => {
     let badge = await tier.tiers(player.address);
     let nonce = parseInt(badge.nonce.toString());
 
-    let [v, r, s] = await signBadge(player, nonce, level);
+    let [v, r, s] = await signBadge(player, nonce, level, chainID, tier.address);
 
     let claimTx = await tier.connect(player).claim(level, v, r, s);
     await claimTx.wait();
@@ -103,7 +107,7 @@ describe("Lighthouse Tier", async () => {
     let badge = await tier.tiers(player.address);
     let nonce = parseInt(badge.nonce.toString());
 
-    let [v, r, s] = await signBadge(player, nonce, level);
+    let [v, r, s] = await signBadge(player, nonce, level, chainID, tier.address);
 
     let claimTx = await tier.connect(player).claim(level, v, r, s);
     await claimTx.wait();
@@ -120,7 +124,7 @@ describe("Lighthouse Tier", async () => {
     let badge = await tier.tiers(player.address);
     let nonce = parseInt(badge.nonce.toString());
 
-    let [v, r, s] = await signBadge(player, nonce, level);
+    let [v, r, s] = await signBadge(player, nonce, level, chainID, tier.address);
 
     try {
       let claimTx = await tier.connect(player).claim(level, v, r, s);
@@ -136,7 +140,7 @@ describe("Lighthouse Tier", async () => {
     let badge = await tier.tiers(player.address);
     let nonce = parseInt(badge.nonce.toString());
 
-    let [v, r, s] = await signBadge(player, nonce, level);
+    let [v, r, s] = await signBadge(player, nonce, level, chainID, tier.address);
 
     let claimTx;
     try {
@@ -164,7 +168,7 @@ describe("Lighthouse Tier", async () => {
     let badge = await tier.tiers(player.address);
     let nonce = parseInt(badge.nonce.toString());
 
-    let [v, r, s] = await signBadge(player, nonce, level);
+    let [v, r, s] = await signBadge(player, nonce, level, chainID, tier.address);
 
     try {
         let claimTx = await tier.connect(player).claim(level, v, r, s);
@@ -180,7 +184,7 @@ describe("Lighthouse Tier", async () => {
     let badge = await tier.tiers(player.address);
     let nonce = parseInt(badge.nonce.toString());
 
-    let [v, r, s] = await signBadge(player, nonce, level);
+    let [v, r, s] = await signBadge(player, nonce, level, chainID, tier.address);
 
     let claimTx = await tier.connect(player).claim(level, v, r, s);
     await claimTx.wait();
@@ -197,7 +201,7 @@ describe("Lighthouse Tier", async () => {
     let badge = await tier.tiers(player.address);
     let nonce = parseInt(badge.nonce.toString());
 
-    let [v, r, s] = await signBadge(player, nonce, level);
+    let [v, r, s] = await signBadge(player, nonce, level, chainID, tier.address);
 
     try {
       let claimTx = await tier.connect(player).claim(level, v, r, s);
@@ -213,7 +217,7 @@ describe("Lighthouse Tier", async () => {
     let badge = await tier.tiers(player.address);
     let nonce = parseInt(badge.nonce.toString());
 
-    let [v, r, s] = await signBadge(player, nonce, level);
+    let [v, r, s] = await signBadge(player, nonce, level, chainID, tier.address);
 
     let claimTx = await tier.connect(player).claim(level, v, r, s);
     await claimTx.wait();
@@ -230,7 +234,7 @@ describe("Lighthouse Tier", async () => {
     let badge = await tier.tiers(player.address);
     let nonce = parseInt(badge.nonce.toString());
 
-    let [v, r, s] = await signBadge(player, nonce, level);
+    let [v, r, s] = await signBadge(player, nonce, level, chainID, tier.address);
 
     let claimTx = await tier.connect(player).claim(level, v, r, s);
     await claimTx.wait();
@@ -247,7 +251,7 @@ describe("Lighthouse Tier", async () => {
     let badge = await tier.tiers(player.address);
     let nonce = parseInt(badge.nonce.toString());
 
-    let [v, r, s] = await signBadge(player, nonce, level);
+    let [v, r, s] = await signBadge(player, nonce, level, chainID, tier.address);
 
     try {
         await tier.connect(player).claim(level, v, r, s);
