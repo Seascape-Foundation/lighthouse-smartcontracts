@@ -47,7 +47,7 @@ contract LighthouseProject is Ownable {
         uint256 scaledAllocation;       // auction PCC allocation
         uint256 scaledCompensation;     // auction Crowns compensation
 
-        bool transferredPrefund;       // Prefund allocatio transferred to aution pool
+        bool transferredPrefund;       // Prefund allocation transferred to aution pool
     }
 
     mapping(uint256 => Registration) public registrations;
@@ -128,15 +128,6 @@ contract LighthouseProject is Ownable {
     }
 
     /// @notice Add the second phase of the project
-    /// @dev
-    /// If _token is address(0), then we receive native token.
-    ///
-    /// uint16 investorAmount 0 - total amount to spend for tier 1
-    /// uint16 investorAmount 1 - total amount to spend for tier 2
-    /// uint16 investorAmount 2 - total amount to spend for tier 3
-    /// uint256 param 2 - tier 1 spend limit
-    /// uint256 param 3 - tier 2 spend limit
-    /// uint256 param 3 - tier 3 spend limit
     function initPrefund(uint256 id, uint256 startTime, uint256 endTime, uint256[3] calldata investAmounts, uint256[3] calldata pools, address _token) external onlyOwner {
         require(validProjectId(id), "Lighthouse: INVALID_PROJECT_ID");
         require(block.timestamp < startTime, "Lighthouse: INVALID_START_TIME");
@@ -234,6 +225,38 @@ contract LighthouseProject is Ownable {
         x.spent = x.spent + amount;
     }
 
+    // auto transfer prefunded and track it in the Prefund
+    function transferPrefund(uint256 id) external onlyOwner {
+        if (auctions[id].transferredPrefund) {
+            return;
+        }
+
+        uint256 cap;
+        uint256 amount;
+        (cap, amount) = prefundTotalPool(id);
+        
+        if (amount < cap) {
+            // We apply SCALER multiplayer, if the cap is less than 100
+            // It could happen if investing goes in NATIVE token.
+            uint256 scaledPercent = (cap - amount) * SCALER / (cap * SCALER / 100);
+
+            // allocation = 10 * SCALER / 100 * SCALED percent;
+            uint256 scaledTransferAmount = (prefunds[id].scaledAllocation * scaledPercent / 100) / SCALER;
+
+            auctions[id].scaledAllocation = auctions[id].scaledAllocation + scaledTransferAmount;
+            prefunds[id].scaledAllocation = prefunds[id].scaledAllocation - scaledTransferAmount;
+
+            uint256 scaledCompensationAmount = (prefunds[id].scaledCompensation * scaledPercent / 100) / SCALER;
+
+            auctions[id].scaledCompensation = auctions[id].scaledCompensation + scaledCompensationAmount;
+            prefunds[id].scaledCompensation = prefunds[id].scaledCompensation - scaledCompensationAmount;
+
+            emit TransferPrefund(id, scaledTransferAmount, scaledCompensationAmount);
+        }
+
+        auctions[id].transferredPrefund = true;
+    }    
+
     ////////////////////////////////////////////////////////////////////////////
     //
     // Public functions
@@ -241,7 +264,7 @@ contract LighthouseProject is Ownable {
     ////////////////////////////////////////////////////////////////////////////
     
     function totalProjects() external view returns(uint256) {
-        return projectId.current();
+        return projectId.current() - 1;
     }
 
     function validProjectId(uint256 id) public view returns(bool) {
@@ -381,41 +404,4 @@ contract LighthouseProject is Ownable {
         return kycVerifier;
     }
 
-    //////////////////////////////////////////////////////////
-    //
-    // Public functions
-    //
-    //////////////////////////////////////////////////////////
-
-    // auto transfer prefunded and track it in the Prefund
-    function transferPrefund(uint256 id) external onlyOwner {
-        if (auctions[id].transferredPrefund) {
-            return;
-        }
-
-        uint256 cap;
-        uint256 amount;
-        (cap, amount) = prefundTotalPool(id);
-        
-        if (amount < cap) {
-            // We apply SCALER multiplayer, if the cap is less than 100
-            // It could happen if investing goes in NATIVE token.
-            uint256 scaledPercent = (cap - amount) * SCALER / (cap * SCALER / 100);
-
-            // allocation = 10 * SCALER / 100 * SCALED percent;
-            uint256 scaledTransferAmount = (prefunds[id].scaledAllocation * scaledPercent / 100) / SCALER;
-
-            auctions[id].scaledAllocation = auctions[id].scaledAllocation + scaledTransferAmount;
-            prefunds[id].scaledAllocation = prefunds[id].scaledAllocation - scaledTransferAmount;
-
-            uint256 scaledCompensationAmount = (prefunds[id].scaledCompensation * scaledPercent / 100) / SCALER;
-
-            auctions[id].scaledCompensation = auctions[id].scaledCompensation + scaledCompensationAmount;
-            prefunds[id].scaledCompensation = prefunds[id].scaledCompensation - scaledCompensationAmount;
-
-            emit TransferPrefund(id, scaledTransferAmount, scaledCompensationAmount);
-        }
-
-        auctions[id].transferredPrefund = true;
-    }    
 }

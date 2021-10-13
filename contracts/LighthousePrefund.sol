@@ -15,6 +15,8 @@ contract LighthousePrefund is Ownable {
     LighthouseRegistration private lighthouseRegistration;
     LighthouseProject private lighthouseProject;
 
+    uint256 public chainID;
+
     /// @notice The investor prefunds in the project
     /// @dev Project -> Investor -> funded
     mapping(uint256 => mapping(address => bool)) public investments;
@@ -23,15 +25,17 @@ contract LighthousePrefund is Ownable {
 
     address payable fundCollector;
 
-    constructor(address _tier, address _submission, address _project, address payable _fundCollector) {
+    constructor(address _tier, address _submission, address _project, address payable _fundCollector, uint256 _chainID) {
         require(_tier != address(0) && _submission != address(0) && _project != address(0) && _fundCollector != address(0), "Lighthouse: ZERO_ADDRESS");
         require(_tier != _submission, "Lighthouse: SAME_ADDRESS");
         require(_tier != _project, "Lighthouse: SAME_ADDRESS");
+        require(_chainID > 0, "Lighthouse: ZERO_VALUE");
 
         lighthouseTier = LighthouseTier(_tier);
         lighthouseRegistration = LighthouseRegistration(_submission);
         lighthouseProject = LighthouseProject(_project);
         fundCollector = _fundCollector;
+        chainID = _chainID;
     }
 
     function setFundCollector(address payable _fundCollector) external onlyOwner {
@@ -72,14 +76,13 @@ contract LighthousePrefund is Ownable {
         {   // avoid stack too deep
         // investor, project verification
 	    bytes memory prefix     = "\x19Ethereum Signed Message:\n32";
-	    bytes32 message         = keccak256(abi.encodePacked(msg.sender, projectId, tier));
+	    bytes32 message         = keccak256(abi.encodePacked(msg.sender, address(this), chainID, projectId, uint8(certainTier)));
 	    bytes32 hash            = keccak256(abi.encodePacked(prefix, message));
 	    address recover         = ecrecover(hash, v, r, s);
 
 	    require(recover == lighthouseProject.getKYCVerifier(), "Lighthouse: SIG");
         }
 
-        lighthouseTier.use(msg.sender, uint8(lighthouseTier.getTierLevel(msg.sender)));
 
         uint256 investAmount;
         address investToken;
@@ -92,6 +95,9 @@ contract LighthousePrefund is Ownable {
             IERC20 token = IERC20(investToken);
             require(token.transferFrom(msg.sender, fundCollector, investAmount), "Lighthouse: FAILED_TO_TRANSER");
         }
+
+
+        lighthouseTier.use(msg.sender, uint8(lighthouseTier.getTierLevel(msg.sender)));
 
         lighthouseProject.collectPrefundInvestment(projectId, tier);
         investments[projectId][msg.sender] = true;

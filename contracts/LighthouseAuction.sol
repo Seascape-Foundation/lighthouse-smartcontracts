@@ -20,11 +20,13 @@ contract LighthouseAuction is Ownable {
     LighthouseProject private lighthouseProject;
     CrownsInterface private crowns;
 
+    uint256 public chainID;
+
     mapping(uint256 => mapping(address => uint256)) public spents;
 
     event Participate(uint256 indexed projectId, address indexed participant, uint256 amount, uint256 time);
 
-    constructor(address _crowns, address tier, address submission, address prefund, address project) {
+    constructor(address _crowns, address tier, address submission, address prefund, address project, uint256 _chainID) {
         require(_crowns != address(0) && tier != address(0) && prefund != address(0) && submission != address(0) && project != address(0), "Lighthouse: ZERO_ADDRESS");
         require(tier != prefund, "Lighthouse: SAME_ADDRESS");
         require(tier != _crowns, "Lighthouse: SAME_ADDRESS");
@@ -36,6 +38,7 @@ contract LighthouseAuction is Ownable {
         lighthousePrefund = LighthousePrefund(prefund);
         lighthouseProject = LighthouseProject(project);
         crowns = CrownsInterface(_crowns);
+        chainID = _chainID;
     }
 
     /// @notice User participates in the Public Auction. Note that Public Auction interaction doesn't reset the Tier.
@@ -64,7 +67,7 @@ contract LighthouseAuction is Ownable {
 
         // investor, project verification
 	    bytes memory prefix     = "\x19Ethereum Signed Message:\n32";
-	    bytes32 message         = keccak256(abi.encodePacked(msg.sender, projectId, amount));
+	    bytes32 message         = keccak256(abi.encodePacked(msg.sender, address(this), projectId, amount, chainID));
 	    bytes32 hash            = keccak256(abi.encodePacked(prefix, message));
 	    address recover         = ecrecover(hash, v, r, s);
 
