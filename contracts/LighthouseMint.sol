@@ -62,8 +62,13 @@ contract LighthouseMint is Ownable {
 
         require(prefunded || spent > 0, "Lighthouse: NOT_INVESTED");
 
+
         int8 tierLevel = lighthouseTier.getTierLevel(msg.sender);
+        if (tierLevel == -1) {
+            tierLevel = lighthousePrefund.getPrefundTier(projectId, msg.sender);
+        }
         require(tierLevel > 0, "Lighthouse: INVALID_TIER");
+
 
         uint8 mintType;
         uint256 allocation;        // Portion of Pool that user will get
@@ -95,9 +100,12 @@ contract LighthouseMint is Ownable {
         LighthouseNft lighthouseNft = LighthouseNft(nftAddress);
         uint256 nftId = lighthouseNft.getNextTokenId();
         require(nftId > 0, "Lighthouse: NO_NFT_MINTED");
-        mintedNfts[projectId][msg.sender] = nftId;
+
 
         require(lighthouseNft.mint(projectId, nftId, msg.sender, allocation, compensation, tierLevel, mintType), "LighthouseMint: FAILED");
+
+
+        mintedNfts[projectId][msg.sender] = nftId;
 
         emit Mint(projectId, nftAddress, nftId, msg.sender, allocation, compensation);
     }

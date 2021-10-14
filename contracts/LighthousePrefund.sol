@@ -20,6 +20,7 @@ contract LighthousePrefund is Ownable {
     /// @notice The investor prefunds in the project
     /// @dev Project -> Investor -> funded
     mapping(uint256 => mapping(address => bool)) public investments;
+    mapping(uint256 => mapping(address => int8)) public tiers;
 
     event Prefund(uint256 indexed projectId, address indexed investor, int8 tier, uint256 time);
 
@@ -101,6 +102,7 @@ contract LighthousePrefund is Ownable {
 
         lighthouseProject.collectPrefundInvestment(projectId, tier);
         investments[projectId][msg.sender] = true;
+        tiers[projectId][msg.sender] = tier;
 
         emit Prefund(projectId, msg.sender, tier, block.timestamp);
     }
@@ -110,5 +112,9 @@ contract LighthousePrefund is Ownable {
     /// @param investor who prefuned
     function prefunded(uint256 id, address investor) public view returns(bool) {
         return investments[id][investor];
+    }
+
+    function getPrefundTier(uint256 id, address investor) external view returns (int8) {
+        return tiers[id][investor];
     }
 }
