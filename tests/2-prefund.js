@@ -404,7 +404,7 @@ describe("Lighthouse Prefunding", async () => {
   });
 
   it("initiation of the minting (game owner)", async () => {
-    // deploy investment nft
+    // deploy investment nft minting interface
     const Mint        = await ethers.getContractFactory("LighthouseMint");
     mint              = await Mint.deploy(
       auction.address, prefund.address, tier.address, project.address, crowns.address
@@ -440,6 +440,54 @@ describe("Lighthouse Prefunding", async () => {
     await mint.connect(participants[1]).mint(projectID, {from: participants[1].address});
 
     expect(await mint.mintedNfts(projectID, investors[0].address)).to.not.equal(0);
+  });
+
+
+  it("initiation of the investment nft burning in exchange for tokens (game owner)", async () => {
+    // deploy investment nft burning
+    const Burn        = await ethers.getContractFactory("LighthouseBurn");
+    burn              = await Burn.deploy(
+      auction.address, prefund.address, tier.address, crowns.address, project.address
+    );
+    await burn.deployed();
+
+    // allow investment token to be minted by mint interface
+    await nft.setBurner(burn.address);
+
+    // deploy investment nft burning
+    const Element        = await ethers.getContractFactory("Element");
+    element              = await Element.deploy(totalElementSupply);
+    await element.deployed();
+
+    let tx = await project.setPcc(projectID, element.address, {from: gameOwner.address});
+    await tx.wait();
+  });
+
+  it("transfer PCC and collateral to the burn (game owner)", async () => {
+    tx = await element.transfer(burn.address, utils.parseEther("10000"), {from: gameOwner.address});
+    await tx.wait();
+    tx = await crowns.transfer(burn.address, utils.parseEther("500"), {from: gameOwner.address});
+    await tx.wait();
+  });
+  
+  it("burn investment nfts", async () => {
+    let nftID = 1;
+    let tx = await nft.connect(investors[0]).approve(burn.address, nftID, {from: investors[0].address})
+    await tx.wait();
+    await burn.connect(investors[0]).burnForPcc(projectID, nftID, {from: investors[0].address});
+
+    nftID = 4;
+    tx = await nft.connect(participants[1]).approve(burn.address, nftID, {from: participants[1].address})
+    await tx.wait();
+    tx = await burn.connect(participants[1]).burnForCws(projectID, nftID, {from: participants[1].address});
+    await tx.wait();
+
+    // nftID = 3;
+    // tx = await nft.connect(participants[0]).approve(burn.address, nftID, {from: participants[0].address})
+    // await tx.wait();
+    // await burn.connect(participants[0]).burnForPcc(projectID, nftID, {from: participants[0].address});
+
+    expect(await burn.stakeReserves(element.address)).to.not.equal(0);
   });
 
   async function claimTierTo(acc, levelTo) {
