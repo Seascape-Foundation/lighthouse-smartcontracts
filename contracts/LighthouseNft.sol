@@ -28,6 +28,7 @@ contract LighthouseNft is ERC721, ERC721Burnable, Ownable {
     }
 
     mapping(address => bool) public minters;
+    mapping(address => bool) public burners;
 
     /// @dev returns parameters of Seascape NFT by token id.
     mapping(uint256 => Params) public paramsOf;
@@ -46,7 +47,12 @@ contract LighthouseNft is ERC721, ERC721Burnable, Ownable {
     }
 
     modifier onlyMinter() {
-        require(minters[_msgSender()], "Seascape NFT: Only NFT Factory can call the method");
+        require(minters[_msgSender()], "Lighthouse: NOT_MINTER");
+        _;
+    }
+
+    modifier onlyBurner() {
+        require(burners[_msgSender()], "Lighthouse: NOT_BURNER");
         _;
     }
 
@@ -67,6 +73,14 @@ contract LighthouseNft is ERC721, ERC721Burnable, Ownable {
         return true;
     }
 
+    function burn(uint256 id) public virtual override onlyBurner {
+        console.log("NFT is meant to be burnt");
+        //solhint-disable-next-line max-line-length
+        require(_isApprovedOrOwner(_msgSender(), id), "ERC721Burnable: caller is not owner nor approved");
+        console.log("NFT approved");
+        _burn(id);
+    }
+
     function getNextTokenId() external view returns(uint256) {
         return tokenId.current();
     }
@@ -81,6 +95,14 @@ contract LighthouseNft is ERC721, ERC721Burnable, Ownable {
 
     function unsetMinter(address _minter) public onlyOwner {
 	    minters[_minter] = false;
+    }
+
+    function setBurner(address _burner) public onlyOwner {
+	    burners[_burner] = true;
+    }
+
+    function unsetBurner(address _burner) public onlyOwner {
+	    burners[_burner] = false;
     }
 
     function _baseURI() internal view virtual override returns (string memory) {

@@ -102,16 +102,18 @@ contract LighthouseBurn is Ownable {
         require(nft.mintType(nftId) <= 2, "Lighthouse: FORBIDDEN_MINT_TYPE");
 
         uint256 allocation = nft.scaledAllocation(nftId) / SCALER;
-        uint256 compensation = nft.scaledCompensation(nftId / SCALER);
+        uint256 compensation = nft.scaledCompensation(nftId) / SCALER;
         require(allocation > 0, "Lighthouse: NFT_ZERO_ALLOCATION");
+        require(compensation > 0, "Lighthouse: NFT_ZERO_COMPENSATION");
 
         require(pcc.balanceOf(address(this)) >= allocation, "Lighthouse: NOT_ENOUGH_PCC");
         require(crowns.balanceOf(address(this)) >= compensation, "Lighthouse: NOT_ENOUGH_CROWNS");
 
         nft.burn(nftId);
 
-        require(pcc.transferFrom(address(this), msg.sender, allocation), "Lighthouse: FAILED_TO_TRANSFER");
-        crowns.spendFrom(address(this), compensation);
+
+        require(pcc.transfer(msg.sender, allocation), "Lighthouse: FAILED_TO_TRANSFER");
+        console.log("Transferred correctly");
 
         emit BurnForPCC(projectId, lighthouseProject.nft(projectId), nftId, msg.sender, pccAddress, allocation);
     }
@@ -136,7 +138,7 @@ contract LighthouseBurn is Ownable {
 
         nft.burn(nftId);
 
-        require(crowns.transferFrom(address(this), msg.sender, compensation), "Lighthouse: FAILED_TO_TRANSFER");
+        require(crowns.transfer(msg.sender, compensation), "Lighthouse: FAILED_TO_TRANSFER");
         stakeReserves[pccAddress] = stakeReserves[pccAddress] + allocation;
 
         emit BurnForCWS(projectId, lighthouseProject.nft(projectId), nftId, msg.sender, compensation);
