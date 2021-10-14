@@ -113,7 +113,6 @@ contract LighthouseBurn is Ownable {
 
 
         require(pcc.transfer(msg.sender, allocation), "Lighthouse: FAILED_TO_TRANSFER");
-        console.log("Transferred correctly");
 
         emit BurnForPCC(projectId, lighthouseProject.nft(projectId), nftId, msg.sender, pccAddress, allocation);
     }

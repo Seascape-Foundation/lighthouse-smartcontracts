@@ -74,10 +74,8 @@ contract LighthouseNft is ERC721, ERC721Burnable, Ownable {
     }
 
     function burn(uint256 id) public virtual override onlyBurner {
-        console.log("NFT is meant to be burnt");
         //solhint-disable-next-line max-line-length
         require(_isApprovedOrOwner(_msgSender(), id), "ERC721Burnable: caller is not owner nor approved");
-        console.log("NFT approved");
         _burn(id);
     }
 
