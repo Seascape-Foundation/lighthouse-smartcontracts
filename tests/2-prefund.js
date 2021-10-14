@@ -332,7 +332,7 @@ describe("Lighthouse Prefunding", async () => {
     } else {
       auctionStartTime  = prefundEndTime + 3;
     }
-    auctionEndTime    = auctionStartTime + 30;
+    auctionEndTime    = auctionStartTime + 20;
     let tx = await project.initAuction(projectID, auctionStartTime, auctionEndTime, {from: gameOwner.address});
     await tx.wait();
 
@@ -404,19 +404,42 @@ describe("Lighthouse Prefunding", async () => {
   });
 
   it("initiation of the minting (game owner)", async () => {
+    // deploy investment nft
+    const Mint        = await ethers.getContractFactory("LighthouseMint");
+    mint              = await Mint.deploy(
+      auction.address, prefund.address, tier.address, project.address, crowns.address
+    );
+    await mint.deployed();
+
+    // allow investment token to be minted by mint interface
+    await nft.setMinter(mint.address);
+  });
+
+  it("mint investment nfts", async () => {
+    let wait = 0;   // Wait till the end of the Auction
     let currentTime   = Math.floor(new Date().getTime()/1000);
-    if (prefundEndTime < currentTime) {
-      auctionStartTime  = currentTime + 3;
-    } else {
-      auctionStartTime  = prefundEndTime + 3;
+    console.log(`In the tests Current time ${currentTime} and auction end time ${auctionEndTime}`)
+    if (auctionEndTime > currentTime) {
+      wait  = auctionEndTime - currentTime;
     }
-    auctionEndTime    = auctionStartTime + 30;
-    let tx = await project.initAuction(projectID, auctionStartTime, auctionEndTime, {from: gameOwner.address});
+    if (wait > 10) {
+      throw `Please decrease the Auction duration, as it exceeds timeout limit of tests`;
+    } else if (wait > 0) {
+      await sleep(wait * 1000);
+    }
+
+    console.log(`Prefund investor's tier: ${await prefund.getPrefundTier(projectID, investors[0].address)}`);
+
+    console.log(`Now after waiting ${wait} seconds, current time is ${Math.floor(new Date().getTime()/1000)}`);
+    let tx = await mint.connect(investors[0]).mint(projectID, {from: investors[0].address});
     await tx.wait();
 
-    let projectAuction = await project.auctions(projectID);
+    await mint.connect(investors[1]).mint(projectID, {from: investors[1].address});
 
-    expect(projectAuction.startTime).to.equal(auctionStartTime);
+    await mint.connect(participants[0]).mint(projectID, {from: participants[0].address});
+    await mint.connect(participants[1]).mint(projectID, {from: participants[1].address});
+
+    expect(await mint.mintedNfts(projectID, investors[0].address)).to.not.equal(0);
   });
 
   async function claimTierTo(acc, levelTo) {
