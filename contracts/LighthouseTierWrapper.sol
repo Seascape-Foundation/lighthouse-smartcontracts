@@ -165,7 +165,7 @@ contract LighthouseTierWrapper is Ownable {
     /// @notice Other Smartcontracts of Lighthouse use the Tier of user.
     /// It's happening, when user won the lottery.
     function use(address investor, uint8 level) external {
-        require(level >= 0 && level < 4,    "LighthouseTier: INVALID_PARAMETER");
+        require(level > 0 && level < 4,    "LighthouseTier: INVALID_PARAMETER");
         require(investor != address(0),     "LighthouseTier: ZERO_ADDRESS");
         require(editors[msg.sender],        "LighthouseTier: FORBIDDEN");
 
