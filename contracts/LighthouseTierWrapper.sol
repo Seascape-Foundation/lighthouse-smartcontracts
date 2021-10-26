@@ -128,7 +128,7 @@ contract LighthouseTierWrapper is Ownable {
             int8 oldTierLevel = oldTier.getTierLevel(msg.sender);
             // User actually has claimed tier in old smartcontract.
             if (oldTierLevel > -1) {
-                require(level == oldTierLevel + 1,          "LighthouseTier: INVALID_WITH_OLD_TIER");
+                require(int8(level) == oldTierLevel + 1,          "LighthouseTier: INVALID_WITH_OLD_TIER");
             } 
             // Never ever claimed any tiers in any smartcontract.
             else {
@@ -173,7 +173,7 @@ contract LighthouseTierWrapper is Ownable {
         // !tier.usable in this method context means, that user claimed tier in old smartcontract, but never in this contract.
         if (!tier.usable) {
             int8 oldTierLevel = oldTier.getTierLevel(msg.sender);
-            require(oldTierLevel == level,  "LighthouseTier: INVALID_OLD_TIER");        
+            require(oldTierLevel == int8(level),  "LighthouseTier: INVALID_OLD_TIER");        
         }
         else {
             require(tier.level == level,     "LighthouseTier: INVALID_LEVEL");
