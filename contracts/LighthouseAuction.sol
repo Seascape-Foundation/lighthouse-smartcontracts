@@ -41,6 +41,10 @@ contract LighthouseAuction is Ownable {
         chainID = _chainID;
     }
 
+    function setLighthouseTier(address newTier) external onlyOwner {
+        lighthouseTier = LighthouseTier(tier);
+    }
+
     /// @notice User participates in the Public Auction. Note that Public Auction interaction doesn't reset the Tier.
     /// @param amount of Crowns that user wants to spend
     /// @dev We are not checkig Tier level of the user, as it was checked in the LighthouseRegistration.

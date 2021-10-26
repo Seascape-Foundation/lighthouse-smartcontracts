@@ -30,6 +30,10 @@ contract LighthouseRegistration is Ownable {
         lighthouseProject = LighthouseProject(_lighthouseProject);
     }
 
+    function setLighthouseTier(address newTier) external onlyOwner {
+        lighthouseTier = LighthouseTier(tier);
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     //
     // Investor functions: register for the prefund in the project.

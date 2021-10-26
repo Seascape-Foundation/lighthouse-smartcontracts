@@ -46,6 +46,10 @@ contract LighthousePrefund is Ownable {
         fundCollector = _fundCollector;
     }
 
+    function setLighthouseTier(address newTier) external onlyOwner {
+        lighthouseTier = LighthouseTier(tier);
+    }
+
     /// @dev v, r, s are used to ensure on server side that user passed KYC
     function prefund(uint256 projectId, int8 certainTier, uint8 v, bytes32 r, bytes32 s) external payable {
         require(lighthouseProject.prefundInitialized(projectId), "Lighthouse: REGISTRATION_NOT_INITIALIZED");

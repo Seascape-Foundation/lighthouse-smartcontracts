@@ -43,6 +43,10 @@ contract LighthouseMint is Ownable {
         crowns          = CrownsInterface(_crowns);
     }
 
+    function setLighthouseTier(address newTier) external onlyOwner {
+        lighthouseTier = LighthouseTier(tier);
+    }
+
     //////////////////////////////////////////////////////////////////////
     //
     // The investor functions

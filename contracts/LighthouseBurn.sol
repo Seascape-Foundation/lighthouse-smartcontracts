@@ -51,6 +51,10 @@ contract LighthouseBurn is Ownable {
         crowns              = CrownsInterface(_crowns);
     }
 
+    function setLighthouseTier(address newTier) external onlyOwner {
+        lighthouseTier = LighthouseTier(tier);
+    }
+
     function setStaker(address _staker) external onlyOwner {
         require(_staker != address(0), "Lighthouse: ZERO_ADDRESS");
 
