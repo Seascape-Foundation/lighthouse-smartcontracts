@@ -231,6 +231,8 @@ contract LighthouseProject is Ownable {
             return;
         }
 
+        require(prefunds[id].endTime < block.timestamp, "Lighthouse: PREFUND_PHASE");
+
         uint256 cap;
         uint256 amount;
         (cap, amount) = prefundTotalPool(id);
