@@ -15,7 +15,7 @@ async function main() {
 
       // uint256 startTime, uint256 endTime
       let registrationStartTime = Math.floor(new Date().getTime() / 1000) + 300;
-      let registrationEndTime   = registrationStartTime + (3600 * 24 * 4);   // 4 days
+      let registrationEndTime   = registrationStartTime + (3600 * 24 * 1);   // 2 days
       let tx = await project.initRegistration(registrationStartTime, registrationEndTime, {from: deployer.address});
       await tx.wait();
 
@@ -23,11 +23,11 @@ async function main() {
       ${new Date(registrationStartTime * 1000)} and ${new Date(registrationEndTime * 1000)}`);
     } else if (chainID == 1285) {
     }
-  }
+}
   
-  main()
+main()
     .then(() => process.exit(0))
     .catch((error) => {
       console.error(error);
       process.exit(1);
-    });
+});
