@@ -52,7 +52,7 @@ contract LighthouseBurn is Ownable {
     }
 
     function setLighthouseTier(address newTier) external onlyOwner {
-        lighthouseTier = LighthouseTier(tier);
+        lighthouseTier = LighthouseTier(newTier);
     }
 
     function setStaker(address _staker) external onlyOwner {

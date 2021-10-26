@@ -44,7 +44,7 @@ contract LighthouseMint is Ownable {
     }
 
     function setLighthouseTier(address newTier) external onlyOwner {
-        lighthouseTier = LighthouseTier(tier);
+        lighthouseTier = LighthouseTier(newTier);
     }
 
     //////////////////////////////////////////////////////////////////////

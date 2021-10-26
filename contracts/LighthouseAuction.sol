@@ -42,7 +42,7 @@ contract LighthouseAuction is Ownable {
     }
 
     function setLighthouseTier(address newTier) external onlyOwner {
-        lighthouseTier = LighthouseTier(tier);
+        lighthouseTier = LighthouseTier(newTier);
     }
 
     /// @notice User participates in the Public Auction. Note that Public Auction interaction doesn't reset the Tier.

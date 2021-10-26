@@ -47,7 +47,7 @@ contract LighthousePrefund is Ownable {
     }
 
     function setLighthouseTier(address newTier) external onlyOwner {
-        lighthouseTier = LighthouseTier(tier);
+        lighthouseTier = LighthouseTier(newTier);
     }
 
     /// @dev v, r, s are used to ensure on server side that user passed KYC
