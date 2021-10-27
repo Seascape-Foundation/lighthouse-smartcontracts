@@ -230,6 +230,7 @@ contract LighthouseProject is Ownable {
         if (auctions[id].transferredPrefund) {
             return;
         }
+        require(validProjectId(id), "Lighthouse: INVALID_PROJECT_ID");
 
         require(prefunds[id].endTime < block.timestamp, "Lighthouse: PREFUND_PHASE");
 
