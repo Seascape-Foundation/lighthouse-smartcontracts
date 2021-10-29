@@ -73,7 +73,7 @@ contract LighthouseTierWrapper is Ownable {
 
     /// @notice Fee for claiming Tier
     function setFees(uint256[4] memory _fees) public onlyOwner {
-        for (uint i=0;i<4; i++) {
+        for (uint8 i=0;i<4; i++) {
             require(_fees[i] >= MIN_SPEND, "LighthouseTier: ZERO_FEE_0");
             fees[i] = _fees[i];
         }
