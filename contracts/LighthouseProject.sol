@@ -36,7 +36,6 @@ contract LighthouseProject is Ownable {
 
         uint256 scaledAllocation;       // prefund PCC allocation
         uint256 scaledCompensation;     // prefund Crowns compensation
-        uint256 scaledRatio;            // Pool to compensation ratio
     }
 
     struct Auction {
@@ -189,7 +188,6 @@ contract LighthouseProject is Ownable {
 
         auction.scaledAllocation    = auctionAllocation * SCALER;
         auction.scaledCompensation  = auctionCompensation * SCALER;
-        prefund.scaledRatio         = prefund.scaledAllocation / prefund.scaledCompensation;
 
         nfts[id]                    = nftAddress; 
         usedNfts[nftAddress]        = id;                   
