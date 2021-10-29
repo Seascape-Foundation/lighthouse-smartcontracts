@@ -20,7 +20,6 @@ contract LighthouseRegistration is Ownable {
     mapping(uint256 => uint256) public participantsAmount;
     mapping(uint256 => mapping(address => bool)) public registrations;
 
-    event RegistrationOpen(uint256 indexed projectId, uint256 startTime, uint256 endTime);
     event Register(uint256 indexed projectId, address indexed participant, uint256 indexed registrationId, uint256 registrationTime);
 
     constructor(address _lighthouseTier, address _lighthouseProject) {
