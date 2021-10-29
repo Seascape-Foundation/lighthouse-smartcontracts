@@ -132,7 +132,7 @@ contract LighthouseProject is Ownable {
     function initPrefund(uint256 id, uint256 startTime, uint256 endTime, uint256[3] calldata investAmounts, uint256[3] calldata pools, address _token) external onlyOwner {
         require(validProjectId(id), "Lighthouse: INVALID_PROJECT_ID");
         require(block.timestamp < startTime, "Lighthouse: INVALID_START_TIME");
-        require(startTime != endTime && startTime < endTime, "Lighthouse: INVALID_END_TIME");
+        require(startTime < endTime, "Lighthouse: INVALID_END_TIME");
         require(pools[0] > 0 && pools[1] > 0 && pools[2] > 0, "Lighthouse: ZERO_POOL_CAP");
         require(investAmounts[0] > 0 && investAmounts[1] > 0 && investAmounts[2] > 0, "Lighthouse: ZERO_FIXED_PRICE");
         Prefund storage prefund = prefunds[id];
@@ -155,7 +155,7 @@ contract LighthouseProject is Ownable {
     function initAuction(uint256 id, uint256 startTime, uint256 endTime) external onlyOwner {
         require(validProjectId(id), "Lighthouse: INVALID_PROJECT_ID");
         require(block.timestamp < startTime, "Lighthouse: INVALID_START_TIME");
-        require(startTime != endTime && startTime < endTime, "Lighthouse: INVALID_END_TIME");
+        require(startTime < endTime, "Lighthouse: INVALID_END_TIME");
         Auction storage auction = auctions[id];
         require(auction.startTime == 0, "Lighthouse: ALREADY_ADDED");
 
