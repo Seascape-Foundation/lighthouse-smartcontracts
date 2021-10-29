@@ -104,7 +104,7 @@ contract LighthouseProject is Ownable {
     }
 
     /// @notice Remove the tier user.
-    function deleteEditorEditor(address _user) external onlyOwner {
+    function deleteEditor(address _user) external onlyOwner {
         require(_user != address(0),                "Lighthouse: ZERO_ADDRESS");
         require(editors[_user],                     "Lighthouse: NO_USER");
 

@@ -31,6 +31,7 @@ contract LighthousePrefund is Ownable {
         require(_tier != _submission, "Lighthouse: SAME_ADDRESS");
         require(_tier != _project, "Lighthouse: SAME_ADDRESS");
         require(_chainID > 0, "Lighthouse: ZERO_VALUE");
+        require(fundCollector != _fundCollector, "Lighthouse: USED_OWNER");
 
         lighthouseTier = LighthouseTier(_tier);
         lighthouseRegistration = LighthouseRegistration(_submission);
@@ -52,7 +53,7 @@ contract LighthousePrefund is Ownable {
 
     /// @dev v, r, s are used to ensure on server side that user passed KYC
     function prefund(uint256 projectId, int8 certainTier, uint8 v, bytes32 r, bytes32 s) external payable {
-        require(lighthouseProject.prefundInitialized(projectId), "Lighthouse: REGISTRATION_NOT_INITIALIZED");
+        require(lighthouseProject.prefundInitialized(projectId), "Lighthouse: PREFUND_NOT_INITIALIZED");
         require(!prefunded(projectId, msg.sender), "Lighthouse: ALREADY_PREFUNDED");
         require(certainTier > 0 && certainTier < 4, "Lighthouse: INVALID_CERTAIN_TIER");
 
