@@ -24,7 +24,7 @@ contract LighthousePrefund is Ownable {
 
     event Prefund(uint256 indexed projectId, address indexed investor, int8 tier, uint256 time);
 
-    address payable fundCollector;
+    address payable public fundCollector;
 
     constructor(address _tier, address _submission, address _project, address payable _fundCollector, uint256 _chainID) {
         require(_tier != address(0) && _submission != address(0) && _project != address(0) && _fundCollector != address(0), "Lighthouse: ZERO_ADDRESS");

@@ -57,7 +57,7 @@ contract LighthouseNft is ERC721, ERC721Burnable, Ownable {
     }
 
     /// @dev ensure that all parameters are checked on factory smartcontract
-    function mint(uint256 _projectId, uint256 _tokenId, address _to, uint256 _allocation, uint256 _compensation, int8 _tier, uint8 _type) public onlyMinter returns(bool) {
+    function mint(uint256 _projectId, uint256 _tokenId, address _to, uint256 _allocation, uint256 _compensation, int8 _tier, uint8 _type) external onlyMinter returns(bool) {
 	    require(_projectId == projectId, "Lighthouse: PROJECT_ID_MISMATCH");
         uint256 _nextTokenId = tokenId.current();
         require(_tokenId == _nextTokenId, "LighthouseNFT: INVALID_TOKEN");
@@ -83,23 +83,23 @@ contract LighthouseNft is ERC721, ERC721Burnable, Ownable {
         return tokenId.current();
     }
 
-    function setOwner(address _owner) public onlyOwner {
+    function setOwner(address _owner) external onlyOwner {
 	    transferOwnership(_owner);
     }
 
-    function setMinter(address _minter) public onlyOwner {
+    function setMinter(address _minter) external onlyOwner {
 	    minters[_minter] = true;
     }
 
-    function unsetMinter(address _minter) public onlyOwner {
+    function unsetMinter(address _minter) external onlyOwner {
 	    minters[_minter] = false;
     }
 
-    function setBurner(address _burner) public onlyOwner {
+    function setBurner(address _burner) external onlyOwner {
 	    burners[_burner] = true;
     }
 
-    function unsetBurner(address _burner) public onlyOwner {
+    function unsetBurner(address _burner) external onlyOwner {
 	    burners[_burner] = false;
     }
 
