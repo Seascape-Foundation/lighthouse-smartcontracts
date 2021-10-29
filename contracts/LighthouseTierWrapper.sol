@@ -41,6 +41,9 @@ contract LighthouseTierWrapper is Ownable {
     /// @dev Used with v, r, s
     address public claimVerifier;
 
+    // Taken from the CrownsToken
+    uint256 private constant MIN_SPEND = 10 ** 6;
+
     event Fees(uint256 feeZero, uint256 feeOne, uint256 feeTwo, uint256 feeThree);
     event TierEditer(address indexed user, bool allowed);
     event Claim(address indexed investor, uint8 indexed tier);
@@ -69,10 +72,10 @@ contract LighthouseTierWrapper is Ownable {
 
     /// @notice Fee for claiming Tier
     function setFees(uint256[4] memory _fees) public onlyOwner {
-        require(_fees[0] > 0, "LighthouseTier: ZERO_FEE_0");
-        require(_fees[1] > 0, "LighthouseTier: ZERO_FEE_1");
-        require(_fees[2] > 0, "LighthouseTier: ZERO_FEE_2");
-        require(_fees[3] > 0, "LighthouseTier: ZERO_FEE_3");
+        require(_fees[0] >= MIN_SPEND, "LighthouseTier: ZERO_FEE_0");
+        require(_fees[1] >= MIN_SPEND, "LighthouseTier: ZERO_FEE_1");
+        require(_fees[2] >= MIN_SPEND, "LighthouseTier: ZERO_FEE_2");
+        require(_fees[3] >= MIN_SPEND, "LighthouseTier: ZERO_FEE_3");
 
         fees[0] = _fees[0];
         fees[1] = _fees[1];
