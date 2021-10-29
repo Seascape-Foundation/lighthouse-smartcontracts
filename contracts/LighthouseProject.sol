@@ -53,6 +53,7 @@ contract LighthouseProject is Ownable {
     mapping(uint256 => Registration) public registrations;
     mapping(uint256 => Prefund) public prefunds;
     mapping(uint256 => Auction) public auctions;
+    mapping(uint256 => bool) public mintable;
 
     // Lighthouse Investment NFT for each project.
     mapping(uint256 => address) public nfts;
@@ -70,6 +71,7 @@ contract LighthouseProject is Ownable {
     event InitAllocationCompensation(uint256 indexed id, address indexed nftAddress, uint256 prefundAllocation, uint256 prefundCompensation, uint256 auctionAllocation, uint256 auctionCompensation);
     event TransferPrefund(uint256 indexed id, uint256 scaledPrefundAmount, uint256 scaledCompensationAmount);
     event SetPCC(uint256 indexed id, address indexed pccAddress);
+    event InitMint(uint256 indexed id);
 
     constructor(address verifier) {
         setKYCVerifier(verifier);
@@ -206,6 +208,15 @@ contract LighthouseProject is Ownable {
         emit SetPCC(id, pccAddress);
     }
 
+    function initMinting(uint256 id) external onlyOwner {
+        require(validProjectId(id), "Lighthouse: INVALID_PROJECT_ID");
+        require(!mintable[id], "Lighthouse: ALREADY_MINTED");
+
+        mintable[id] = true;
+
+        emit InitMint(id);
+    }
+
     /// @dev Should be called from other smartcontracts that are doing security check-ins.
     function collectPrefundInvestment(uint256 id, int8 tier) external {
         require(editors[msg.sender], "Lighthouse: FORBIDDEN");
@@ -299,6 +310,10 @@ contract LighthouseProject is Ownable {
 
         Auction storage x = auctions[id];
         return (x.startTime > 0);
+    }
+
+    function mintInitialized(uint256 id) public view returns(bool) {
+        return mintable[id];
     }
 
     function allocationCompensationInitialized(uint256 id) public view returns(bool) {
