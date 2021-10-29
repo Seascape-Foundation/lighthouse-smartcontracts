@@ -48,6 +48,7 @@ contract LighthouseTierWrapper is Ownable {
     event TierEditer(address indexed user, bool allowed);
     event Claim(address indexed investor, uint8 indexed tier);
     event Use(address indexed investor, uint8 indexed tier);
+    event ClaimVerifier(address indexed oldAddress, address indexed newAddress);
 
     constructor(address _crowns, address _tier, address _claimVerifier, uint256[4] memory _fees, uint256 _chainID) {
         require(_crowns != address(0),                          "LighthouseTier: ZERO_ADDRESS");
@@ -84,6 +85,8 @@ contract LighthouseTierWrapper is Ownable {
     function setClaimVerifier(address _claimVerifier) external onlyOwner {
         require(_claimVerifier != address(0),       "LighthouseTier: ZERO_ADDRESS");
         require(claimVerifier != _claimVerifier,    "LighthouseTier: SAME_ADDRESS");
+
+        emit ClaimVerifier(claimVerifier, _claimVerifier);
 
         claimVerifier = _claimVerifier;
     }
