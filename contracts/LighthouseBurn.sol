@@ -115,8 +115,8 @@ contract LighthouseBurn is Ownable {
 
         nft.burn(nftId);
 
-
         require(pcc.transfer(msg.sender, allocation), "Lighthouse: FAILED_TO_TRANSFER");
+        require(crowns.spend(compensation), "Lighthouse: FAILED_TO_SPEND");
 
         emit BurnForPCC(projectId, lighthouseProject.nft(projectId), nftId, msg.sender, pccAddress, allocation);
     }
@@ -139,10 +139,10 @@ contract LighthouseBurn is Ownable {
         require(pcc.balanceOf(address(this)) >= allocation, "Lighthouse: NOT_ENOUGH_PCC");
         require(crowns.balanceOf(address(this)) >= compensation, "Lighthouse: NOT_ENOUGH_CROWNS");
 
-        nft.burn(nftId);
-
-        require(crowns.transfer(msg.sender, compensation), "Lighthouse: FAILED_TO_TRANSFER");
         stakeReserves[pccAddress] = stakeReserves[pccAddress] + allocation;
+
+        nft.burn(nftId);
+        require(crowns.transfer(msg.sender, compensation), "Lighthouse: FAILED_TO_TRANSFER");
 
         emit BurnForCWS(projectId, lighthouseProject.nft(projectId), nftId, msg.sender, compensation);
     }

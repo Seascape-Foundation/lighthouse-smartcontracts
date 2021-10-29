@@ -32,6 +32,9 @@ contract LighthouseAuction is Ownable {
         require(tier != _crowns, "Lighthouse: SAME_ADDRESS");
         require(tier != submission, "Lighthouse: SAME_ADDRESS");
         require(tier != project, "Lighthouse: SAME_ADDRESS");
+        require(submission != project, "Lighthouse: SAME_ADDRESS");
+        require(submission != prefund, "Lighthouse: SAME_ADDRESS");
+        require(prefund != project, "Lighthouse: SAME_ADDRESS");
 
         lighthouseTier = LighthouseTier(tier);
         lighthouseRegistration = LighthouseRegistration(submission);
@@ -75,12 +78,12 @@ contract LighthouseAuction is Ownable {
 	    bytes32 hash            = keccak256(abi.encodePacked(prefix, message));
 	    address recover         = ecrecover(hash, v, r, s);
 
+        lighthouseProject.collectAuctionAmount(projectId, amount);
+        spents[projectId][msg.sender] = amount;
+
 	    require(recover == lighthouseProject.getKYCVerifier(), "Lighthouse: SIG");
 
         require(crowns.spendFrom(msg.sender, amount), "Lighthouse: CWS_UNSPEND");
-
-        lighthouseProject.collectAuctionAmount(projectId, amount);
-        spents[projectId][msg.sender] = amount;
 
         emit Participate(projectId, msg.sender, amount, block.timestamp);
     }
