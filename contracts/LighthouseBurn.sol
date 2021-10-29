@@ -41,7 +41,7 @@ contract LighthouseBurn is Ownable {
     event BurnForPCC(uint256 indexed projectId, address indexed lighthouse, uint256 indexed nftId, address owner, address pcc, uint256 allocation);
     event BurnForCWS(uint256 indexed projectId, address indexed lighthouse, uint256 indexed nftId, address owner, uint256 compensation);
 
-    constructor(address _lighthouseAuction, address _lighthousePrefund, address _lighthouseTier, address _crowns, address _project) {
+    constructor(address _lighthouseAuction, address _lighthousePrefund, address _lighthouseTier, address _project, address _crowns) {
         require(_lighthouseAuction != address(0) && _crowns != address(0) && _lighthousePrefund != address(0) && _lighthouseTier != address(0) && _project != address(0), "Lighthouse: ZERO_ADDRESS");
 
         lighthouseAuction   = LighthouseAuction(_lighthouseAuction);
