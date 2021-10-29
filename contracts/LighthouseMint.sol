@@ -60,6 +60,7 @@ contract LighthouseMint is Ownable {
         require(block.timestamp > endTime,     "Lighthouse: AUCTION_FINISHED_YET");
         require(mintedNfts[projectId][msg.sender] == 0, "Lighthouse: ALREADY_MINTED");
         require(lighthouseProject.allocationCompensationInitialized(projectId), "Lighthouse: ALLOCATION_NOT_INITIALIZED_YET");
+        require(lighthouseProject.mintable(projectId), "Lighthouse: NO_PERMISSION");
 
         bool prefunded = lighthousePrefund.prefunded(projectId, msg.sender);
         uint256 spent = lighthouseAuction.getSpent(projectId, msg.sender);
