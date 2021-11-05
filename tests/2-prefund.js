@@ -341,7 +341,7 @@ describe("Lighthouse Prefunding", async () => {
     expect(projectAuction.startTime).to.equal(auctionStartTime);
   });
 
-  it("prepare for auction (mint investment nft, add pcc amount and collatoreal, move prefund to auction pool)", async () => {
+  it("prepare for auction (mint investment nft, add pcc amount and collateral, move prefund to auction pool)", async () => {
     // deploy prefund interface
     const Auction        = await ethers.getContractFactory("LighthouseAuction");
     auction              = await Auction.deploy(
