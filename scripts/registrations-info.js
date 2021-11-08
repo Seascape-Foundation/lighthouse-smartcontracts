@@ -11,14 +11,14 @@ async function main() {
     if (chainID == 1287) {
       project = await Project.attach("0xc98c9f17673A7cf1278040a4A02e469Dd96d8D5f");
 
-      let register1 = await project.registrations(1);
-      console.log(`Project 1 from ${new Date(register1.startTime.toString() * 1000)} to ${new Date(register1.endTime.toString() * 1000)}`);
-      let register2 = await project.registrations(2);
-      console.log(`Project 2 from ${new Date(register2.startTime.toString() * 1000)} to ${new Date(register2.endTime.toString() * 1000)}`);
-      let register3 = await project.registrations(3);
-      console.log(`Project 3 from ${new Date(register3.startTime.toString() * 1000)} to ${new Date(register3.endTime.toString() * 1000)}`);
-      let register4 = await project.registrations(4);
-      console.log(`Project 4 from ${new Date(register4.startTime.toString() * 1000)} to ${new Date(register4.endTime.toString() * 1000)}`);
+      let projectID = 20;
+
+      let register1 = await project.registrations(projectID);
+      console.log(`Project ${projectID} from ${new Date(register1.startTime.toString() * 1000)} to ${new Date(register1.endTime.toString() * 1000)}`);
+
+      let info = await project.registrationInfo(projectID);
+      console.log(`Registration: ${new Date(info[0].toString() * 1000)} and ${new Date(info[1].toString() * 1000)}`);
+      console.log(`${info[0].toString()} - ${info[1].toString()}`);
     } else if (chainID == 1285) {
     }
 }
