@@ -35,6 +35,9 @@ async function main() {
       tierAddress = "0x8dbD38BbA02A3Cb72c8E9b42b4bcAD3e0889a6da";
     } else if (chainID == 1285) {
       crowns          = "0x6fc9651f45B262AE6338a701D563Ab118B1eC0Ce";
+
+      verifier = "0xb7fA673753c321f14733Eff576bC0d8E644e455e";
+      tierAddress = "0x95031b2b24b350cb30d30df7b1cd688255be839a";
     }
 
     // deploy project
