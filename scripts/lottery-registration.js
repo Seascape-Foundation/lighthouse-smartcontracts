@@ -15,11 +15,11 @@ async function main() {
 
       // uint256 startTime, uint256 endTime
       let registrationStartTime = Math.floor(new Date().getTime() / 1000) + 300;
-      let registrationEndTime   = registrationStartTime + (3600 * 24 * 1);   // 2 days
-      let tx = await project.initRegistration(registrationStartTime, registrationEndTime, {from: deployer.address});
-      await tx.wait();
+      let registrationEndTime   = registrationStartTime + (3600 * 1);   // 2 hours
+      let tx = await project.initRegistration(registrationStartTime, registrationEndTime, {from: deployer.address, gasPrice: 3000000000});
+      // await tx.wait();
 
-      console.log(`Project registration between\n
+      console.log(`Project registration (${tx.hash}) between\n
       ${new Date(registrationStartTime * 1000)} and ${new Date(registrationEndTime * 1000)}`);
     } else if (chainID == 1285) {
     }
