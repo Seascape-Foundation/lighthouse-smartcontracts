@@ -4,7 +4,6 @@ async function main() {
   console.log(`Welcome to deployment`);
 
     // We get the contract to deploy
-    const Tier          = await ethers.getContractFactory("LighthouseTier");
     const Project       = await ethers.getContractFactory("LighthouseProject");
     const Auction       = await ethers.getContractFactory("LighthouseAuction");
 
@@ -18,7 +17,6 @@ async function main() {
 
     // To add permissions
     let project             = null;
-    let tier                = null;
 
     // Constructor arguments
     let crowns;
@@ -39,7 +37,6 @@ async function main() {
       crowns              = "0xFde9cad69E98b3Cc8C998a8F2094293cb0bD6911";
       prefundAddress      = "0xbC7b18824c88710638cd0cd157effa3FE6117cF5";
 
-      tier                = Tier.attach(tierAddress);
       project             = Project.attach(projectAddress);
     } else if (chainID == 1285) {
       crowns              = "0x6fc9651f45B262AE6338a701D563Ab118B1eC0Ce";
@@ -51,7 +48,7 @@ async function main() {
     console.log(`Lighthouse Auction deployed to ${auction.address}.\nSetting up permissions...`);
 
     await project.addEditor(auction.address, {from: deployer.address});
-    console.log(`Lighthouse Prefund got permission to update Lighthouse Project data.`);
+    console.log(`Lighthouse Auction got permission to update Lighthouse Project data.`);
 
     console.log(`\n\nDeployment Finished!\n\n`);
   }
