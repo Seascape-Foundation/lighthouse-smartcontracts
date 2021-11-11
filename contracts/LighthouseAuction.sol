@@ -25,13 +25,17 @@ contract LighthouseAuction is Ownable {
     uint256 public chainID;
 
     mapping(uint256 => mapping(address => uint256)) public spents;
-    mapping(uint256 => uint16) public gifts;
-    mapping(uint256 => uint16) public minted;
+    /// @notice Whether user is eligable for minting or not
+    /// project id => user => bool
+    mapping(uint256 => mapping(address => uint16)) public giftOrder;
+    /// @notice Gifted NFT id for the user per project
+    /// project id => user => nft id 
+    mapping(uint256 => mapping(address => uint256)) public gifts;
 
-    event Participate(uint256 indexed projectId, address indexed participant, uint256 amount, uint256 time, uint256 tokenId);
+    event Participate(uint256 indexed projectId, address indexed participant, uint256 amount, uint256 time);
     event Gift(uint256 indexed projectId, address indexed participant, uint256 indexed tokenId);
 
-    constructor(address _crowns, address tier, address submission, address prefund, address project, uint16 giftsAmount, uint256 _chainID) {
+    constructor(address _crowns, address tier, address submission, address prefund, address project, uint256 _chainID) {
         require(_crowns != address(0) && tier != address(0) && prefund != address(0) && submission != address(0) && project != address(0), "Lighthouse: ZERO_ADDRESS");
         require(tier != prefund, "Lighthouse: SAME_ADDRESS");
         require(tier != _crowns, "Lighthouse: SAME_ADDRESS");
@@ -47,7 +51,6 @@ contract LighthouseAuction is Ownable {
         lighthouseProject = LighthouseProject(project);
         crowns = CrownsInterface(_crowns);
         chainID = _chainID;
-        gifts = giftsAmount;
     }
 
     function setLighthouseTier(address newTier) external onlyOwner {
@@ -65,6 +68,7 @@ contract LighthouseAuction is Ownable {
         require(lighthouseProject.auctionInitialized(projectId), "Lighthouse: AUCTION_NOT_INITIALIZED");
         require(lighthouseProject.transferredPrefund(projectId), "Lighthouse: NOT_TRANSFERRED_PREFUND_YET");
         require(!participated(projectId, msg.sender), "Lighthouse: ALREADY_PARTICIPATED");
+        require(amount > 0, "Lighthouse: ZERO_VALUE");
 
         {   // Avoid stack too deep.
         uint256 startTime;
@@ -74,29 +78,39 @@ contract LighthouseAuction is Ownable {
 
         require(block.timestamp >= startTime,   "Lighthouse: NOT_STARTED_YET");
         require(block.timestamp <= endTime,     "Lighthouse: FINISHED");
+
+        require(amount >= lighthouseProject.auctionMinAmount(projectId), "Lighthouse: LESS_THAN_MIN");
         }
+
 
         require(lighthouseRegistration.registered(projectId, msg.sender), "Lighthouse: NOT_REGISTERED");
         // Lottery winners are not joining to public auction
         require(!lighthousePrefund.prefunded(projectId, msg.sender), "Lighthouse: PREFUNDED");
 
-        require(amount > 0, "Lighthouse: ZERO_VALUE");
-
         // investor, project verification
 	    bytes memory prefix     = "\x19Ethereum Signed Message:\n32";
-	    bytes32 message         = keccak256(abi.encodePacked(msg.sender, address(this), projectId, amount, chainID));
+	    bytes32 message         = keccak256(abi.encodePacked(msg.sender, address(this), projectId, chainID));
 	    bytes32 hash            = keccak256(abi.encodePacked(prefix, message));
 	    address recover         = ecrecover(hash, v, r, s);
 
-        if (minted[projectId] < gifts[projectId]) {
-            uint256 tokenId = nft.getNextTokenId();
-            require(nft.mint(projectId, tokenId, msg.sender, minted[projectId] + 1), "Lighthouse: FAILED_TO_GIFT");
-            minted[projectId]++;
+        uint16 gifted;
+        uint16 giftAmount;
+        (gifted, giftAmount) = lighthouseProject.auctionGiftInfo(projectId);
 
-            emit Gift(projectId, msg.sender, tokenId);
+        if (giftAmount > 0) {
+            require(address(nft) != address(0), "Lighthouse: NO_NFT_ADDRESS");
         }
 
+        if (gifted < giftAmount) {
+            uint256 nftId = nft.mint(projectId, msg.sender);
+            require(nftId > 0, "Lighthouse: NOT_MINTED");
+            giftOrder[projectId][msg.sender] = gifted + 1;
+            gifts[projectId][msg.sender] = nftId;
+        }
+
+        // this should increment the gifted users amount
         lighthouseProject.collectAuctionAmount(projectId, amount);
+
         spents[projectId][msg.sender] = amount;
 
 	    require(recover == lighthouseProject.getKYCVerifier(), "Lighthouse: SIG");
@@ -115,5 +129,15 @@ contract LighthouseAuction is Ownable {
 
     function participated(uint256 projectId, address investor) public view returns(bool) {
         return spents[projectId][investor] > 0;
+    }
+
+    function participantGiftOrder(uint256 projectId, address participant) external view returns(uint16) {
+        return giftOrder[projectId][participant];
+    }
+
+    /// @notice Returns the information about the minted amounts of NFTs and limit of them
+    /// per project.
+    function giftInfo(uint256 projectId) external view returns(uint16, uint16) {
+        return lighthouseProject.auctionGiftInfo(projectId);
     }
 }
