@@ -47,11 +47,6 @@ contract LighthouseProject is Ownable {
         uint256 scaledCompensation;     // auction Crowns compensation
 
         bool transferredPrefund;        // Prefund allocation transferred to aution pool
-
-        uint16 gifted;                  // Amount of users that are gifted
-        uint16 giftAmount;              // Amount of users that could be gifted
-
-        uint256 min;                    // Minimum amount of CWS allowed to spend. Could be 0.
     }
 
     mapping(uint256 => Registration) public registrations;
@@ -71,7 +66,7 @@ contract LighthouseProject is Ownable {
     event ProjectEditor(address indexed user, bool allowed);
     event InitRegistration(uint256 indexed id, uint256 startTime, uint256 endTime);
     event InitPrefund(uint256 indexed id, address indexed token, uint256 startTime, uint256 endTime, uint256[3] pools, uint256[3] investAmounts);
-    event InitAuction(uint256 indexed id, uint256 startTime, uint256 endTime, uint16 giftAmount);
+    event InitAuction(uint256 indexed id, uint256 startTime, uint256 endTime);
     event InitAllocationCompensation(uint256 indexed id, address indexed nftAddress, uint256 prefundAllocation, uint256 prefundCompensation, uint256 auctionAllocation, uint256 auctionCompensation);
     event TransferPrefund(uint256 indexed id, uint256 scaledPrefundAmount, uint256 scaledCompensationAmount);
     event SetPCC(uint256 indexed id, address indexed pccAddress);
@@ -157,7 +152,7 @@ contract LighthouseProject is Ownable {
     }
 
     /// @notice Add the last stage period for the project
-    function initAuction(uint256 id, uint256 startTime, uint256 endTime, uint256 min, uint16 giftAmount) external onlyOwner {
+    function initAuction(uint256 id, uint256 startTime, uint256 endTime) external onlyOwner {
         require(validProjectId(id), "Lighthouse: INVALID_PROJECT_ID");
         require(block.timestamp < startTime, "Lighthouse: INVALID_START_TIME");
         require(startTime < endTime, "Lighthouse: INVALID_END_TIME");
@@ -171,10 +166,8 @@ contract LighthouseProject is Ownable {
     
         auction.startTime = startTime;
         auction.endTime = endTime;
-        auction.giftAmount = giftAmount;
-        auction.min = min;
 
-        emit InitAuction(id, startTime, endTime, giftAmount);
+        emit InitAuction(id, startTime, endTime);
     }
 
     /// @notice add allocation for prefund, auction.
@@ -239,10 +232,6 @@ contract LighthouseProject is Ownable {
         Auction storage x = auctions[id];
 
         x.spent = x.spent + amount;
-
-        if (x.gifted < x.giftAmount) {
-            x.gifted++;
-        }
     }
 
     // auto transfer prefunded and track it in the Prefund
@@ -355,17 +344,6 @@ contract LighthouseProject is Ownable {
     function auctionTimeInfo(uint256 id) external view returns(uint256, uint256) {
         Auction storage x = auctions[id];
         return (x.startTime, x.endTime);
-    }
-
-    /// @notice Returns Information about Auction Gift: amount of gifted users, limit of gifted users
-    function auctionGiftInfo(uint256 id) external view returns(uint16, uint16) {
-        Auction storage x = auctions[id];
-        return (x.gifted, x.giftAmount);
-    }
-
-    /// @notice Returns minimum amount of CWS that user could burn for auction
-    function auctionMinAmount(uint256 id) external view returns(uint256) {
-        return auctions[id].min;
     }
 
     /// @notice Returns Information about Prefund Pool: invested amount, investment cap
