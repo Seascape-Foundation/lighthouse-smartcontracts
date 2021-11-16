@@ -69,7 +69,7 @@ contract LighthouseAuction is Ownable {
         require(lighthouseProject.auctionInitialized(projectId), "Lighthouse: AUCTION_NOT_INITIALIZED");
         require(!auctionData[projectId].set, "Lighthouse: ALREADY_SET");
 
-        AuctionData data = auctionData[projectId];
+        AuctionData storage data = auctionData[projectId];
         data.set = true;
         data.giftAmount = giftAmount;
         data.min = min;
@@ -118,7 +118,7 @@ contract LighthouseAuction is Ownable {
 	    bytes32 hash            = keccak256(abi.encodePacked(prefix, message));
 	    address recover         = ecrecover(hash, v, r, s);
 
-        AuctionData data = auctionData[projectId];
+        AuctionData storage data = auctionData[projectId];
 
         if (data.giftAmount > 0) {
             require(address(nft) != address(0), "Lighthouse: NO_NFT_ADDRESS");
