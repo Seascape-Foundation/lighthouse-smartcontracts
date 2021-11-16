@@ -173,7 +173,7 @@ contract LighthouseTierWrapper is Ownable {
         Tier storage tier     = tiers[investor];
         // !tier.usable in this method context means, that user claimed tier in old smartcontract, but never in this contract.
         if (!tier.usable) {
-            int8 oldTierLevel = oldTier.getTierLevel(msg.sender);
+            int8 oldTierLevel = oldTier.getTierLevel(investor);
             require(oldTierLevel == int8(level),  "LighthouseTier: INVALID_OLD_TIER");        
         }
         else {
