@@ -31,7 +31,7 @@ contract LighthouseMint is Ownable {
     /// @notice Check whether the user minted nft for the project or not
     mapping(uint256 => mapping(address => uint256)) public mintedNfts;
 
-    event Mint(uint256 indexed projectId, address indexed nft, uint256 indexed nftId, address owner, uint256 allocation, uint256 compensation);
+    event Mint(uint256 indexed projectId, address indexed nft, uint256 indexed nftId, address owner, uint256 allocation, uint256 compensation, int tierLevel, uint8 mintType);
 
     constructor(address _lighthouseAuction, address _lighthousePrefund, address _lighthouseTier, address _project, address _crowns) {
         require(_lighthouseAuction != address(0) && _crowns != address(0) && _lighthousePrefund != address(0) && _lighthouseTier != address(0) && _project != address(0), "Lighthouse: ZERO_ADDRESS");
@@ -112,7 +112,7 @@ contract LighthouseMint is Ownable {
 
         mintedNfts[projectId][msg.sender] = nftId;
 
-        emit Mint(projectId, nftAddress, nftId, msg.sender, allocation, compensation);
+        emit Mint(projectId, nftAddress, nftId, msg.sender, allocation, compensation, tierLevel, mintType);
     }
 
 }
