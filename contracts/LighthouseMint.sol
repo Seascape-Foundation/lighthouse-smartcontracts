@@ -69,7 +69,7 @@ contract LighthouseMint is Ownable {
 
 
         int8 tierLevel = lighthouseTier.getTierLevel(msg.sender);
-        if (tierLevel == -1) {
+        if (tierLevel <= 0) {
             tierLevel = lighthousePrefund.getPrefundTier(projectId, msg.sender);
         }
         require(tierLevel > 0, "Lighthouse: INVALID_TIER");
