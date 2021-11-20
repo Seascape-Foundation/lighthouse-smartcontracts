@@ -25,7 +25,12 @@ module.exports = {
     },
     moonbase: {
       url: process.env.MOONBEAM_REMOTE_HTTP,
-      accounts: [process.env.MOONBEAM_DEPLOYER_KEY]
+      accounts: [
+        process.env.MOONBEAM_DEPLOYER_KEY,
+        process.env.MOONBEAM_DEPLOYER_KEY_2,
+        process.env.MOONBEAM_DEPLOYER_KEY_3,
+        process.env.MOONBEAM_DEPLOYER_KEY_4
+      ]
     },
     moonriver: {
       url: process.env.MOONRIVER_REMOTE_HTTP,
