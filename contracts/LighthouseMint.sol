@@ -109,6 +109,43 @@ contract LighthouseMint is Ownable {
     }
 
 
+    function allocationCompensation(uint256 projectId, address investor) external view returns(uint256, uint256, int8, uint8) {
+        uint256 endTime = lighthouseProject.auctionEndTime(projectId);
+        if(block.timestamp > endTime ||     
+            mintedNfts[projectId][msg.sender] != 0 || 
+            !lighthouseProject.allocationCompensationInitialized(projectId) ||
+            !lighthouseProject.mintable(projectId)) {
+            return (0, 0, -2, 0);
+        }
+
+        bool prefunded = lighthousePrefund.prefunded(projectId, msg.sender);
+        uint256 spent = lighthouseAuction.getSpent(projectId, msg.sender);
+
+        if (prefunded == 0 || spent == 0) {
+            return (0, 0, -3, 0);
+        }
+
+        int8 tierLevel = lighthouseTier.getTierLevel(msg.sender);
+        if (tierLevel <= 0) {
+            tierLevel = lighthousePrefund.getPrefundTier(projectId, msg.sender);
+        }
+        require(tierLevel > 0, "Lighthouse: INVALID_TIER");
+
+
+        uint8 mintType = 1;
+        uint256 allocation;        // Portion of Pool that user will get
+        uint256 compensation;
+
+        if (prefunded) {
+            (allocation, compensation) = prefundAllocation(projectId, tierLevel);
+        } else {
+            mintType = 2;
+            (allocation, compensation) = auctionAllocation(projectId, spent);
+        }
+
+        return (allocation, compensation, tierLevel, mintType);
+    }
+
     function prefundAllocation(uint256 projectId, int8 tierLevel) internal view returns (uint256, uint256) {
         (uint256 scaledAllocationUnit, uint256 scaledCompensationUnit) = lighthouseProject.prefundScaledUnit(projectId);
 
