@@ -23,7 +23,7 @@ module.exports = {
         interval: 1000
       }
     },
-    moonbeam: {
+    moonbase: {
       url: process.env.MOONBEAM_REMOTE_HTTP,
       accounts: [process.env.MOONBEAM_DEPLOYER_KEY]
     },
