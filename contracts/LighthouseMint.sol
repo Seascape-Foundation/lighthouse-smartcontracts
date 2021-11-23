@@ -41,7 +41,7 @@ contract LighthouseMint is Ownable {
         lighthousePrefund   = LighthousePrefund(_lighthousePrefund);
         lighthouseTier      = LighthouseTier(_lighthouseTier);
         lighthouseProject   = LighthouseProject(_project);
-        crowns          = CrownsInterface(_crowns);
+        crowns              = CrownsInterface(_crowns);
         chainID             = _chainID;
     }
 
@@ -112,22 +112,22 @@ contract LighthouseMint is Ownable {
     function allocationCompensation(uint256 projectId, address investor) external view returns(uint256, uint256, int8, uint8) {
         uint256 endTime = lighthouseProject.auctionEndTime(projectId);
         if(block.timestamp > endTime ||     
-            mintedNfts[projectId][msg.sender] != 0 || 
+            mintedNfts[projectId][investor] != 0 || 
             !lighthouseProject.allocationCompensationInitialized(projectId) ||
             !lighthouseProject.mintable(projectId)) {
             return (0, 0, -2, 0);
         }
 
-        bool prefunded = lighthousePrefund.prefunded(projectId, msg.sender);
-        uint256 spent = lighthouseAuction.getSpent(projectId, msg.sender);
+        bool prefunded = lighthousePrefund.prefunded(projectId, investor);
+        uint256 spent = lighthouseAuction.getSpent(projectId, investor);
 
-        if (prefunded == 0 || spent == 0) {
+        if (!prefunded || spent == 0) {
             return (0, 0, -3, 0);
         }
 
-        int8 tierLevel = lighthouseTier.getTierLevel(msg.sender);
+        int8 tierLevel = lighthouseTier.getTierLevel(investor);
         if (tierLevel <= 0) {
-            tierLevel = lighthousePrefund.getPrefundTier(projectId, msg.sender);
+            tierLevel = lighthousePrefund.getPrefundTier(projectId, investor);
         }
         require(tierLevel > 0, "Lighthouse: INVALID_TIER");
 
