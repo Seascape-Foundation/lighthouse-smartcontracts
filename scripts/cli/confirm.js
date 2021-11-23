@@ -23,6 +23,7 @@ let inputConfirm = async (title, params) => {
     const { SURE } = await askConfirmation(message);
     if (SURE !== 'y' && SURE !== 'n') {
       console.error(chalk.red(`You can input only 'y' or 'n'`));
+      process.exit(1);
       return;
     }
 
