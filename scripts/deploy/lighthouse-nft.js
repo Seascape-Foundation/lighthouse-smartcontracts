@@ -21,10 +21,6 @@ async function main() {
     // To add permissions
     let auction             = await Auction.attach(addressOf(chainID, alias.AUCTION));
 
-    if (chainID == 1285) {
-      throw `Chain 1285 Not supported yet`;
-    }
-
     let gasPrice        = await cliGas.inputGasPrice();
 
     // deploy gift interface
