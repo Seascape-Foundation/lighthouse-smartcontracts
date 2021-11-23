@@ -9,6 +9,7 @@ async function main() {
   // We get the contract to deploy
   const Project       = await ethers.getContractFactory("LighthouseProjectWrapper");
   const Auction       = await ethers.getContractFactory("LighthouseAuction");
+  const Gift          = await ethers.getContractFactory("GiftNft");
 
   let deployer            = await ethers.getSigner();
   let chainID             = await deployer.getChainId();
@@ -16,6 +17,7 @@ async function main() {
   // To add permissions
   let projectAddress      = addressOf(chainID, alias.PROJECT_WRAPPER);
   let project             = await Project.attach(projectAddress);
+  // let gift                = await Gift.attach(addressOf(chainID, alias.LIGHTHOUSE_NFT));
 
   // Constructor arguments
   let crowns              = addressOf(chainID, alias.CROWNS)
@@ -46,6 +48,12 @@ async function main() {
 
   await project.addEditor(auction.address, {from: deployer.address, gasPrice: gasPrice});
   console.log(`Lighthouse Auction got permission to update Lighthouse Project data.`);
+
+  // await auction.setGiftNft(gift.address, {gasPrice: gasPrice});
+  // console.log(`Auction now linked to the Lighthose NFT`);
+
+  // await gift.setMinter(auction.address, {gasPrice: gasPrice});
+  // console.log(`Auction pool got permission to mint Lighthouse NFTs`);
 
   console.log(`\n\nDeployment Finished!\n\n`);
 }
