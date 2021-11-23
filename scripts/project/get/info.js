@@ -32,7 +32,7 @@ async function main() {
     console.log(prefund);
 
     let totalPool = await project.prefundTotalPool(projectID);
-    console.log(`Cap: ${totalPool[0]/1e18}, Invested: ${totalPool[1]/1e18}`);
+    console.log(`Cap: ${totalPool[0]/1e6}, Invested: ${totalPool[1]/1e6}`);
 }
 
 main()
