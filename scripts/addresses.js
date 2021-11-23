@@ -12,21 +12,29 @@ let addresses = {
 
     registration: '0x908CCdD6C53deB1D14F815b178f828317e4E2943',     // v3
     prefund:      '0xC44E0A63ac50e5E58010d6aaa76579B1800914E1',     // v2
-    auction:      '0xdd4e4E031Ff39447982b1C9BC1074809Dd3C138C',     // v2
+    auction:      '0xC31E7B6888d0AD6EF851Ad833Fc93E3640471E3a',     // v2
 
     gift:         '0x5b4a54Bf2F695A2aB20eF486EB3B5358C89A537C',     // v2
-    invest:       '0x809A4f9c16210838db01640f5A8EB00795483578',     // proj id 3
+    invest:       '0x830f5641233Dd211346D40D8Db7622b4260D9668',     // proj id 3
 
-    mint:         '0x3a0D166079836C867D92c8b503eD33e4355a2Ab6'      // for testing. it includes imitating function
+    mint:         '0xd542c9c0ec62c7a634A6eAEbF204EF5Ffd72c5eE'      // for testing. it includes imitating function
   },
   1285: {
+    usdc:         '0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D',
+
     crowns: '0x6fc9651f45B262AE6338a701D563Ab118B1eC0Ce',
 
     tierWrapper: "0xbc719dc309beb82489e9a949c415e0eaed87d247",
     
+    registration: "0xf102cA709bB314614167574e2965aDFcb001d3e9",
     prefund: "0x8caABAe09aaF3980A2954dB9d4F37c0FFe36E493",
+    auction: "0x28788cadf01b37DA1c866c479B6809B24Ac8fD2B",
 
-    project: "0x0395560D3b148b7b69255B87635AD01B2f761806"
+    gift: "0x2D81C6e616d1C2925Ed01f41D298BFD52f2f7ea0",
+    invest: "0x32A9f8BB0bc177619c1c5C475AFd3E497288c1fd",       // MSCP ALLO
+
+    project: "0x0395560D3b148b7b69255B87635AD01B2f761806",
+    projectWrapper: "0x6749C5793d0F64D2287bEEf7D152F94B98679EE4",
   }
 }
 
