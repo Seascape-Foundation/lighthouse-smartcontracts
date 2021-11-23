@@ -26,10 +26,12 @@ const inputData = async () => {
   
   let min, giftAmount = parseInt(GIFT_AMOUNT);
 
+  const decimals = 18; // CWS decimals.
+
   if (MIN.length === 0) {
     min = 0;
   } else {
-    min = parseInt(MIN);
+    min = parseFloat(MIN);
     if (isNaN(min) || min < 0 || min > 100000) {
       throw `Invalid min burn ${min}`;
     } else {
