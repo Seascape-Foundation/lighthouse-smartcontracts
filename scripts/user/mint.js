@@ -16,7 +16,7 @@ async function main() {
     let deployer          = await ethers.getSigner();
     let chainID           = await deployer.getChainId();
 
-    let projectAddress    = addressOf(chainID, alias.PROJECT);
+    let projectAddress    = addressOf(chainID, alias.PROJECT_WRAPPER);
     let mintAddress       = addressOf(chainID, alias.MINT);
 
     let project           = await Project.attach(projectAddress);
