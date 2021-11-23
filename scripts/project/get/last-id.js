@@ -1,15 +1,12 @@
 const { ethers }  = require("hardhat");
 const projectUtil = require(`../util`);
+const { addressOf, alias } = require("../../addresses");
 
 async function main() {
     let deployer      = await ethers.getSigner();
     let chainID       = await deployer.getChainId();
 
-    let address       = "";
-
-    if (chainID == 1287) {
-      address         = "0xc98c9f17673A7cf1278040a4A02e469Dd96d8D5f";
-    }
+    let address       = await addressOf(chainID, alias.PROJECT_WRAPPER);
 
     if (!address) {
       throw `No Project Contract was detected`;
@@ -25,7 +22,7 @@ async function totalProjects(address) {
 
   // We get the contract to deploy
   try {
-    const Project       = await ethers.getContractFactory("LighthouseProject");
+    const Project       = await ethers.getContractFactory("LighthouseProjectWrapper");
     project             = await Project.attach(address);
   } catch (error) {
     console.error(error);
