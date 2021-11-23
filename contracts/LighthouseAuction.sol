@@ -129,12 +129,10 @@ contract LighthouseAuction is Ownable {
             require(nftId > 0, "Lighthouse: NOT_MINTED");
             giftOrder[projectId][msg.sender] = data.gifted + 1;
             gifts[projectId][msg.sender] = nftId;
+
+            data.gifted = data.gifted + 1;
         }
 
-        data.gifted = data.gifted + 1;
-        if (data.gifted < data.giftAmount) {
-            data.gifted++;
-        }
         lighthouseProject.collectAuctionAmount(projectId, amount);
 
         spents[projectId][msg.sender] = amount;
