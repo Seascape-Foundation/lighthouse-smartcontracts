@@ -90,7 +90,7 @@ const inputStartEnd = async () => {
       const { START_TIME_OFFSET } = await askOffset();
       let offset = OFFSET;
       if (START_TIME_OFFSET.length != 0) {
-        let offset = parseInt(eval(START_TIME_OFFSET));
+        offset = parseInt(eval(START_TIME_OFFSET));
         if (isNaN(offset) || offset < 1) {
           console.log(chalk.red(`Offset should be only a positive integer number. Given ${offset}`));
           process.exit(1);
