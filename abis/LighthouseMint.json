@@ -25,6 +25,11 @@
         "internalType": "address",
         "name": "_crowns",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_chainID",
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
@@ -110,6 +115,55 @@
         "internalType": "uint256",
         "name": "projectId",
         "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "investor",
+        "type": "address"
+      }
+    ],
+    "name": "allocationCompensation",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "int8",
+        "name": "",
+        "type": "int8"
+      },
+      {
+        "internalType": "uint8",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "projectId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint8",
+        "name": "v",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bytes32[2]",
+        "name": "sig",
+        "type": "bytes32[2]"
       }
     ],
     "name": "mint",
