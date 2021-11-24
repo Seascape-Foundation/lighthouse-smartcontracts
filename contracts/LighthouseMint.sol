@@ -109,6 +109,9 @@ contract LighthouseMint is Ownable {
     }
 
 
+    /**
+     * @dev returns allocation, compensation, tier, and mint type
+     */
     function allocationCompensation(uint256 projectId, address investor) external view returns(uint256, uint256, int8, uint8) {
         uint256 endTime = lighthouseProject.auctionEndTime(projectId);
         if(block.timestamp > endTime ||     
