@@ -41,10 +41,10 @@ async function main() {
     chainID: chainID
   }
 
-  // await cliConfirm.inputConfirm(deployTitle, deployParams);
+  await cliConfirm.inputConfirm(deployTitle, deployParams);
 
-  // let mint         = await Mint.deploy(auctionAddress, prefundAddress, tierAddress, projectAddress, crownsAddress, chainID, {gasPrice: gasPrice});    /// Argument '1' means deploy in Test mode
-  // console.log("Lighthouse Mint deployed to ", chalk.green(mint.address), ' Txid ', chalk.blue(mint.deployTransaction.hash));
+  let mint         = await Mint.deploy(auctionAddress, prefundAddress, tierAddress, projectAddress, crownsAddress, chainID, {gasPrice: gasPrice});    /// Argument '1' means deploy in Test mode
+  console.log("Lighthouse Mint deployed to ", chalk.green(mint.address), ' Txid ', chalk.blue(mint.deployTransaction.hash));
 
   let nftAddress = addressOf(chainID, alias.INVEST_NFT);
   let permissionTitle = `press CTRL+Z if you don't want to add permission to ${nftAddress} to be minted`;
