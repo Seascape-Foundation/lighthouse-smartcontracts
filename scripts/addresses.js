@@ -15,7 +15,7 @@ let addresses = {
     auction:      '0xC31E7B6888d0AD6EF851Ad833Fc93E3640471E3a',     // v2
 
     gift:         '0x5b4a54Bf2F695A2aB20eF486EB3B5358C89A537C',     // v2
-    invest:       '0x830f5641233Dd211346D40D8Db7622b4260D9668',     // proj id 3
+    invest:       '0xCd8a64e4736DeA2aFa6d2650B4354df6A82AAdDD',     // proj id 3
 
     mint:         '0xd542c9c0ec62c7a634A6eAEbF204EF5Ffd72c5eE'      // for testing. it includes imitating function
   },
@@ -35,6 +35,8 @@ let addresses = {
 
     project: "0x0395560D3b148b7b69255B87635AD01B2f761806",
     projectWrapper: "0x6749C5793d0F64D2287bEEf7D152F94B98679EE4",
+
+    mint: "0xd8d458C7Fc844d97ef90CCdAEddD7B2f8d066Fe0"
   }
 }
 
