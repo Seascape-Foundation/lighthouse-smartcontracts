@@ -26,10 +26,13 @@ async function main() {
     let projectID = await cliProjectId.inputProjectId(latestProjectId);
 
     let auction = await project.auctions(projectID);
-    console.log(auction);
+    console.log(`Auction allocation: ${auction.scaledAllocation/1e36}, collateral: ${auction.scaledCompensation/1e36}`);
 
     let prefund = await project.prefunds(projectID);
     console.log(prefund);
+
+    let totalAuctionPool = await project.auctionTotalPool(projectID);
+    console.log(`Total burnt CWS: ${totalAuctionPool/1e18}`);
 
     let totalPool = await project.prefundTotalPool(projectID);
     console.log(`Cap: ${totalPool[0]/1e6}, Invested: ${totalPool[1]/1e6}`);
