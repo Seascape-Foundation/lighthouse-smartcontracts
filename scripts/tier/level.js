@@ -16,7 +16,7 @@ async function main() {
       tier = await Tier.attach("0xbc719dc309beb82489e9a949c415e0eaed87d247");
     }
 
-    let user = '0xd8DF41a3f8f973beC62d6104b6758BEAf5Ce4260'
+    let user = '0xF218466013F3957d307C72154Dbe466dA2Aaec17'
     let level = await tier.getTierLevel(user)
     console.log(`User ${user} tier level is ${level}`);
   }
