@@ -22,7 +22,6 @@ import "./crowns/CrownsInterface.sol";
 contract LighthouseBurn is Ownable {
     LighthouseAuction   private lighthouseAuction;
     LighthousePrefund   private lighthousePrefund;
-    LighthouseTier      private lighthouseTier;
     LighthouseProject   private lighthouseProject;
     CrownsInterface     private crowns;
 
@@ -41,18 +40,13 @@ contract LighthouseBurn is Ownable {
     event BurnForPCC(uint256 indexed projectId, address indexed lighthouse, uint256 indexed nftId, address owner, address pcc, uint256 allocation);
     event BurnForCWS(uint256 indexed projectId, address indexed lighthouse, uint256 indexed nftId, address owner, uint256 compensation);
 
-    constructor(address _lighthouseAuction, address _lighthousePrefund, address _lighthouseTier, address _project, address _crowns) {
-        require(_lighthouseAuction != address(0) && _crowns != address(0) && _lighthousePrefund != address(0) && _lighthouseTier != address(0) && _project != address(0), "Lighthouse: ZERO_ADDRESS");
+    constructor(address _lighthouseAuction, address _lighthousePrefund, address _project, address _crowns) {
+        require(_lighthouseAuction != address(0) && _crowns != address(0) && _lighthousePrefund != address(0) && _project != address(0), "Lighthouse: ZERO_ADDRESS");
 
         lighthouseAuction   = LighthouseAuction(_lighthouseAuction);
         lighthousePrefund   = LighthousePrefund(_lighthousePrefund);
-        lighthouseTier      = LighthouseTier(_lighthouseTier);
         lighthouseProject   = LighthouseProject(_project);
         crowns              = CrownsInterface(_crowns);
-    }
-
-    function setLighthouseTier(address newTier) external onlyOwner {
-        lighthouseTier = LighthouseTier(newTier);
     }
 
     function setStaker(address _staker) external onlyOwner {
