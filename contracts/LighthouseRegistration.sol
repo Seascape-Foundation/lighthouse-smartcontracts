@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
-import "./LighthouseTier.sol";
 import "./LighthouseProject.sol";
 
 /**
@@ -13,8 +12,9 @@ import "./LighthouseProject.sol";
  * @dev In order to start a new project funding, the first thing to do is add project here.
  */
 contract LighthouseRegistration is Ownable {
-    LighthouseTier private lighthouseTier;
     LighthouseProject private lighthouseProject;
+
+    uint public chainID;
 
     /// @notice Amount of participants
     mapping(uint256 => uint256) public participantsAmount;
@@ -22,15 +22,9 @@ contract LighthouseRegistration is Ownable {
 
     event Register(uint256 indexed projectId, address indexed participant, uint256 indexed registrationId, uint256 registrationTime);
 
-    constructor(address _lighthouseTier, address _lighthouseProject) {
-        require(_lighthouseTier != address(0), "Lighthouse: ZERO_ADDRESS");
-
-        lighthouseTier = LighthouseTier(_lighthouseTier);
+    constructor(address _lighthouseProject, uint _chainID) {
         lighthouseProject = LighthouseProject(_lighthouseProject);
-    }
-
-    function setLighthouseTier(address newTier) external onlyOwner {
-        lighthouseTier = LighthouseTier(newTier);
+        chainID = _chainID;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -41,7 +35,7 @@ contract LighthouseRegistration is Ownable {
 
     /// @notice User registers to join the fund.
     /// @param id is the project id to join
-    function register(uint256 id) external {
+    function register(uint256 id, int8 tierLevel, uint8 v, bytes32 r, bytes32 s) external {
         require(lighthouseProject.registrationInitialized(id), "Lighthouse: REGISTRATION_NOT_INITIALIZED");
 
         uint256 startTime;
@@ -53,8 +47,15 @@ contract LighthouseRegistration is Ownable {
         require(block.timestamp <= endTime, "Lighthouse: FINISHED");
         require(!registered(id, msg.sender), "Lighthouse: ALREADY_REGISTERED");
 
-        int8 tierLevel = lighthouseTier.getTierLevel(msg.sender);
-        require(tierLevel > 0, "Lighthouse: NOT_QUALIFIED");
+        {   // avoid stack too deep
+        // investor, project verification
+	    bytes memory prefix     = "\x19Ethereum Signed Message:\n32";
+	    bytes32 message         = keccak256(abi.encodePacked(msg.sender, address(this), chainID, id, uint8(tierLevel)));
+	    bytes32 hash            = keccak256(abi.encodePacked(prefix, message));
+	    address recover         = ecrecover(hash, v, r, s);
+
+	    require(recover == lighthouseProject.getKYCVerifier(), "Lighthouse: SIG");
+        }
         
         participantsAmount[id] = participantsAmount[id] + 1;
 
