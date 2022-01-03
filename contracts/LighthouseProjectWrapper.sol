@@ -79,7 +79,7 @@ contract LighthouseProjectWrapper is Ownable {
         emit SetKYCVerifier(verifier);
     }
 
-    /// @notice Who can update tier of user? It's another smartcontract from Seapad.
+    /// @notice Who can update project? It's another smartcontract from Seapad.
     function addEditor(address _user) external onlyOwner {
         require(_user != address(0),                "Lighthouse: ZERO_ADDRESS");
         require(!editors[_user],                    "Lighthouse: ALREADY_ADDED");
@@ -89,7 +89,7 @@ contract LighthouseProjectWrapper is Ownable {
         emit ProjectEditor(_user, true);
     }
 
-    /// @notice Remove the tier user.
+    /// @notice Remove the project user.
     function deleteEditor(address _user) external onlyOwner {
         require(_user != address(0),                "Lighthouse: ZERO_ADDRESS");
         require(editors[_user],                     "Lighthouse: NO_USER");
