@@ -3,12 +3,10 @@ const clear                   = require("clear");
 
 const { ethers }              = require("hardhat");
 let cliGas                    = require('../cli/gas');
-let cliConfirm            = require('../cli/confirm');
-let cliProjectId          = require('../cli/project-id');
-let projectUtil           = require('../project/util');
-let tierUtil              = require('../tier/util')
-let cliAccount            = require('../cli/account');
-const { addressOf, alias } = require("../addresses");
+let cliConfirm                = require('../cli/confirm');
+let tierUtil                  = require('../tier/util')
+let cliAccount                = require('../cli/account');
+const { addressOf, alias }    = require("../addresses");
 
 /**
  * Investor registers in the Blockchain
