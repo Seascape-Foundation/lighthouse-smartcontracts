@@ -15,9 +15,10 @@ let addresses = {
     auction:      '0xC31E7B6888d0AD6EF851Ad833Fc93E3640471E3a',     // v2
 
     gift:         '0x5b4a54Bf2F695A2aB20eF486EB3B5358C89A537C',     // v2
-    invest:       '0xCd8a64e4736DeA2aFa6d2650B4354df6A82AAdDD',     // proj id 3
+    invest:       '0xF2aa9d820C3b6c3efD10d6d51690ba6D9E9aBbCB',     // proj id 3
 
-    mint:         '0xd542c9c0ec62c7a634A6eAEbF204EF5Ffd72c5eE'      // for testing. it includes imitating function
+    mint:         '0xd542c9c0ec62c7a634A6eAEbF204EF5Ffd72c5eE',     // for testing. it includes imitating function
+    burn:         '0xE7168F5E7dc7516D16476904006978345A546408'
   },
   1285: {
     usdc:         '0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D',
@@ -36,7 +37,8 @@ let addresses = {
     project: "0x0395560D3b148b7b69255B87635AD01B2f761806",
     projectWrapper: "0x6749C5793d0F64D2287bEEf7D152F94B98679EE4",
 
-    mint: "0xd8d458C7Fc844d97ef90CCdAEddD7B2f8d066Fe0"
+    mint: "0x578Dc3b6f488e845fB2d3af73D6a61cd4D69dD09",
+    burn: ""
   }
 }
 
