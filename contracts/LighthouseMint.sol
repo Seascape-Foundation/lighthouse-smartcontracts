@@ -22,7 +22,6 @@ import "./crowns/CrownsInterface.sol";
 contract LighthouseMint is Ownable {
     LighthouseAuction   private lighthouseAuction;
     LighthousePrefund   private lighthousePrefund;
-    LighthouseTier      private lighthouseTier;
     LighthouseProject   private lighthouseProject;
     CrownsInterface     private crowns;
     uint256             private chainID;
@@ -32,21 +31,16 @@ contract LighthouseMint is Ownable {
     /// @notice Check whether the user minted nft for the project or not
     mapping(uint256 => mapping(address => uint256)) public mintedNfts;
 
-    event Mint(uint256 indexed projectId, address indexed nft, uint256 indexed nftId, address owner, uint256 allocation, uint256 compensation, int tierLevel, uint8 mintType);
+    event Mint(uint256 indexed projectId, address indexed nft, uint256 indexed nftId, address owner, uint256 allocation, uint256 compensation, uint8 mintType);
 
-    constructor(address _lighthouseAuction, address _lighthousePrefund, address _lighthouseTier, address _project, address _crowns, uint256 _chainID) {
-        require(_lighthouseAuction != address(0) && _crowns != address(0) && _lighthousePrefund != address(0) && _lighthouseTier != address(0) && _project != address(0), "Lighthouse: ZERO_ADDRESS");
+    constructor(address _lighthouseAuction, address _lighthousePrefund, address _project, address _crowns, uint256 _chainID) {
+        require(_lighthouseAuction != address(0) && _crowns != address(0) && _lighthousePrefund != address(0) && _project != address(0), "Lighthouse: ZERO_ADDRESS");
 
         lighthouseAuction   = LighthouseAuction(_lighthouseAuction);
         lighthousePrefund   = LighthousePrefund(_lighthousePrefund);
-        lighthouseTier      = LighthouseTier(_lighthouseTier);
         lighthouseProject   = LighthouseProject(_project);
         crowns              = CrownsInterface(_crowns);
         chainID             = _chainID;
-    }
-
-    function setLighthouseTier(address newTier) external onlyOwner {
-        lighthouseTier = LighthouseTier(newTier);
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -56,7 +50,6 @@ contract LighthouseMint is Ownable {
     //////////////////////////////////////////////////////////////////////
 
     /// @notice After the prefund phase, investors can get a NFT with the weight proportion to their investment.
-    /// @dev Lighthouse should be added into LighthouseTier.badgeUser();
     function mint(uint256 projectId, uint8 v, bytes32[2] calldata sig) external {
         uint256 endTime = lighthouseProject.auctionEndTime(projectId);
         require(block.timestamp > endTime,     "Lighthouse: AUCTION_FINISHED_YET");
@@ -77,19 +70,12 @@ contract LighthouseMint is Ownable {
         }
 
 
-        int8 tierLevel = lighthouseTier.getTierLevel(msg.sender);
-        if (tierLevel <= 0) {
-            tierLevel = lighthousePrefund.getPrefundTier(projectId, msg.sender);
-        }
-        require(tierLevel > 0, "Lighthouse: INVALID_TIER");
-
-
         uint8 mintType = 1;
         uint256 allocation;        // Portion of Pool that user will get
         uint256 compensation;
 
         if (prefunded) {
-            (allocation, compensation) = prefundAllocation(projectId, tierLevel);
+            (allocation, compensation) = prefundAllocation(projectId, lighthousePrefund.getPrefundTier(projectId, msg.sender));
         } else {
             mintType = 2;
             (allocation, compensation) = auctionAllocation(projectId, spent);
@@ -101,52 +87,43 @@ contract LighthouseMint is Ownable {
         uint256 nftId = lighthouseNft.getNextTokenId();
         require(nftId > 0, "Lighthouse: NO_NFT_MINTED");
 
-        require(lighthouseNft.mint(projectId, nftId, msg.sender, allocation, compensation, tierLevel, mintType), "LighthouseMint: FAILED");
+        require(lighthouseNft.mint(projectId, nftId, msg.sender, allocation, compensation, mintType), "LighthouseMint: FAILED");
 
         mintedNfts[projectId][msg.sender] = nftId;
 
-        emit Mint(projectId, nftAddress, nftId, msg.sender, allocation, compensation, tierLevel, mintType);
+        emit Mint(projectId, nftAddress, nftId, msg.sender, allocation, compensation, mintType);
     }
 
 
     /**
-     * @dev returns allocation, compensation, tier, and mint type
+     * @dev returns allocation, compensation, and mint type
      */
-    function allocationCompensation(uint256 projectId, address investor) external view returns(uint256, uint256, int8, uint8) {
+    function allocationCompensation(uint256 projectId, address investor) external view returns(uint256, uint256, uint8) {
         uint256 endTime = lighthouseProject.auctionEndTime(projectId);
-        if(block.timestamp > endTime ||     
+        if(block.timestamp < endTime ||     
             mintedNfts[projectId][investor] != 0 || 
-            !lighthouseProject.allocationCompensationInitialized(projectId) ||
-            !lighthouseProject.mintable(projectId)) {
+            !lighthouseProject.allocationCompensationInitialized(projectId) 
+            ) {
             return (0, 0, -2, 0);
         }
 
         bool prefunded = lighthousePrefund.prefunded(projectId, investor);
         uint256 spent = lighthouseAuction.getSpent(projectId, investor);
 
-        if (!prefunded || spent == 0) {
-            return (0, 0, -3, 0);
-        }
-
-        int8 tierLevel = lighthouseTier.getTierLevel(investor);
-        if (tierLevel <= 0) {
-            tierLevel = lighthousePrefund.getPrefundTier(projectId, investor);
-        }
-        require(tierLevel > 0, "Lighthouse: INVALID_TIER");
-
+        require(prefunded || spent > 0, "Lighthouse: NOT_INVESTED");
 
         uint8 mintType = 1;
         uint256 allocation;        // Portion of Pool that user will get
         uint256 compensation;
 
         if (prefunded) {
-            (allocation, compensation) = prefundAllocation(projectId, tierLevel);
+            (allocation, compensation) = prefundAllocation(projectId, lighthousePrefund.getPrefundTier(projectId, investor));
         } else {
             mintType = 2;
             (allocation, compensation) = auctionAllocation(projectId, spent);
         }
 
-        return (allocation, compensation, tierLevel, mintType);
+        return (allocation, compensation, mintType);
     }
 
     function prefundAllocation(uint256 projectId, int8 tierLevel) internal view returns (uint256, uint256) {

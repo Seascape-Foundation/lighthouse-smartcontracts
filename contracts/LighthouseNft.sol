@@ -23,7 +23,6 @@ contract LighthouseNft is ERC721, ERC721Burnable, Ownable {
     struct Params {
 	    uint256 scaledAllocation;       // allocation among total pool of investors.
         uint256 scaledCompensation;     // compensation
-	    int8 tier;                      // tier level
         uint8 mintType;                 // mint type: 1 = prefund pool, 2 = auction pool, 3 = private investor
     }
 
@@ -33,7 +32,7 @@ contract LighthouseNft is ERC721, ERC721Burnable, Ownable {
     /// @dev returns parameters of Seascape NFT by token id.
     mapping(uint256 => Params) public paramsOf;
 
-    event Minted(address indexed owner, uint256 indexed id, uint256 allocation, uint256 compensation, int8 tier, uint8 mintType, uint256 projectId);
+    event Minted(address indexed owner, uint256 indexed id, uint256 allocation, uint256 compensation, uint8 mintType, uint256 projectId);
     
     /**
      * @dev Sets the {name} and {symbol} of token.
@@ -57,18 +56,18 @@ contract LighthouseNft is ERC721, ERC721Burnable, Ownable {
     }
 
     /// @dev ensure that all parameters are checked on factory smartcontract
-    function mint(uint256 _projectId, uint256 _tokenId, address _to, uint256 _allocation, uint256 _compensation, int8 _tier, uint8 _type) external onlyMinter returns(bool) {
+    function mint(uint256 _projectId, uint256 _tokenId, address _to, uint256 _allocation, uint256 _compensation, uint8 _type) external onlyMinter returns(bool) {
 	    require(_projectId == projectId, "Lighthouse: PROJECT_ID_MISMATCH");
         uint256 _nextTokenId = tokenId.current();
         require(_tokenId == _nextTokenId, "LighthouseNFT: INVALID_TOKEN");
 
         _safeMint(_to, _tokenId);
 
-        paramsOf[_tokenId] = Params(_allocation, _compensation, _tier, _type);
+        paramsOf[_tokenId] = Params(_allocation, _compensation, _type);
 
         tokenId.increment();
 
-        emit Minted(_to, _tokenId, _allocation, _compensation, _tier, _type, projectId);
+        emit Minted(_to, _tokenId, _allocation, _compensation, _type, projectId);
         
         return true;
     }
