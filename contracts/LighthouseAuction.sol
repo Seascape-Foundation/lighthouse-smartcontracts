@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./crowns/CrownsInterface.sol";
-import "./LighthouseTier.sol";
 import "./LighthousePrefund.sol";
 import "./LighthouseRegistration.sol";
 import "./LighthouseProject.sol";
@@ -14,8 +13,6 @@ import "./GiftNft.sol";
  *  @notice Public Auction - the third phase of fundraising. It's the final stage.
  */
 contract LighthouseAuction is Ownable {
-
-    LighthouseTier private lighthouseTier;
     LighthouseRegistration private lighthouseRegistration;
     LighthousePrefund private lighthousePrefund;
     LighthouseProject private lighthouseProject;
@@ -47,17 +44,13 @@ contract LighthouseAuction is Ownable {
     event SetAuctionData(uint256 indexed projectId, uint256 min, uint16 giftAmount);
     event Gift(uint256 indexed projectId, address indexed participant, uint256 indexed tokenId);
 
-    constructor(address _crowns, address tier, address submission, address prefund, address project, uint256 _chainID) {
-        require(_crowns != address(0) && tier != address(0) && prefund != address(0) && submission != address(0) && project != address(0), "Lighthouse: ZERO_ADDRESS");
-        require(tier != prefund, "Lighthouse: SAME_ADDRESS");
-        require(tier != _crowns, "Lighthouse: SAME_ADDRESS");
-        require(tier != submission, "Lighthouse: SAME_ADDRESS");
-        require(tier != project, "Lighthouse: SAME_ADDRESS");
-        require(submission != project, "Lighthouse: SAME_ADDRESS");
+    constructor(address _crowns, address submission, address prefund, address project, uint256 _chainID) {
+        require(_crowns != address(0) && prefund != address(0) && submission != address(0) && project != address(0), "Lighthouse: ZERO_ADDRESS");
         require(submission != prefund, "Lighthouse: SAME_ADDRESS");
+        require(submission != _crowns, "Lighthouse: SAME_ADDRESS");
+        require(submission != project, "Lighthouse: SAME_ADDRESS");
         require(prefund != project, "Lighthouse: SAME_ADDRESS");
 
-        lighthouseTier = LighthouseTier(tier);
         lighthouseRegistration = LighthouseRegistration(submission);
         lighthousePrefund = LighthousePrefund(prefund);
         lighthouseProject = LighthouseProject(project);
@@ -77,17 +70,12 @@ contract LighthouseAuction is Ownable {
         emit SetAuctionData(projectId, min, giftAmount);
     }
 
-    function setLighthouseTier(address newTier) external onlyOwner {
-        lighthouseTier = LighthouseTier(newTier);
-    }
-
     function setGiftNft(address giftNft) external onlyOwner {
         nft = GiftNft(giftNft);
     }
 
-    /// @notice User participates in the Public Auction. Note that Public Auction interaction doesn't reset the Tier.
+    /// @notice User participates in the Public Auction.
     /// @param amount of Crowns that user wants to spend
-    /// @dev We are not checkig Tier level of the user, as it was checked in the LighthouseRegistration.
     function participate(uint256 projectId, uint256 amount, uint8 v, bytes32 r, bytes32 s) external {
         require(lighthouseProject.auctionInitialized(projectId), "Lighthouse: AUCTION_NOT_INITIALIZED");
         require(lighthouseProject.transferredPrefund(projectId), "Lighthouse: NOT_TRANSFERRED_PREFUND_YET");
