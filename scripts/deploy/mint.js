@@ -21,7 +21,6 @@ async function main() {
   let chainID         = await deployer.getChainId();
 
   // Constructor arguments
-  let tierAddress     = addressOf(chainID, alias.TIER_WRAPPER);
   let prefundAddress = addressOf(chainID, alias.PREFUND);
   let projectAddress  = addressOf(chainID, alias.PROJECT_WRAPPER);
   let auctionAddress  = addressOf(chainID, alias.AUCTION);
@@ -34,7 +33,6 @@ async function main() {
     gasPrice: `${cliGas.weiToGwei(gasPrice)}`,
     auctionAddress: auctionAddress,
     prefundAddress: prefundAddress,
-    tierAddress: tierAddress,
     projectAddress: projectAddress,
     crownsAddress: crownsAddress,
 
@@ -43,7 +41,8 @@ async function main() {
 
   await cliConfirm.inputConfirm(deployTitle, deployParams);
 
-  let mint         = await Mint.deploy(auctionAddress, prefundAddress, tierAddress, projectAddress, crownsAddress, chainID, {gasPrice: gasPrice});    /// Argument '1' means deploy in Test mode
+  // address _lighthouseAuction, address _lighthousePrefund, address _project, address _crowns, uint256 _chainID
+  let mint         = await Mint.deploy(auctionAddress, prefundAddress, projectAddress, crownsAddress, chainID, {gasPrice: gasPrice});    /// Argument '1' means deploy in Test mode
   console.log("Lighthouse Mint deployed to ", chalk.green(mint.address), ' Txid ', chalk.blue(mint.deployTransaction.hash));
 
   let nftAddress = addressOf(chainID, alias.INVEST_NFT);
