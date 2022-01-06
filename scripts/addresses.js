@@ -77,7 +77,7 @@ let alias = {
 }
 
 /**
- * Throws an error if function couldn't find an address either by
+ * @description Throws an error if function couldn't find an address either by
  * - invalid name
  * - invalid chain ID
  * - address of smartcontract wasn't defined
