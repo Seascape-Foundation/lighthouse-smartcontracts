@@ -39,6 +39,19 @@ let addresses = {
 
     mint: "0x578Dc3b6f488e845fB2d3af73D6a61cd4D69dD09",
     burn: ""
+  },
+  97: {
+    crowns:       '0x4Ca0ACab9f6B9C084d216F40963c070Eef95033B',
+
+    tier: "0xd7Eb82f5AB90534dFa6922D8Ea3926F17911724E",
+    tierWrapper: "0x1D4cB4EdBD484CC357606592de3c6b76A312B200",
+
+    project: "0x790f532e7CB515066C60BE13074949aE4C90ea23",
+    projectWrapper: "0x17803f649217C9cB7c6301e33BEfA946E6729950",
+
+    registration: "0x3AfFC3A52B538f5A011dC14E97932b7fc8828Bf0",
+    prefund: "0xFbc8B415c748091e6a813e13F9B21d314ED9c4e3",
+
   }
 }
 
