@@ -110,3 +110,4 @@ truffle-config.js
 artifacts/contracts/crowns-token
 cache
 contracts/samples
+artifacts
