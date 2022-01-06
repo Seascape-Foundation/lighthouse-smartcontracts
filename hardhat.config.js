@@ -35,6 +35,11 @@ module.exports = {
     moonriver: {
       url: process.env.MOONRIVER_REMOTE_HTTP,
       accounts: [process.env.MOONRIVER_DEPLOYER_KEY]
+    bsc_testnet: {
+      url: process.env.BSC_TESTNET_REMOTE_HTTP,
+      accounts: [
+        process.env.BSC_TESTNET_DEPLOYER_KEY
+      ]
     }
   },
   etherscan: {
