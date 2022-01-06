@@ -157,6 +157,26 @@ contract LighthouseTierWrapper is Ownable {
         emit Claim(msg.sender, level);
     }
 
+    /// @notice Reclaim on another chain the token that user.
+    function reclaim(uint8 level, uint8 v, bytes32 r, bytes32 s) external {
+        require(level < 4,        "LighthouseTier: INVALID_PARAMETER");
+        Tier storage tier = tiers[msg.sender];
+
+        // investor, level verification with claim verifier
+	    bytes memory prefix     = "\x19Ethereum Signed Message:\n32";
+	    bytes32 message         = keccak256(abi.encodePacked(msg.sender, tier.nonce, level, chainID, address(this)));
+	    bytes32 hash            = keccak256(abi.encodePacked(prefix, message));
+	    address recover         = ecrecover(hash, v, r, s);
+	    require(recover == claimVerifier,                   "LighthouseTier: SIG");
+
+        tier.level = level;
+        tier.usable = true;
+        tier.nonce = tier.nonce + 1;      // Prevent "double-spend".
+
+        emit Claim(msg.sender, level);
+    }
+
+
     ////////////////////////////////////////////////////////////////////////////
     //
     // Editor functions
