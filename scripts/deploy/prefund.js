@@ -4,13 +4,7 @@ const clear                   = require("clear");
 const { ethers }              = require("hardhat");
 let { addressOf, alias }      = require('../addresses');
 let cliGas                    = require('../cli/gas');
-let cliStartEnd               = require('../cli/start-end');
 let cliConfirm                = require('../cli/confirm');
-let cliProjectId              = require('../cli/project-id');
-let cliAuction                = require('../cli/auction');
-let cliAllocationCompensation = require('../cli/allocation-compensation');
-let cliInvestNft              = require('../cli/investment-nft');
-let projectUtil               = require('../project/util');
 let cliAccount                = require('../cli/account');
 
 async function main() {
