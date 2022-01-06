@@ -2,15 +2,15 @@ const { ethers } = require("hardhat");
 const clear               = require("clear");
 const chalk               = require("chalk");
 
-let cliOwner              = require('./../cli/owner')
-let cliConfirm            = require('./../cli/confirm')
-let cliGas                = require('./../cli/gas');
+let cliOwner              = require('../cli/owner')
+let cliConfirm            = require('../cli/confirm')
+let cliGas                = require('../cli/gas');
 
 async function main() {
   clear();
   
     // We get the contract to deploy
-    const Project        = await ethers.getContractFactory("LighthouseTier");
+    const Tier        = await ethers.getContractFactory("LighthouseTierWrapper");
 
     let deployer      = await ethers.getSigner();
 
@@ -18,9 +18,9 @@ async function main() {
 
     console.log(`Signing by ${deployer.address}`);
 
-    let project = await Project.attach(address);
+    let tier = await Tier.attach(address);
 
-    let owner = await project.claimVerifier();
+    let owner = await tier.claimVerifier();
 
     console.log(`The smartcontract ${address} verifier is ${owner}`);
 
@@ -28,7 +28,7 @@ async function main() {
 
     await cliConfirm.inputConfirm(changeTitle, {});
 
-    let contractOwner = await project.owner();
+    let contractOwner = await tier.owner();
 
     if (contractOwner.toLowerCase() != deployer.address.toLocaleLowerCase()) {
       console.error(chalk.red(`The current user ${deployer.address} and the owner of contract ${owner} doesnt match!`));
@@ -46,7 +46,7 @@ async function main() {
     };
     await cliConfirm.inputConfirm(newOwnerTitle, newOwnerParams);
 
-  let transferTx = await project.setClaimVerifier(newOwner, {from: deployer.address, gasPrice});
+  let transferTx = await tier.setClaimVerifier(newOwner, {from: deployer.address, gasPrice});
   console.log(`Changing verifier was successful! Txid: ` + chalk.blue(transferTx.hash))
 }
 
