@@ -8,6 +8,11 @@
       },
       {
         "internalType": "address",
+        "name": "_tier",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "_claimVerifier",
         "type": "address"
       },
@@ -42,6 +47,25 @@
       }
     ],
     "name": "Claim",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "oldAddress",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "newAddress",
+        "type": "address"
+      }
+    ],
+    "name": "ClaimVerifier",
     "type": "event"
   },
   {
