@@ -21,7 +21,6 @@ async function main() {
 
   // Constructor arguments
   let crowns              = addressOf(chainID, alias.CROWNS)
-  let tierAddress         = addressOf(chainID, alias.TIER_WRAPPER);
   let registrationAddress = addressOf(chainID, alias.REGISTRATION);
   let prefundAddress      = addressOf(chainID, alias.PREFUND);
 
@@ -30,7 +29,6 @@ async function main() {
   let title = `Please confirm the parameters`;
   let params = {
     crowns: crowns,
-    tierAddress: tierAddress,
     registrationAddress: registrationAddress,
     projectAddress: projectAddress,
     prefundAddress: prefundAddress,
@@ -41,8 +39,8 @@ async function main() {
   await cliConfirm.inputConfirm(title, params);
 
   // deploy prefund interface
-  // address _crowns, address tier, address submission, address prefund, address project, uint256 _chainID
-  let auction           = await Auction.deploy(crowns, tierAddress, registrationAddress, prefundAddress, projectAddress, chainID, {gasPrice: gasPrice});    /// Argument '1' means deploy in Test mode
+  // address _crowns, address submission, address prefund, address project, uint256 _chainID
+  let auction           = await Auction.deploy(crowns, registrationAddress, prefundAddress, projectAddress, chainID, {gasPrice: gasPrice});    /// Argument '1' means deploy in Test mode
   console.log(`Lighthouse Auction deployed to ${auction.address}\nSetting up permissions...`);
   // let auction           = await Auction.attach("0xE8Ee22a82e3BC3e9dF8E49367f58144c9B0eFF5e");
 

@@ -35,13 +35,23 @@ async function main() {
         ethers.utils.parseEther("10", 18),     // Tier 2
         ethers.utils.parseEther("20", 18),     // Tier 3
       ];
+    } else if (chainID = 97) {
+      crowns          = "0x4Ca0ACab9f6B9C084d216F40963c070Eef95033B";
+      claimVerifier   = process.env.MOONBEAM_DEPLOYER_ADDRESS;
+      tierAddress     = "0xd7Eb82f5AB90534dFa6922D8Ea3926F17911724E";
+      fees            = [                     // Tier claiming fees
+        ethers.utils.parseEther("0.1", 18),     // Tier 0
+        ethers.utils.parseEther("0.25", 18),       // Tier 1
+        ethers.utils.parseEther("0.5", 18),       // Tier 2
+        ethers.utils.parseEther("1", 18),      // Tier 3
+      ];
     }
 
     let gasPrice    = 200000000000;                                    // 20 gwei
 
     const tier       = await Tier.deploy(crowns, tierAddress, claimVerifier, fees, chainID, {gasPrice: gasPrice});
 
-    console.log(`Lighthouse Tier Wrapper deployed to: ${tier.deployTransaction.hash}`, tier.address);
+    console.log(`Lighthouse Tier Wrapper deployed at tx: ${tier.deployTransaction.hash} to`, tier.address);
   }
   
   main()

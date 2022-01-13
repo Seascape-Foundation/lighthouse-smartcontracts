@@ -30,6 +30,15 @@ async function main() {
         ethers.utils.parseEther("0.5", 18),       // Tier 2
         ethers.utils.parseEther("1", 18),      // Tier 3
       ];
+    } else if (chainID == 97) {
+      crowns          = "0x4Ca0ACab9f6B9C084d216F40963c070Eef95033B";
+      claimVerifier   = process.env.MOONBEAM_DEPLOYER_ADDRESS;
+      fees            = [                     // Tier claiming fees
+        ethers.utils.parseEther("0.1", 18),     // Tier 0
+        ethers.utils.parseEther("0.25", 18),       // Tier 1
+        ethers.utils.parseEther("0.5", 18),       // Tier 2
+        ethers.utils.parseEther("1", 18),      // Tier 3
+      ];
     }
 
     const tier       = await Tier.deploy(crowns, claimVerifier, fees, chainID);

@@ -24,7 +24,6 @@ let addresses = {
     usdc:         '0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D',
 
     crowns: '0x6fc9651f45B262AE6338a701D563Ab118B1eC0Ce',
-
     tierWrapper: "0xbc719dc309beb82489e9a949c415e0eaed87d247",
     
     registration: "0xf102cA709bB314614167574e2965aDFcb001d3e9",
@@ -39,6 +38,21 @@ let addresses = {
 
     mint: "0x578Dc3b6f488e845fB2d3af73D6a61cd4D69dD09",
     burn: ""
+  },
+  97: {
+    crowns:         '0x4Ca0ACab9f6B9C084d216F40963c070Eef95033B',
+
+    tier:           "0xd7Eb82f5AB90534dFa6922D8Ea3926F17911724E",
+    tierWrapper:    "0x1D4cB4EdBD484CC357606592de3c6b76A312B200",
+
+    project:        "0x790f532e7CB515066C60BE13074949aE4C90ea23",
+    projectWrapper: "0x17803f649217C9cB7c6301e33BEfA946E6729950",
+
+    registration:   "0x3AfFC3A52B538f5A011dC14E97932b7fc8828Bf0",
+    prefund:        "0xFbc8B415c748091e6a813e13F9B21d314ED9c4e3",
+    auction:        "0x005C044a505a4795D59EB48Dd3Ca77870d918977",
+
+    mint:           "0x22ebc9f7A2FA47884e472BB3B1e816c0Fc3Cf34D"
   }
 }
 
@@ -63,7 +77,7 @@ let alias = {
 }
 
 /**
- * Throws an error if function couldn't find an address either by
+ * @description Throws an error if function couldn't find an address either by
  * - invalid name
  * - invalid chain ID
  * - address of smartcontract wasn't defined

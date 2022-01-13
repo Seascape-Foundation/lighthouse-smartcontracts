@@ -104,7 +104,7 @@ contract LighthouseMint is Ownable {
             mintedNfts[projectId][investor] != 0 || 
             !lighthouseProject.allocationCompensationInitialized(projectId) 
             ) {
-            return (0, 0, -2, 0);
+            return (0, 0, 0);
         }
 
         bool prefunded = lighthousePrefund.prefunded(projectId, investor);
