@@ -1,6 +1,7 @@
 let addresses = {
   1287: {
     crowns:       '0xFde9cad69E98b3Cc8C998a8F2094293cb0bD6911',
+    scape:        '0x9ceAB9b5530762DE5409F2715e85663405129e54',
 
     tier:         '0x1bb55d99aaf303a1586114662ef74638ed9db2ee',
     tierWrapper:  '0xeFfdB75Ff90349151E100D82Dfd38fa1d7f050D2',
@@ -41,6 +42,8 @@ let addresses = {
   },
   97: {
     crowns:         '0x4Ca0ACab9f6B9C084d216F40963c070Eef95033B',
+    scape:          '0x66638F4970C2ae63773946906922c07a583b6069',
+    wichita:        '0x66638F4970C2ae63773946906922c07a583b6069',
 
     tier:           "0xd7Eb82f5AB90534dFa6922D8Ea3926F17911724E",
     tierWrapper:    "0x1D4cB4EdBD484CC357606592de3c6b76A312B200",
@@ -52,7 +55,12 @@ let addresses = {
     prefund:        "0xFbc8B415c748091e6a813e13F9B21d314ED9c4e3",
     auction:        "0x005C044a505a4795D59EB48Dd3Ca77870d918977",
 
-    mint:           "0x22ebc9f7A2FA47884e472BB3B1e816c0Fc3Cf34D"
+    mint:           "0x22ebc9f7A2FA47884e472BB3B1e816c0Fc3Cf34D",
+
+    burnAnyWichita: "0xB1004072E827e496EfBdb16a0304E42FaBf8B15d",
+    burnScape:      "0x9321a5E859Fc492A89dA335146c20AEd34f4D99E",
+    burnToken:      "0x3a713bDA1232906a1114AEe3D239909B953B1263"
+
   }
 }
 
@@ -73,7 +81,9 @@ let alias = {
   MINT: 'mint',
   BURN: 'burn',
 
-  CROWNS: 'crowns'
+  CROWNS: 'crowns',
+  SCAPE: 'scape',
+  WICHITA: 'wichita'
 }
 
 /**
