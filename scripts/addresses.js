@@ -59,7 +59,7 @@ let addresses = {
 
     burnAnyWichita: "0xB1004072E827e496EfBdb16a0304E42FaBf8B15d",
     burnScape:      "0x9321a5E859Fc492A89dA335146c20AEd34f4D99E",
-    burnToken:      "0x3a713bDA1232906a1114AEe3D239909B953B1263"
+    burnToken:      "0xf68003fe56e334f95404bFb877788F82f87338c3"
 
   }
 }
