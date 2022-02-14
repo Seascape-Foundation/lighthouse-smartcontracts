@@ -18,7 +18,7 @@ async function main() {
     if (chainID == 1287) {
       crowns          = "0xFde9cad69E98b3Cc8C998a8F2094293cb0bD6911";
       claimVerifier   = process.env.MOONBEAM_DEPLOYER_ADDRESS;
-      tierAddress     = "0x1BB55D99aAF303A1586114662ef74638Ed9dB2Ee";
+      tierAddress     = "0xeFfdB75Ff90349151E100D82Dfd38fa1d7f050D2";
       fees            = [                       // Tier claiming fees
         ethers.utils.parseEther("0.1", 18),     // Tier 0
         ethers.utils.parseEther("0.25", 18),    // Tier 1
@@ -47,11 +47,18 @@ async function main() {
       ];
     }
 
-    let gasPrice    = 200000000000;                                    // 20 gwei
+    let gasPrice    = 20000000000;                                    // 20 gwei
 
-    const tier       = await Tier.deploy(crowns, tierAddress, claimVerifier, fees, chainID, {gasPrice: gasPrice});
+    let tier;
+    try {
+      //address _crowns, address _tier, address _claimVerifier, uint256[4] memory _fees, uint256 _chainID
+      tier       = await Tier.deploy(crowns, tierAddress, claimVerifier, fees, chainID);
+      console.log(`Lighthouse Tier Wrapper deployed at tx: ${tier.deployTransaction.hash} to`, tier.address);
+    } catch (error) {
+      console.log(error);
+    }
 
-    console.log(`Lighthouse Tier Wrapper deployed at tx: ${tier.deployTransaction.hash} to`, tier.address);
+    
   }
   
   main()
