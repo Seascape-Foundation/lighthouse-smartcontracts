@@ -3,8 +3,8 @@ let addresses = {
     crowns:       '0xFde9cad69E98b3Cc8C998a8F2094293cb0bD6911',
     scape:        '0x9ceAB9b5530762DE5409F2715e85663405129e54',
 
-    tier:         '0x1bb55d99aaf303a1586114662ef74638ed9db2ee',
-    tierWrapper:  '0xeFfdB75Ff90349151E100D82Dfd38fa1d7f050D2',
+    tier:         '0xeFfdB75Ff90349151E100D82Dfd38fa1d7f050D2',
+    tierWrapper:  '0xc815b90f2987747Df4617a592CBa8939eBE4B7F2',
     
     usdc:         '0x1bc33357E79c1E69A46b69c3f6F14691164375Dd',
 
