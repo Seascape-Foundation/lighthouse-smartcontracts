@@ -13,10 +13,8 @@ import "./LighthouseNftInterface.sol";
 /// If user's  is in the game, then deposit is unavailable.
 contract LighthouseStake is Ownable {
     address payable public stakeHandler;
-
-    // The seascape  address
-    address public nft; // address of nft user has to stake
-    address public rewardToken; // pcc token address
+    
+    uint256 public latestSessionId;
 
     /// @dev The account that keeps all ERC20 rewards
     uint256 public nonce = 0;
@@ -25,6 +23,8 @@ contract LighthouseStake is Ownable {
         uint256 startTime;
         uint256 period;
         uint256 rewardPool;
+        address nft;
+        address rewardToken;
     }
 
     struct Player {
@@ -58,14 +58,8 @@ contract LighthouseStake is Ownable {
     );
     /// @notice Decimal of reward token should be set to 18
     constructor(
-        address _nft,
-        address _reward,
         address payable _handler
     ) public {
-        require(_nft != address(0), "invalid _scape address");
-
-        nft = _nft;
-        rewardToken = _reward;
         stakeHandler = _handler;
     }
 
@@ -74,7 +68,9 @@ contract LighthouseStake is Ownable {
         uint256 sessionId,
         uint256 startTime,
         uint256 period,
-        uint256 rewardPool
+        uint256 rewardPool,
+        address nft,
+        address rewardToken
     ) external onlyOwner {
         require(
             sessions[sessionId].rewardPool == 0,
@@ -90,8 +86,12 @@ contract LighthouseStake is Ownable {
         Session storage session = sessions[sessionId];
         session.startTime = startTime;
         session.period = period;
+        session.rewardToken = rewardToken;
+        session.nft = nft;
         session.rewardPool = rewardPool;
         StakeNft handler = StakeNft(stakeHandler);
+
+        latestSessionId = sessionId;
 
         handler.newPeriod(
             sessionId,
@@ -122,7 +122,7 @@ contract LighthouseStake is Ownable {
 
         // create interface of the LighthouseNft
         LighthouseNftInterface nftInterface = LighthouseNftInterface(
-            nft
+            session.nft
         );
 
         // get weight of the nft using paramsOf function of the LighthouseNftInterface
