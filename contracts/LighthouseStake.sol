@@ -29,12 +29,14 @@ contract LighthouseStake is Ownable {
 
     struct Player {
         uint256 weight;
-        uint256 nftId; //  that user staked in.
+        address player;
     }
 
     mapping(uint256 => Session) public sessions;
     // session id => player address = PlayerChallenge
-    mapping(uint256 => mapping(address => Player)) public playerParams;
+    mapping(uint256 => mapping(uint256 => Player)) public playerParams;
+
+    
 
     event Stake(
         address indexed staker,
@@ -122,11 +124,11 @@ contract LighthouseStake is Ownable {
 
         address staker = msg.sender;
 
-        Player storage challenge = playerParams[sessionId][staker];
+        Player storage challenge = playerParams[sessionId][nftId];
 
-        require(challenge.nftId == 0, "already staked");
+        require(challenge.player == address(0x0), "already staked");
 
-        challenge.nftId = nftId;
+        challenge.player = staker;
         challenge.weight = weight;
 
         StakeNft handler = StakeNft(stakeHandler);
@@ -138,37 +140,37 @@ contract LighthouseStake is Ownable {
     /// @notice Unstake nft. If the challenge is burning in this sesion
     /// then burn nft.
     /// @dev data variable is not used, but its here for following the ZombieFarm architecture.
-    function unstake(uint256 sessionId) external {
+    function unstake(uint256 sessionId, uint256 nftId) external {
         address staker = msg.sender;
         Session storage session = sessions[sessionId];
         require(session.rewardPool > 0, "session does not exist");
 
-        Player storage playerChallenge = playerParams[sessionId][staker];
-        require(playerChallenge.nftId > 0, "stake amount zero");
+        Player storage playerChallenge = playerParams[sessionId][nftId];
+        require(playerChallenge.player != msg.sender, "forbidden");
 
         StakeNft handler = StakeNft(stakeHandler);
         handler.claim(sessionId, staker);
 
-        handler.unstake(sessionId, staker, playerChallenge.nftId, false);
+        handler.unstake(sessionId, staker, nftId, false);
+        delete playerParams[sessionId][nftId];
 
-        playerChallenge.nftId = 0;
-
-        emit Unstake(staker, sessionId, playerChallenge.nftId);
+        emit Unstake(staker, sessionId, nftId);
     }
 
     /// @notice CLAIMING:
     /// you can't call this function is time is completed.
     /// you can't call this function if nft is burning.
-    function claim(uint256 sessionId, address staker) external {
+    function claim(uint256 sessionId, uint256 nftId) external {
         Session storage session = sessions[sessionId];
-        Player storage playerChallenge = playerParams[sessionId][staker];
+        address staker = msg.sender;
+        Player storage playerChallenge = playerParams[sessionId][nftId];
 
         require(session.rewardPool > 0, "session does not exist");
-        require(playerChallenge.nftId > 0, "stake amount zero");
+        require(playerChallenge.player != msg.sender, "forbidden");
 
         StakeNft handler = StakeNft(stakeHandler);
         uint256 claimed = handler.claim(sessionId, staker);
 
-        emit Claim(staker, sessionId, playerChallenge.nftId, claimed);
+        emit Claim(staker, sessionId, nftId, claimed);
     }
 }
