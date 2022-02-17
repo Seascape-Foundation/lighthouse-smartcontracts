@@ -111,6 +111,15 @@ contract LighthouseStake is Ownable {
         // (uint nftId, uint weight) = decodeStakeData(data);
         require(nftId > 0, "invalid nftId");
 
+         Session storage session = sessions[sessionId];
+        require(session.rewardPool > 0, "session does not exist");
+
+        // prevent staking if the current time is not in the period
+        require(
+            block.timestamp >= session.startTime && block.timestamp < session.startTime + session.period,
+            "stake is not in the period"
+        );
+
         // create interface of the LighthouseNft
         LighthouseNftInterface nftInterface = LighthouseNftInterface(
             nft
@@ -119,8 +128,7 @@ contract LighthouseStake is Ownable {
         // get weight of the nft using paramsOf function of the LighthouseNftInterface
         (uint256 weight, , ) = nftInterface.paramsOf(nftId);
 
-        Session storage session = sessions[sessionId];
-        require(session.rewardPool > 0, "session does not exist");
+       
 
         address staker = msg.sender;
 
