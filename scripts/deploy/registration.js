@@ -34,7 +34,7 @@ async function main() {
   await cliConfirm.inputConfirm(title, params);
 
   // deploy registration interface
-  let registration              = await Registration.deploy(tierAddress, projectAddress);  
+  let registration              = await Registration.deploy(projectAddress, chainID);  
 
   console.log("Lighthouse Registration deployed to ", chalk.green(registration.address), ' Txid ', chalk.blue(registration.deployTransaction.hash));
 
