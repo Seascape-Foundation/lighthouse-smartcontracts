@@ -51,7 +51,7 @@ let addresses = {
     project:        "0x790f532e7CB515066C60BE13074949aE4C90ea23",
     projectWrapper: "0x17803f649217C9cB7c6301e33BEfA946E6729950",
 
-    registration:   "0x3AfFC3A52B538f5A011dC14E97932b7fc8828Bf0",
+    registration:   "0x52541539C531623c3cb19769a3da40fe07928eF3",
     prefund:        "0xFbc8B415c748091e6a813e13F9B21d314ED9c4e3",
     auction:        "0x005C044a505a4795D59EB48Dd3Ca77870d918977",
 
