@@ -41,6 +41,8 @@ let addresses = {
     burn: ""
   },
   97: {
+    usdc:           '0x3b2ADA1f8A2CaDF05b591e5Bc033a40Ea572fD7D',
+
     crowns:         '0x4Ca0ACab9f6B9C084d216F40963c070Eef95033B',
     scape:          '0x66638F4970C2ae63773946906922c07a583b6069',
     wichita:        '0x66638F4970C2ae63773946906922c07a583b6069',
