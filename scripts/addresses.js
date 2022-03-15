@@ -54,8 +54,11 @@ let addresses = {
     projectWrapper: "0x17803f649217C9cB7c6301e33BEfA946E6729950",
 
     registration:   "0x52541539C531623c3cb19769a3da40fe07928eF3",
-    prefund:        "0xFbc8B415c748091e6a813e13F9B21d314ED9c4e3",
-    auction:        "0x005C044a505a4795D59EB48Dd3Ca77870d918977",
+    prefund:        "0x684aF9B67889d57660FAdD4f5bC012687CeE9A75",
+    //pf 0x5DD3C4c1f47dF7057232162fB4E5Bc089b43B727
+    auction:        "0xb19FD21E06F0F96eCb25676a9A310fb16Da0e0B4",
+    gift:           "0x8595b9A749E8f8688EE51c193aAacd94e88B3404",
+    invest:         "0x5C465E6d627F90B6ae60aBf42d0910D87403B6CF",
 
     mint:           "0x22ebc9f7A2FA47884e472BB3B1e816c0Fc3Cf34D",
 
