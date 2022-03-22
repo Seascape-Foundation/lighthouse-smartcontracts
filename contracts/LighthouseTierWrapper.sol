@@ -47,6 +47,7 @@ contract LighthouseTierWrapper is Ownable {
     event Fees(uint256 feeZero, uint256 feeOne, uint256 feeTwo, uint256 feeThree);
     event TierEditer(address indexed user, bool allowed);
     event Claim(address indexed investor, uint8 indexed tier);
+    event Reclaim(address indexed investor, uint8 indexed tier);
     event Use(address indexed investor, uint8 indexed tier);
     event ClaimVerifier(address indexed oldAddress, address indexed newAddress);
 
@@ -173,7 +174,7 @@ contract LighthouseTierWrapper is Ownable {
         tier.usable = true;
         tier.nonce = tier.nonce + 1;      // Prevent "double-spend".
 
-        emit Claim(msg.sender, level);
+        emit Reclaim(msg.sender, level);
     }
 
 
