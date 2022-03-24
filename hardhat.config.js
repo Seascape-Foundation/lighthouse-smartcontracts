@@ -32,9 +32,10 @@ module.exports = {
         process.env.MOONBEAM_DEPLOYER_KEY_4
       ]
     },
-    moonriver: {
-      url: process.env.MOONRIVER_REMOTE_HTTP,
-      accounts: [process.env.MOONRIVER_DEPLOYER_KEY]
+    // moonriver: {
+    //   url: process.env.MOONRIVER_REMOTE_HTTP,
+    //   accounts: [process.env.MOONRIVER_DEPLOYER_KEY]
+    // },
     bsc_testnet: {
       url: process.env.BSC_TESTNET_REMOTE_HTTP,
       accounts: [
@@ -51,6 +52,9 @@ module.exports = {
     compilers: [
       {
         version: "0.8.0",
+      },
+      {
+        version: "0.8.1",
       },
       {
         version: "0.6.7",
