@@ -26,18 +26,14 @@ describe("Lighthouse Staking", async () => {
     }
 
     let usdAmount = utils.parseEther("10000");
-    let tier = null;
     let usd = null;
 
 
-    let player1 = null;
-    let player2 = null;
     let owner = null;
     let nft1, nft2 = null;
     let stakeContract = null;
     let sessionId = 1;
     let rewardPool = 100;
-    let period = 3600
 
     it("1 should link contracts", async () => {
         let signers = await ethers.getSigners();
