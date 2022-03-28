@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./LighthouseNftInterface.sol";
 
-/// @notice Stake a single nft , and earn ERC20 token
+/// @notice Stake multiple nfts, and earn ERC20 token
 ///
 /// STAKING:
 /// First time whe user deposits his :
@@ -108,7 +108,6 @@ contract LighthouseStake is Ownable {
     ///     It receives  id, signature and amount of staking.
     function stake(uint256 sessionId, uint256 nftId) external {
         // It does verification that  id is valid
-        // (uint nftId, uint weight) = decodeStakeData(data);
         require(nftId > 0, "invalid nftId");
 
          Session storage session = sessions[sessionId];
@@ -136,6 +135,7 @@ contract LighthouseStake is Ownable {
 
         require(challenge.player == address(0x0), "already staked");
 
+        // set the stake player and weight
         challenge.player = staker;
         challenge.weight = weight;
 
