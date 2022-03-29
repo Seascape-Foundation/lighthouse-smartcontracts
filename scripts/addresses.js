@@ -57,10 +57,10 @@ let addresses = {
     prefund:        "0x684aF9B67889d57660FAdD4f5bC012687CeE9A75",
     //pf 0x5DD3C4c1f47dF7057232162fB4E5Bc089b43B727
     auction:        "0xb19FD21E06F0F96eCb25676a9A310fb16Da0e0B4",
-    gift:           "0x6Af943A83237dd3f3286B53C7D38F38dFa919FFC",
-    invest:         "0x0C9109F978cd577f797De6eC2e7AA545aCF43281",
+    gift:           "0x8fe12b877d38A690b7a4583aefC727D55a4095e3",
+    invest:         "0x0272b730C784561c8df39380f7eDB75565E13602",
 
-    mint:           "0x22ebc9f7A2FA47884e472BB3B1e816c0Fc3Cf34D",
+    mint:           "0x8B034600375122a741fbb3Cb6b6ea7Af1DB2325A",
 
     burnAnyWichita: "0xB1004072E827e496EfBdb16a0304E42FaBf8B15d",
     burnScape:      "0x9321a5E859Fc492A89dA335146c20AEd34f4D99E",
