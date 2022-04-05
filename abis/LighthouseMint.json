@@ -13,11 +13,6 @@
       },
       {
         "internalType": "address",
-        "name": "_lighthouseTier",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
         "name": "_project",
         "type": "address"
       },
@@ -76,12 +71,6 @@
       },
       {
         "indexed": false,
-        "internalType": "int256",
-        "name": "tierLevel",
-        "type": "int256"
-      },
-      {
-        "indexed": false,
         "internalType": "uint8",
         "name": "mintType",
         "type": "uint8"
@@ -133,11 +122,6 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
-      },
-      {
-        "internalType": "int8",
-        "name": "",
-        "type": "int8"
       },
       {
         "internalType": "uint8",
@@ -211,19 +195,6 @@
   {
     "inputs": [],
     "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newTier",
-        "type": "address"
-      }
-    ],
-    "name": "setLighthouseTier",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
