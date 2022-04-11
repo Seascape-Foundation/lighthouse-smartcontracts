@@ -1,4 +1,6 @@
 const { ethers } = require("hardhat");
+const addresses = require("../addresses");
+const { addressOf, alias } = require("../addresses");
 
 async function main() {
     // We get the contract to deploy
@@ -13,18 +15,14 @@ async function main() {
     // Constructor arguments
     let fees;
 
-    if (chainID == 1287) {
-      tier = await Tier.attach('0xeFfdB75Ff90349151E100D82Dfd38fa1d7f050D2')
-    } else if (chainID == 1285) {
-        tier = await Tier.attach('0xbc719dc309beb82489e9a949c415e0eaed87d247')
-    }
+    tier = await Tier.attach(addressOf(chainID, alias.TIER_WRAPPER))
 
-    let editor = '0x8caABAe09aaF3980A2954dB9d4F37c0FFe36E493';
+    let editor = addressOf(chainID, alias.PREFUND);
     let isEditor = await tier.editors(editor);
     console.log(`Editor ${editor} is able to change tier info: ${isEditor}`);
 
-    // await tier.addEditor(deployer.address);
-    // console.log(`${deployer.address} was set as tier user`);
+    // await tier.addEditor(editor);
+    // console.log(`${editor} was set as tier user`);
   }
   
   main()

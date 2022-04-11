@@ -11,12 +11,14 @@ async function main() {
     console.log(deployer.address);
 
     if (chainID == 1287) {
-      tier = await Tier.attach("0x1BB55D99aAF303A1586114662ef74638Ed9dB2Ee");
+      tier = await Tier.attach("0xc815b90f2987747Df4617a592CBa8939eBE4B7F2");
     } else if (chainID == 1285) {
-      tier = await Tier.attach("0xbc719dc309beb82489e9a949c415e0eaed87d247");
+      tier = await Tier.attach("0xc815b90f2987747Df4617a592CBa8939eBE4B7F2");
+    }  else if (chainID == 97) {
+      tier = await Tier.attach("0xAa5158938a54363F5701f51C9615c94bA300FB11");
     }
 
-    let user = '0xF218466013F3957d307C72154Dbe466dA2Aaec17'
+    let user = ''
     let level = await tier.getTierLevel(user)
     console.log(`User ${user} tier level is ${level}`);
   }

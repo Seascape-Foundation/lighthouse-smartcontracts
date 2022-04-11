@@ -42,7 +42,7 @@ async function main() {
   await cliConfirm.inputConfirm(deployTitle, deployParams);
 
   // address _lighthouseAuction, address _lighthousePrefund, address _project, address _crowns, uint256 _chainID
-  let mint         = await Mint.deploy(auctionAddress, prefundAddress, projectAddress, crownsAddress, chainID, {gasPrice: gasPrice});    /// Argument '1' means deploy in Test mode
+  let mint         = await Mint.deploy(auctionAddress, prefundAddress, projectAddress, crownsAddress, chainID);    /// Argument '1' means deploy in Test mode
   console.log("Lighthouse Mint deployed to ", chalk.green(mint.address), ' Txid ', chalk.blue(mint.deployTransaction.hash));
 
   let nftAddress = addressOf(chainID, alias.INVEST_NFT);
@@ -52,7 +52,7 @@ async function main() {
   const InvestNft     = await ethers.getContractFactory("LighthouseNft");
 
   let nft = await InvestNft.attach(nftAddress);
-  let permissionTx = await nft.setMinter(mint.address, {gasPrice: gasPrice});
+  let permissionTx = await nft.setMinter(mint.address);
   console.log("Minting contract got a permission to mint Investment NFT! Txid: " + permissionTx.hash);
 }
   

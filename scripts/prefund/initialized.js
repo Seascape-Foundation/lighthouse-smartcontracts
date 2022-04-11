@@ -1,4 +1,5 @@
 const { ethers } = require("hardhat");
+const { addressOf, alias } = require("../addresses");
 
 async function main() {
     // We get the contract to deploy
@@ -11,6 +12,8 @@ async function main() {
     if (chainID == 1287) {
       project = await Project.attach("0xc98c9f17673A7cf1278040a4A02e469Dd96d8D5f");
     } else if (chainID == 1285) {
+    } else if (chainID == 97) {
+      project = await Project.attach(addressOf(chainID, alias.PROJECT_WRAPPER));
     }
 
     let projectID = 31;
