@@ -57,8 +57,8 @@ let addresses = {
     prefund:        "0x684aF9B67889d57660FAdD4f5bC012687CeE9A75",
     //pf 0x5DD3C4c1f47dF7057232162fB4E5Bc089b43B727
     auction:        "0xb19FD21E06F0F96eCb25676a9A310fb16Da0e0B4",
-    gift:           "0x8fe12b877d38A690b7a4583aefC727D55a4095e3",
-    invest:         "0x0272b730C784561c8df39380f7eDB75565E13602",
+    gift:           "0xCcfa48f83b7bB2F6C318C3Cfc2Ae88DAF897716b",
+    invest:         "0x34c11f00d1Cd6163fb7621c654B848e73F616D77",
 
     mint:           "0x8B034600375122a741fbb3Cb6b6ea7Af1DB2325A",
 
