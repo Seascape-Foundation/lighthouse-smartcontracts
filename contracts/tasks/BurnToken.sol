@@ -20,6 +20,8 @@ interface ERC20 {
 contract BurnToken {
     address public wichitaAddress;
 
+    address constant dead = 0x000000000000000000000000000000000000dEaD;
+
     // token => user => burn amount => burnt
     mapping (address => mapping(uint => mapping(address => uint))) public burnt;
     mapping (address => mapping(address => uint)) public totalBurnt;
@@ -32,7 +34,7 @@ contract BurnToken {
         ERC20 token = ERC20(_token);
         require(token.balanceOf(msg.sender) >= _amount, "NOT_ENOUGH_BALANCE");
 
-        token.transferFrom(msg.sender, address(0), _amount);
+        token.transferFrom(msg.sender, dead, _amount);
 
         burnt[_token][_amount][msg.sender]++;
         totalBurnt[_token][msg.sender] += _amount;

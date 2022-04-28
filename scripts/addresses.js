@@ -3,8 +3,8 @@ let addresses = {
     crowns:       '0xFde9cad69E98b3Cc8C998a8F2094293cb0bD6911',
     scape:        '0x9ceAB9b5530762DE5409F2715e85663405129e54',
 
-    tier:         '0x1bb55d99aaf303a1586114662ef74638ed9db2ee',
-    tierWrapper:  '0xeFfdB75Ff90349151E100D82Dfd38fa1d7f050D2',
+    tier:         '0xeFfdB75Ff90349151E100D82Dfd38fa1d7f050D2',
+    tierWrapper:  '0xc815b90f2987747Df4617a592CBa8939eBE4B7F2',
     
     usdc:         '0x1bc33357E79c1E69A46b69c3f6F14691164375Dd',
 
@@ -59,7 +59,7 @@ let addresses = {
 
     burnAnyWichita: "0xB1004072E827e496EfBdb16a0304E42FaBf8B15d",
     burnScape:      "0x9321a5E859Fc492A89dA335146c20AEd34f4D99E",
-    burnToken:      "0x3a713bDA1232906a1114AEe3D239909B953B1263"
+    burnToken:      "0xf68003fe56e334f95404bFb877788F82f87338c3"
 
   }
 }
