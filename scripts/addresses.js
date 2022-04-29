@@ -61,6 +61,28 @@ let addresses = {
     burnScape:      "0x9321a5E859Fc492A89dA335146c20AEd34f4D99E",
     burnToken:      "0xf68003fe56e334f95404bFb877788F82f87338c3"
 
+  },
+  56: {
+    crowns:         '0xbcf39F0EDDa668C58371E519AF37CA705f2bFcbd',
+    scape:          '0xc54b96b04AA8828b63Cf250408E1084E9F6Ac6c8',
+    //wichita:        '0x66638F4970C2ae63773946906922c07a583b6069',
+
+    tier:           "0x9066b28c2f3F712268D71893877d16Bb52A69c5c",
+    tierWrapper:    "0x5f64BB041D1d2E111406B6d63b0Ca6c4C66F2052",
+
+    project:        "0x18f788d5886D0ad1885e70637eC4529e42440b9D",
+    projectWrapper: "0xc09a141E129d7210df004cc642f04dEbD5b1D7aB",
+
+    registration:   "0xf1CD72C28C36F2e2c76D7Cb8d5740C0991f67B3e",
+    prefund:        "0x9902b302A708f8f443203cfFE5A8ADF279FAAa0d",
+    auction:        "0xc07E3719900732849E347F2ed7987CdD9D89295a",
+
+    mint:           "0x22ebc9f7A2FA47884e472BB3B1e816c0Fc3Cf34D",
+
+    burnAnyWichita: "0xB1004072E827e496EfBdb16a0304E42FaBf8B15d",
+    burnScape:      "0x9321a5E859Fc492A89dA335146c20AEd34f4D99E",
+    burnToken:      "0xf68003fe56e334f95404bFb877788F82f87338c3"
+
   }
 }
 
