@@ -35,7 +35,7 @@ async function main() {
         ethers.utils.parseEther("10", 18),     // Tier 2
         ethers.utils.parseEther("20", 18),     // Tier 3
       ];
-    } else if (chainID = 97) {
+    } else if (chainID == 97) {
       crowns          = "0x4Ca0ACab9f6B9C084d216F40963c070Eef95033B";
       claimVerifier   = process.env.MOONBEAM_DEPLOYER_ADDRESS;
       tierAddress     = "0xd7Eb82f5AB90534dFa6922D8Ea3926F17911724E";
