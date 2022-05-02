@@ -50,7 +50,7 @@ async function main() {
 
   // deploy prefund interface
   let prefund         = await Prefund.deploy(tierAddress, registrationAddress, projectAddress, fundCollector, chainID, {gasPrice: gasPrice});    /// Argument '1' means deploy in Test mode
-  console.log("Lighthouse Project deployed to ", chalk.green(prefund.address), ' Txid ', chalk.blue(prefund.deployTransaction.hash));
+  console.log("Lighthouse Prefund deployed to ", chalk.green(prefund.address), ' Txid ', chalk.blue(prefund.deployTransaction.hash));
 
   console.log(chalk.green(`Now, please insert it into the /scripts/addresses.js and update the docs.seascape.network/`));
 
