@@ -5,7 +5,7 @@ let addresses = {
 
     tier:         '0xeFfdB75Ff90349151E100D82Dfd38fa1d7f050D2',
     tierWrapper:  '0xc815b90f2987747Df4617a592CBa8939eBE4B7F2',
-    
+
     usdc:         '0x1bc33357E79c1E69A46b69c3f6F14691164375Dd',
 
     project:      '0xCC084E9962eFc1f35fD18423Dc2424a0A0324f18',     // for prefund and registration.
@@ -26,7 +26,7 @@ let addresses = {
 
     crowns: '0x6fc9651f45B262AE6338a701D563Ab118B1eC0Ce',
     tierWrapper: "0xbc719dc309beb82489e9a949c415e0eaed87d247",
-    
+
     registration: "0xf102cA709bB314614167574e2965aDFcb001d3e9",
     prefund: "0x8caABAe09aaF3980A2954dB9d4F37c0FFe36E493",
     auction: "0x28788cadf01b37DA1c866c479B6809B24Ac8fD2B",
@@ -65,7 +65,7 @@ let addresses = {
   56: {
     crowns:         '0xbcf39F0EDDa668C58371E519AF37CA705f2bFcbd',
     scape:          '0xc54b96b04AA8828b63Cf250408E1084E9F6Ac6c8',
-    //wichita:        '0x66638F4970C2ae63773946906922c07a583b6069',
+    wichita:        '0x201d44A50604e0FCC3B4A47c2b60e01f00bB47dc',
 
     tier:           "0x9066b28c2f3F712268D71893877d16Bb52A69c5c",
     tierWrapper:    "0x5f64BB041D1d2E111406B6d63b0Ca6c4C66F2052",
@@ -77,11 +77,11 @@ let addresses = {
     prefund:        "0x9902b302A708f8f443203cfFE5A8ADF279FAAa0d",
     auction:        "0xc07E3719900732849E347F2ed7987CdD9D89295a",
 
-    mint:           "0x22ebc9f7A2FA47884e472BB3B1e816c0Fc3Cf34D",
+    burn:           '0x456c2cACbBE68A565F998C12233c8f7697bE8942',
 
-    burnAnyWichita: "0xB1004072E827e496EfBdb16a0304E42FaBf8B15d",
-    burnScape:      "0x9321a5E859Fc492A89dA335146c20AEd34f4D99E",
-    burnToken:      "0xf68003fe56e334f95404bFb877788F82f87338c3"
+    burnAnyWichita: "0x93C9A972373113E7e7624C0AE842EDF97b3B7C10",
+    burnScape:      "0xf959faDCF4Af04685Fd4B12f3A09856723B61D8b",
+    burnToken:      "0x952a343FB162e6067024679019B53c68600D991D"
 
   }
 }
@@ -113,8 +113,8 @@ let alias = {
  * - invalid name
  * - invalid chain ID
  * - address of smartcontract wasn't defined
- * 
- * @param {Integer} chainID 
+ *
+ * @param {Integer} chainID
  */
 let addressOf = function(chainID, name) {
   if (addresses[chainID] === undefined) {
