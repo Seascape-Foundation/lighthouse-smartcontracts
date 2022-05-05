@@ -92,7 +92,7 @@ contract LighthouseTier is Ownable {
 
         editors[_user] = true;
 
-        TierEditer(_user, true);
+        emit TierEditer(_user, true);
     }
 
     /// @notice Remove the tier user.
@@ -102,7 +102,7 @@ contract LighthouseTier is Ownable {
 
         editors[_user] = false;
 
-        TierEditer(_user, false);
+        emit TierEditer(_user, false);
     }
 
     ////////////////////////////////////////////////////////////////////////////

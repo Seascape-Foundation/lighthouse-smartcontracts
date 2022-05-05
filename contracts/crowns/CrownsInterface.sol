@@ -1,6 +1,6 @@
 // contracts/Crowns.sol
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.1;
+pragma solidity 0.8.10;
 
 interface CrownsInterface {
     function addBridge(address _bridge) external returns(bool);

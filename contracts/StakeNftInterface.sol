@@ -1,4 +1,6 @@
-pragma solidity 0.8.1;
+// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.10;
 
 /// @dev The core functionality of the DeFi.
 /// This is Stake erc721/native, and earn another erc20/native currency.

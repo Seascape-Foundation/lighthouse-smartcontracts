@@ -1,6 +1,6 @@
 // Seascape NFT
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.1;
+pragma solidity 0.8.10;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
@@ -36,7 +36,7 @@ interface LighthouseNftInterface {
         uint8 _type
     ) external returns (bool);
 
-    function burn(uint256 id) external virtual;
+    function burn(uint256 id) external;
 
     function getNextTokenId() external view returns (uint256);
 
