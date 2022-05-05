@@ -21,7 +21,7 @@ contract BurnAnyWichita {
     address public wichitaAddress;
 
     mapping (address => uint) public burntTotalAmount;
-    mapping (address => mapping(uint => uint)) public burnt;
+    mapping (address => mapping(uint => bool)) public burnt;
 
     event Burnt(address indexed investor, uint time, uint id);
 
@@ -30,11 +30,12 @@ contract BurnAnyWichita {
     }
 
     function burn(uint _id) external {
-        BNFT scape = BNFT(wichitaAddress);
-        require(scape.ownerOf(_id) == msg.sender, "NOT_YOURS");
+        BNFT nft = BNFT(wichitaAddress);
+        require(nft.ownerOf(_id) == msg.sender, "NOT_YOURS");
 
-        scape.safeTransferFrom(msg.sender, address(0), _id);
-
+        nft.safeTransferFrom(msg.sender, 0x000000000000000000000000000000000000dEaD, _id);
+        burntTotalAmount[msg.sender]++;
+        burnt[msg.sender][_id] = true;
         emit Burnt(msg.sender, block.timestamp, _id);
     }
 }

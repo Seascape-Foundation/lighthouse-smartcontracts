@@ -39,6 +39,15 @@ async function main() {
         ethers.utils.parseEther("0.5", 18),       // Tier 2
         ethers.utils.parseEther("1", 18),      // Tier 3
       ];
+    } else if (chainID == 56) {
+      crowns          = "0x6fc9651f45B262AE6338a701D563Ab118B1eC0Ce";
+      claimVerifier   = deployer.address;
+      fees            = [                     // Tier claiming fees
+        ethers.utils.parseEther("0.1", 18),     // Tier 0
+        ethers.utils.parseEther("0.25", 18),       // Tier 1
+        ethers.utils.parseEther("0.5", 18),       // Tier 2
+        ethers.utils.parseEther("1", 18),      // Tier 3
+      ];
     }
 
     const tier       = await Tier.deploy(crowns, claimVerifier, fees, chainID);

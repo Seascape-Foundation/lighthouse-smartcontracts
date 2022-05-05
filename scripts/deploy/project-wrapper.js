@@ -39,8 +39,8 @@ async function main() {
   await cliConfirm.inputConfirm(title, params);
 
   // deploy project
-  let project              = await Project.deploy(verifier, projectAddress); 
-  console.log("Lighthouse Project deployed to ", chalk.green(project.address), ' Txid ', chalk.blue(project.deployTransaction.hash));
+  let project              = await Project.deploy(verifier, projectAddress);
+  console.log("Lighthouse Project Wrapper deployed to ", chalk.green(project.address), ' Txid ', chalk.blue(project.deployTransaction.hash));
 
   console.log(chalk.green(`Now, please insert it into the /scripts/addresses.js and update the docs.seascape.network/`));
 }
