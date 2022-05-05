@@ -1,8 +1,10 @@
-pragma solidity 0.8.1;
+// SPDX-License-Identifier: MIT
+pragma solidity 0.8.10;
 
 import "./StakeNftInterface.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./LighthouseNftInterface.sol";
 
 /// @notice Stake multiple nfts, and earn ERC20 token
@@ -11,7 +13,7 @@ import "./LighthouseNftInterface.sol";
 /// First time whe user deposits his :
 /// It receives  id, signature.
 /// If user's  is in the game, then deposit is unavailable.
-contract LighthouseStake is Ownable {
+contract LighthouseStake is Ownable, ReentrancyGuard {
     address payable public stakeHandler;
     
     uint256 public latestSessionId;
@@ -59,28 +61,26 @@ contract LighthouseStake is Ownable {
     /// @notice Decimal of reward token should be set to 18
     constructor(
         address payable _handler
-    ) public {
+    ) {
         stakeHandler = _handler;
     }
 
     /// @notice The challenges of this category were added to the Zombie Farm season
     function addSession(
-        uint256 sessionId,
         uint256 startTime,
         uint256 period,
         uint256 rewardPool,
         address nft,
         address rewardToken
     ) external onlyOwner {
+        uint sessionId = latestSessionId + 1;
         require(
             sessions[sessionId].rewardPool == 0,
             "the session already exists"
         );
 
-        require(
-            rewardPool > 0 && period > 0 && startTime > block.timestamp,
-            "zero_value"
-        );
+        require(rewardPool > 0 && period > 0 , "zero_value");
+        require(startTime > block.timestamp, "Start time is before the current block timestamp");
 
         // Challenge.stake is not null, means that earn is not null too.
         Session storage session = sessions[sessionId];
@@ -103,10 +103,9 @@ contract LighthouseStake is Ownable {
         );
     }
 
-    /// @notice Stake an  and some token.
-    /// For the first time whe user deposits his :
-    ///     It receives  id, signature and amount of staking.
-    function stake(uint256 sessionId, uint256 nftId) external {
+    /// @notice Stake an NFT. Amount of earing tokens is proportional to the Weight of NFT.
+    /// IMPORANT! Its possible to stake LighthouseNFT.sol (in ./contracts) only.
+    function stake(uint256 sessionId, uint256 nftId) external nonReentrant {
         // It does verification that  id is valid
         require(nftId > 0, "invalid nftId");
 
@@ -127,8 +126,6 @@ contract LighthouseStake is Ownable {
         // get weight of the nft using paramsOf function of the LighthouseNftInterface
         (uint256 weight, , ) = nftInterface.paramsOf(nftId);
 
-       
-
         address staker = msg.sender;
 
         Player storage challenge = playerParams[sessionId][nftId];
@@ -145,16 +142,14 @@ contract LighthouseStake is Ownable {
         emit Stake(staker, sessionId, nftId);
     }
 
-    /// @notice Unstake nft. If the challenge is burning in this sesion
-    /// then burn nft.
-    /// @dev data variable is not used, but its here for following the ZombieFarm architecture.
-    function unstake(uint256 sessionId, uint256 nftId) external {
+    /// @notice Unstake nft.
+    function unstake(uint256 sessionId, uint256 nftId) external nonReentrant {
         address staker = msg.sender;
         Session storage session = sessions[sessionId];
         require(session.rewardPool > 0, "session does not exist");
 
         Player storage playerChallenge = playerParams[sessionId][nftId];
-        require(playerChallenge.player != msg.sender, "forbidden");
+        require(playerChallenge.player == msg.sender, "forbidden");
 
         StakeNft handler = StakeNft(stakeHandler);
         handler.claim(sessionId, staker);
@@ -165,16 +160,14 @@ contract LighthouseStake is Ownable {
         emit Unstake(staker, sessionId, nftId);
     }
 
-    /// @notice CLAIMING:
-    /// you can't call this function is time is completed.
-    /// you can't call this function if nft is burning.
-    function claim(uint256 sessionId, uint256 nftId) external {
+    /// @notice Keep stake and harvest the rewards till now.
+    function claim(uint256 sessionId, uint256 nftId) external nonReentrant {
         Session storage session = sessions[sessionId];
         address staker = msg.sender;
         Player storage playerChallenge = playerParams[sessionId][nftId];
 
         require(session.rewardPool > 0, "session does not exist");
-        require(playerChallenge.player != msg.sender, "forbidden");
+        require(playerChallenge.player == msg.sender, "forbidden");
 
         StakeNft handler = StakeNft(stakeHandler);
         uint256 claimed = handler.claim(sessionId, staker);

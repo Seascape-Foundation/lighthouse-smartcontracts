@@ -67,7 +67,7 @@ describe("Lighthouse Staking", async () => {
         let period = 600;
 
         console.log(`starting session...`);
-        await stakeContract.addSession(sessionId, startTime, period, rewardPool, nft1.address, usd.address);
+        await stakeContract.addSession(startTime, period, rewardPool, nft1.address, usd.address);
         console.log(`session started!`);
     });
 
