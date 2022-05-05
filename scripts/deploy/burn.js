@@ -46,7 +46,7 @@ async function main() {
 
   await cliConfirm.inputConfirm(deployTitle, deployParams);
 
-  let burn         = await Burn.deploy(auctionAddress, prefundAddress, tierAddress, projectAddress, crownsAddress, {gasPrice: gasPrice});    /// Argument '1' means deploy in Test mode
+  let burn         = await Burn.deploy(auctionAddress, prefundAddress, projectAddress, crownsAddress, {gasPrice: gasPrice});    /// Argument '1' means deploy in Test mode
   console.log("Lighthouse Burn deployed to ", chalk.green(burn.address), ' Txid ', chalk.blue(burn.deployTransaction.hash));
 
   let nftAddress = addressOf(chainID, alias.INVEST_NFT);

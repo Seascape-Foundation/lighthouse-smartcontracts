@@ -35,7 +35,7 @@ async function main() {
         ethers.utils.parseEther("10", 18),     // Tier 2
         ethers.utils.parseEther("20", 18),     // Tier 3
       ];
-    } else if (chainID = 97) {
+    } else if (chainID == 97) {
       crowns          = "0x4Ca0ACab9f6B9C084d216F40963c070Eef95033B";
       claimVerifier   = process.env.MOONBEAM_DEPLOYER_ADDRESS;
       tierAddress     = "0xd7Eb82f5AB90534dFa6922D8Ea3926F17911724E";
@@ -45,8 +45,17 @@ async function main() {
         ethers.utils.parseEther("0.5", 18),       // Tier 2
         ethers.utils.parseEther("1", 18),      // Tier 3
       ];
+    } else if (chainID == 56) {
+      crowns          = "0xbcf39F0EDDa668C58371E519AF37CA705f2bFcbd";
+      claimVerifier   = process.env.BSC_DEPLOYER_ADDRESS;
+      tierAddress     = "0x9066b28c2f3F712268D71893877d16Bb52A69c5c";
+      fees            = [                     // Tier claiming fees
+        ethers.utils.parseEther("0.1", 18),     // Tier 0
+        ethers.utils.parseEther("0.25", 18),       // Tier 1
+        ethers.utils.parseEther("0.5", 18),       // Tier 2
+        ethers.utils.parseEther("1", 18),      // Tier 3
+      ];
     }
-
     let gasPrice    = 20000000000;                                    // 20 gwei
 
     let tier;

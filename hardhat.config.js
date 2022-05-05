@@ -24,18 +24,18 @@ module.exports = {
       }
     },
     moonbase: {
-      url: process.env.MOONBEAM_REMOTE_HTTP,
+      url: process.env.MOONBASE_REMOTE_HTTP,
       accounts: [
-        process.env.MOONBEAM_DEPLOYER_KEY,
-        process.env.MOONBEAM_DEPLOYER_KEY_2,
-        process.env.MOONBEAM_DEPLOYER_KEY_3,
-        process.env.MOONBEAM_DEPLOYER_KEY_4
+        process.env.MOONBASE_DEPLOYER_KEY,
+        process.env.MOONBASE_DEPLOYER_KEY_2,
+        process.env.MOONBASE_DEPLOYER_KEY_3,
+        process.env.MOONBASE_DEPLOYER_KEY_4
       ]
     },
-    // moonriver: {
-    //   url: process.env.MOONRIVER_REMOTE_HTTP,
-    //   accounts: [process.env.MOONRIVER_DEPLOYER_KEY]
-    // },
+    moonriver: {
+      url: process.env.MOONRIVER_REMOTE_HTTP,
+      accounts: [process.env.MOONRIVER_DEPLOYER_KEY]
+    },
     bsc_testnet: {
       url: process.env.BSC_TESTNET_REMOTE_HTTP,
       accounts: [
