@@ -19,7 +19,7 @@ async function main() {
     let chainID       = await deployer.getChainId();
 
     console.log(`Signing by ${deployer.address}`);
-
+    console.log(`Chain id  ${chainID}`);
     let projectAddress = addressOf(chainID, alias.PROJECT);
     let project = await Project.attach(projectAddress);
 
@@ -36,9 +36,9 @@ async function main() {
 
     let title = 'Initializing a new registration phase with following parameters!';
     let params = {
-      gasPrice: chalk.blue(`${(cliGas.weiToGwei(gasPrice))} gwei`), 
+      gasPrice: chalk.blue(`${(cliGas.weiToGwei(gasPrice))} gwei`),
       projectAddress: chalk.blue(`${projectAddress}`),
-      startTime: chalk.blue(`${new Date(start * 1000)}`), 
+      startTime: chalk.blue(`${new Date(start * 1000)}`),
       endTime: chalk.blue(`${new Date(end * 1000)}`),
     }
 
