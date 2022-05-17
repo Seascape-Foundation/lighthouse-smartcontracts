@@ -38,7 +38,6 @@ contract LighthouseStake is Ownable, ReentrancyGuard {
     // session id => player address = PlayerChallenge
     mapping(uint256 => mapping(uint256 => Player)) public playerParams;
 
-    
 
     event Stake(
         address indexed staker,
@@ -58,10 +57,9 @@ contract LighthouseStake is Ownable, ReentrancyGuard {
         uint256 nftId,
         uint256 amount
     );
+
     /// @notice Decimal of reward token should be set to 18
-    constructor(
-        address payable _handler
-    ) {
+    constructor(address payable _handler) {
         stakeHandler = _handler;
     }
 
@@ -72,7 +70,10 @@ contract LighthouseStake is Ownable, ReentrancyGuard {
         uint256 rewardPool,
         address nft,
         address rewardToken
-    ) external onlyOwner {
+    )
+        external
+        onlyOwner
+    {
         uint sessionId = latestSessionId + 1;
         require(
             sessions[sessionId].rewardPool == 0,
@@ -109,7 +110,7 @@ contract LighthouseStake is Ownable, ReentrancyGuard {
         // It does verification that  id is valid
         require(nftId > 0, "invalid nftId");
 
-         Session storage session = sessions[sessionId];
+        Session storage session = sessions[sessionId];
         require(session.rewardPool > 0, "session does not exist");
 
         // prevent staking if the current time is not in the period
@@ -119,9 +120,7 @@ contract LighthouseStake is Ownable, ReentrancyGuard {
         );
 
         // create interface of the LighthouseNft
-        LighthouseNftInterface nftInterface = LighthouseNftInterface(
-            session.nft
-        );
+        LighthouseNftInterface nftInterface = LighthouseNftInterface(session.nft);
 
         // get weight of the nft using paramsOf function of the LighthouseNftInterface
         (uint256 weight, , ) = nftInterface.paramsOf(nftId);
