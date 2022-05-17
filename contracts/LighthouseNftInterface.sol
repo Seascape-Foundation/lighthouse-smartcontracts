@@ -17,14 +17,7 @@ interface LighthouseNftInterface {
 
     function burner(address _burner) external view returns (bool);
 
-    function paramsOf(uint256 _tokenId)
-        external
-        view
-        returns (
-            uint256,
-            uint256,
-            uint8
-        );
+    function paramsOf(uint256 _tokenId) external view returns (uint256, uint256, uint8);
 
     /// @dev ensure that all parameters are checked on factory smartcontract
     function mint(
