@@ -13,11 +13,7 @@ interface StakeNft {
 
     function weights(address, uint256) external view returns (uint256);
 
-    function owners(
-        address,
-        uint256,
-        uint256
-    ) external view returns (address);
+    function owners(address, uint256, uint256) external view returns (address);
 
     /// @notice a new staking period in the namespace of this method caller.
     function newPeriod(
@@ -30,19 +26,9 @@ interface StakeNft {
     ) external;
 
     /// @dev The ZombieFarm calls this function when the session is active only.
-    function stake(
-        uint256 key,
-        address stakerAddr,
-        uint256 id,
-        uint256 amount
-    ) external;
+    function stake(uint256 key, address stakerAddr, uint256 id, uint256 amount) external;
 
-    function unstake(
-        uint256 key,
-        address stakerAddr,
-        uint256 id,
-        bool burn
-    ) external;
+    function unstake(uint256 key, address stakerAddr, uint256 id, bool burn) external;
 
     function claim(uint256 key, address stakerAddr) external returns (uint256);
 }
