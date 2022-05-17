@@ -15,11 +15,8 @@ import "./LighthouseNftInterface.sol";
 /// If user's  is in the game, then deposit is unavailable.
 contract LighthouseStake is Ownable, ReentrancyGuard {
     address payable public stakeHandler;
-    
-    uint256 public latestSessionId;
 
-    /// @dev The account that keeps all ERC20 rewards
-    uint256 public nonce = 0;
+    uint256 public latestSessionId;
 
     struct Session {
         uint256 startTime;
