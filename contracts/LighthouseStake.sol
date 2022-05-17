@@ -140,7 +140,7 @@ contract LighthouseStake is Ownable, ReentrancyGuard {
         require(session.rewardPool > 0, "session does not exist");
 
         Player storage playerChallenge = playerParams[sessionId][nftId];
-        require(playerChallenge.player == msg.sender, "forbidden");
+        require(playerChallenge.player == msg.sender, "sender is not an active staker");
 
         StakeNft handler = StakeNft(stakeHandler);
         handler.claim(sessionId, staker);
@@ -158,7 +158,7 @@ contract LighthouseStake is Ownable, ReentrancyGuard {
         Player storage playerChallenge = playerParams[sessionId][nftId];
 
         require(session.rewardPool > 0, "session does not exist");
-        require(playerChallenge.player == msg.sender, "forbidden");
+        require(playerChallenge.player == msg.sender, "sender is not an active staker");
 
         StakeNft handler = StakeNft(stakeHandler);
         uint256 claimed = handler.claim(sessionId, staker);
