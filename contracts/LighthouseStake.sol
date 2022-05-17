@@ -35,7 +35,7 @@ contract LighthouseStake is Ownable, ReentrancyGuard {
     }
 
     mapping(uint256 => Session) public sessions;
-    // session id => player address = PlayerChallenge
+    // session id => nft id => Player struct
     mapping(uint256 => mapping(uint256 => Player)) public playerParams;
 
 
