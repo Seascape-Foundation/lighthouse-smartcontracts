@@ -75,13 +75,9 @@ contract LighthouseStake is Ownable, ReentrancyGuard {
         onlyOwner
     {
         uint sessionId = latestSessionId + 1;
-        require(
-            sessions[sessionId].rewardPool == 0,
-            "the session already exists"
-        );
-
-        require(rewardPool > 0 && period > 0 , "zero_value");
-        require(startTime > block.timestamp, "Start time is before the current block timestamp");
+        require(sessions[sessionId].rewardPool == 0, "the session already exists");
+        require(rewardPool > 0 && period > 0 , "rewardPool & period not above 0");
+        require(startTime > block.timestamp, "startTime should be in future");
 
         // Challenge.stake is not null, means that earn is not null too.
         Session storage session = sessions[sessionId];
@@ -112,12 +108,8 @@ contract LighthouseStake is Ownable, ReentrancyGuard {
 
         Session storage session = sessions[sessionId];
         require(session.rewardPool > 0, "session does not exist");
-
-        // prevent staking if the current time is not in the period
-        require(
-            block.timestamp >= session.startTime && block.timestamp < session.startTime + session.period,
-            "stake is not in the period"
-        );
+        require(block.timestamp >= session.startTime, "session hasnt started yet");
+        require(block.timestamp < session.startTime + session.period, "session already finished");
 
         // create interface of the LighthouseNft
         LighthouseNftInterface nftInterface = LighthouseNftInterface(session.nft);
