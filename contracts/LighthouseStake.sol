@@ -15,6 +15,7 @@ import "./LighthouseNftInterface.sol";
 /// If user's  is in the game, then deposit is unavailable.
 contract LighthouseStake is Ownable, ReentrancyGuard {
     address payable public stakeHandler;
+    StakeNft handler = StakeNft(stakeHandler);
 
     uint256 public latestSessionId;
 
@@ -83,7 +84,6 @@ contract LighthouseStake is Ownable, ReentrancyGuard {
         session.rewardToken = rewardToken;
         session.nft = nft;
         session.rewardPool = rewardPool;
-        StakeNft handler = StakeNft(stakeHandler);
 
         latestSessionId = sessionId;
 
@@ -124,7 +124,6 @@ contract LighthouseStake is Ownable, ReentrancyGuard {
         challenge.player = staker;
         challenge.weight = weight;
 
-        StakeNft handler = StakeNft(stakeHandler);
         handler.stake(sessionId, staker, nftId, weight);
 
         emit Stake(staker, sessionId, nftId);
@@ -139,7 +138,6 @@ contract LighthouseStake is Ownable, ReentrancyGuard {
         Player storage playerChallenge = playerParams[sessionId][nftId];
         require(playerChallenge.player == msg.sender, "sender is not an active staker");
 
-        StakeNft handler = StakeNft(stakeHandler);
         handler.claim(sessionId, staker);
 
         handler.unstake(sessionId, staker, nftId, false);
@@ -157,7 +155,6 @@ contract LighthouseStake is Ownable, ReentrancyGuard {
         require(session.rewardPool > 0, "session does not exist");
         require(playerChallenge.player == msg.sender, "sender is not an active staker");
 
-        StakeNft handler = StakeNft(stakeHandler);
         uint256 claimed = handler.claim(sessionId, staker);
 
         emit Claim(staker, sessionId, nftId, claimed);
