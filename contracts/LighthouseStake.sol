@@ -140,7 +140,7 @@ contract LighthouseStake is Ownable, ReentrancyGuard {
 
         handler.claim(sessionId, staker);
 
-        handler.unstake(sessionId, staker, nftId, false);
+        handler.unstake(sessionId, staker, nftId);
         delete playerParams[sessionId][nftId];
 
         emit Unstake(staker, sessionId, nftId);
