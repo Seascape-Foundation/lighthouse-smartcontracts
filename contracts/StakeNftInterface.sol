@@ -28,7 +28,7 @@ interface StakeNft {
     /// @dev The ZombieFarm calls this function when the session is active only.
     function stake(uint256 key, address stakerAddr, uint256 id, uint256 amount) external;
 
-    function unstake(uint256 key, address stakerAddr, uint256 id, bool burn) external;
+    function unstake(uint256 key, address stakerAddr, uint256 id) external;
 
     function claim(uint256 key, address stakerAddr) external returns (uint256);
 }
