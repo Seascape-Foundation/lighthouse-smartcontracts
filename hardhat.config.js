@@ -39,6 +39,12 @@ module.exports = {
       accounts: [
         process.env.BSC_TESTNET_DEPLOYER_KEY
       ]
+    },
+    bsc: {
+      url: process.env.BSC_REMOTE_HTTP,
+      accounts: [
+        process.env.BSC_DEPLOYER_KEY
+      ]
     }
   },
   etherscan: {
