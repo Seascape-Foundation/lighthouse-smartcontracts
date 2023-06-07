@@ -1,6 +1,7 @@
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
+require('dotenv').config();
 require("@nomiclabs/hardhat-waffle");
 require("@nomiclabs/hardhat-etherscan");
 
@@ -24,17 +25,14 @@ module.exports = {
       }
     },
     moonbase: {
-      url: process.env.MOONBASE_REMOTE_HTTP,
+      url: process.env.MOONBEAM_REMOTE_HTTP,
       accounts: [
-        process.env.MOONBASE_DEPLOYER_KEY,
-        process.env.MOONBASE_DEPLOYER_KEY_2,
-        process.env.MOONBASE_DEPLOYER_KEY_3,
-        process.env.MOONBASE_DEPLOYER_KEY_4
+        process.env.MOONBEAM_DEPLOYER_KEY
       ]
     },
     moonriver: {
-      url: process.env.MOONRIVER_REMOTE_HTTP,
-      accounts: [process.env.MOONRIVER_DEPLOYER_KEY]
+      url: `${process.env.MOONRIVER_REMOTE_HTTP || process.env.MOONBEAM_REMOTE_HTTP}`,
+      accounts: [`${process.env.MOONRIVER_DEPLOYER_KEY || process.env.MOONBEAM_DEPLOYER_KEY}`]
     },
     bsc_testnet: {
       url: process.env.BSC_TESTNET_REMOTE_HTTP,
@@ -51,7 +49,7 @@ module.exports = {
   solidity: {
     compilers: [
       {
-        version: "0.8.0",
+        version: "0.8.1",
       },
       {
         version: "0.6.7",
