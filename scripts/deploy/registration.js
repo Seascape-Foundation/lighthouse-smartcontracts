@@ -20,12 +20,10 @@ async function main() {
   let gasPrice = await cliGas.inputGasPrice();
 
   // Constructor arguments
-  let tierAddress = await addressOf(chainID, alias.TIER_WRAPPER);
   let projectAddress = await addressOf(chainID, alias.PROJECT);
 
   let title = `Please confirm the parameters...`;
   let params = {
-    tierAddress: tierAddress,
     projectAddress: projectAddress,
     gasPrice: `${cliGas.weiToGwei(gasPrice)} gwei`,
     deployer: deployer.address
