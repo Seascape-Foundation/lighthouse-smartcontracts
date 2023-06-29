@@ -32,6 +32,7 @@ async function main() {
   //     console.log(`Fees updated on chain for the Wrapper ${chainID}`);
   // }
   if (chainID == 97) {
+    console.log("Changing on BSC Testnet")
     wrapper = await Wrapper.attach('0x5f64BB041D1d2E111406B6d63b0Ca6c4C66F2052')
     fees = [                     // Tier claiming fees
       ethers.utils.parseEther("5", 18),     // Tier 0
@@ -40,9 +41,12 @@ async function main() {
       ethers.utils.parseEther("200", 18),      // Tier 3
     ];
     let setFeesTx = await wrapper.setFees(fees);
+    console.log(`TXID: ${setFeesTx.hash}`);
+
     console.log(`Fees updated on chain for the Wrapper ${chainID}`);
   }
   else if (chainID == 56) {
+    console.log("Changing on BSC Mainnet")
     wrapper = await Wrapper.attach('0xAa5158938a54363F5701f51C9615c94bA300FB11')
     fees = [                     // Tier claiming fees
       ethers.utils.parseEther("5", 18),     // Tier 0
@@ -51,6 +55,7 @@ async function main() {
       ethers.utils.parseEther("200", 18),      // Tier 3
     ];
     let setFeesTx = await wrapper.setFees(fees);
+    console.log(`TXID: ${setFeesTx.hash}`);
     console.log(`Fees updated on chain for the Wrapper ${chainID}`);
   }
 }
