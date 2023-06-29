@@ -33,7 +33,8 @@ async function main() {
   // }
   if (chainID == 97) {
     console.log("Changing on BSC Testnet")
-    wrapper = await Wrapper.attach('0x5f64BB041D1d2E111406B6d63b0Ca6c4C66F2052')
+    wrapper = await Wrapper.attach('0xAa5158938a54363F5701f51C9615c94bA300FB11')
+
     fees = [                     // Tier claiming fees
       ethers.utils.parseEther("5", 18),     // Tier 0
       ethers.utils.parseEther("50", 18),       // Tier 1
@@ -47,7 +48,8 @@ async function main() {
   }
   else if (chainID == 56) {
     console.log("Changing on BSC Mainnet")
-    wrapper = await Wrapper.attach('0xAa5158938a54363F5701f51C9615c94bA300FB11')
+    wrapper = await Wrapper.attach('0x5f64BB041D1d2E111406B6d63b0Ca6c4C66F2052')
+
     fees = [                     // Tier claiming fees
       ethers.utils.parseEther("5", 18),     // Tier 0
       ethers.utils.parseEther("50", 18),       // Tier 1
