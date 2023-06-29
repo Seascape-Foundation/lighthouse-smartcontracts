@@ -31,16 +31,28 @@ async function main() {
   //     // await setFeesTx.wait();
   //     console.log(`Fees updated on chain for the Wrapper ${chainID}`);
   // }
-  tier = await Tier.attach('0x5f64BB041D1d2E111406B6d63b0Ca6c4C66F2052')
-  wrapper = await Wrapper.attach('0x5f64BB041D1d2E111406B6d63b0Ca6c4C66F2052')
-  fees = [                     // Tier claiming fees
-    ethers.utils.parseEther("5", 18),     // Tier 0
-    ethers.utils.parseEther("50", 18),       // Tier 1
-    ethers.utils.parseEther("100", 18),       // Tier 2
-    ethers.utils.parseEther("200", 18),      // Tier 3
-  ];
-  let setFeesTx = await wrapper.setFees(fees);
-  console.log(`Fees updated on chain for the Wrapper ${chainID}`);
+  if (chainID == 97) {
+    wrapper = await Wrapper.attach('0x5f64BB041D1d2E111406B6d63b0Ca6c4C66F2052')
+    fees = [                     // Tier claiming fees
+      ethers.utils.parseEther("5", 18),     // Tier 0
+      ethers.utils.parseEther("50", 18),       // Tier 1
+      ethers.utils.parseEther("100", 18),       // Tier 2
+      ethers.utils.parseEther("200", 18),      // Tier 3
+    ];
+    let setFeesTx = await wrapper.setFees(fees);
+    console.log(`Fees updated on chain for the Wrapper ${chainID}`);
+  }
+  else if (chainID == 56) {
+    wrapper = await Wrapper.attach('0xAa5158938a54363F5701f51C9615c94bA300FB11')
+    fees = [                     // Tier claiming fees
+      ethers.utils.parseEther("5", 18),     // Tier 0
+      ethers.utils.parseEther("50", 18),       // Tier 1
+      ethers.utils.parseEther("100", 18),       // Tier 2
+      ethers.utils.parseEther("200", 18),      // Tier 3
+    ];
+    let setFeesTx = await wrapper.setFees(fees);
+    console.log(`Fees updated on chain for the Wrapper ${chainID}`);
+  }
 }
 
 main()
